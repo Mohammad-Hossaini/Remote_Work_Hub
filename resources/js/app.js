@@ -1,2 +1,2 @@
-import "./App.jsx";
+import "./Main.jsx";
 import "./bootstrap";

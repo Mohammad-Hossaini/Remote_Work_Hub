@@ -1,0 +1,218 @@
+{
+  "jobs": [
+    {
+      "id": "1",
+      "companyLogo": "/company-images/image(1).jfif",
+      "title": "Frontend Developer",
+      "position": "React.js Specialist",
+      "location": "Kabul",
+      "type": "Full Time",
+      "experience": "2+ years",
+      "companyName": "Microsoft",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "700 USD/month",
+      "skills": [
+        "CSS",
+        "HTML",
+        "C++"
+      ]
+    },
+    {
+      "id": "2",
+      "companyLogo": "/company-images/image(2).jfif",
+      "title": "Backend Developer",
+      "position": "Node.js Specialist",
+      "location": "Herat",
+      "type": "Part Time",
+      "experience": "Internship",
+      "companyName": "Google",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "500 USD/month",
+      "skills": [
+        "JavaScript",
+        "Node.js",
+        "SQL"
+      ]
+    },
+    {
+      "id": "3",
+      "companyLogo": "/company-images/image(3).jfif",
+      "title": "UI/UX Designer",
+      "position": "Figma & Adobe XD",
+      "location": "Remote",
+      "type": "Full Time",
+      "experience": "1+ years",
+      "companyName": "Meta (Facebook)",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "650 USD/month",
+      "skills": [
+        "Figma",
+        "Adobe XD",
+        "CSS"
+      ]
+    },
+    {
+      "id": "4",
+      "companyLogo": "/company-images/image(4).jfif",
+      "title": "Full Stack Developer",
+      "position": "React + Node.js",
+      "location": "Mazar",
+      "type": "Full Time",
+      "experience": "4+ years",
+      "companyName": "IBM",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "1200 USD/month",
+      "skills": [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "CSS"
+      ]
+    },
+    {
+      "id": "5",
+      "companyLogo": "/company-images/image(5).jfif",
+      "title": "Data Scientist",
+      "position": "Python & ML",
+      "location": "Remote",
+      "type": "Contract",
+      "experience": "3+ years",
+      "companyName": "Yahoo",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "1500 USD/month",
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "SQL"
+      ]
+    },
+    {
+      "id": "6",
+      "companyLogo": "/company-images/image(6).jfif",
+      "title": "Mobile Developer",
+      "position": "Flutter & React Native",
+      "location": "Kabul",
+      "type": "Internship",
+      "experience": "0-1 years",
+      "companyName": "Apple",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "300 USD/month",
+      "skills": [
+        "Flutter",
+        "React Native",
+        "JavaScript"
+      ]
+    },
+    {
+      "id": "7",
+      "companyLogo": "/company-images/image (7).png",
+      "title": "DevOps Engineer",
+      "position": "AWS & Docker",
+      "location": "Herat",
+      "type": "Full Time",
+      "experience": "5+ years",
+      "companyName": "Amazon",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "2000 USD/month",
+      "skills": [
+        "AWS",
+        "Docker",
+        "Kubernetes"
+      ]
+    },
+    {
+      "id": "8",
+      "companyLogo": "/company-images/image (8).png",
+      "title": "QA Engineer",
+      "position": "Automation & Manual Testing",
+      "location": "Mazar",
+      "type": "Part Time",
+      "experience": "2+ years",
+      "companyName": "Netflix",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "800 USD/month",
+      "skills": [
+        "Selenium",
+        "Cypress",
+        "JavaScript"
+      ]
+    },
+    {
+      "id": "8d20",
+      "title": "React Developer",
+      "position": "Seniour",
+      "location": "Norway",
+      "type": "Full Time",
+      "experience": "2 years",
+      "companyName": "Google",
+      "companyLogo": "data:image/jpeg;base64,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",
+      "salary": "$2300 per mounth",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "skills": [
+        "HTML",
+        "CSS",
+        "JS",
+        "REACT"
+      ]
+    }
+  ],
+  "savedJobs": [
+    {
+      "id": "1",
+      "companyLogo": "/company-images/image(1).jfif",
+      "title": "Frontend Developer",
+      "position": "React.js Specialist",
+      "location": "Kabul",
+      "type": "Full Time",
+      "experience": "2+ years",
+      "companyName": "Microsoft",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "700 USD/month",
+      "skills": [
+        "CSS",
+        "HTML",
+        "C++"
+      ],
+      "isFavorite": false
+    }
+  ],
+  "appliedJobs": [
+    {
+      "id": "4c8cf52bcc73a",
+      "firstName": "Katelyn",
+      "lastName": "Harmon",
+      "countryCode": "+91",
+      "mobile": "+1 (824) 489-7939",
+      "email": "bywop@mailinator.com",
+      "jobId": "1"
+    },
+    {
+      "id": "442a3318c5ed28",
+      "firstName": "Tana",
+      "lastName": "Winters",
+      "countryCode": "+44",
+      "mobile": "+1 (275) 499-6521",
+      "email": "hypylyqoq@mailinator.com",
+      "jobId": "7"
+    },
+    {
+      "id": "378a6e01ca49a8",
+      "firstName": "Angelica",
+      "lastName": "Daniel",
+      "countryCode": "+1",
+      "mobile": "+1 (196) 831-7526",
+      "email": "tygydy@mailinator.com",
+      "jobId": "3"
+    }
+  ]
+}

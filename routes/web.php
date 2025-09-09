@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', function () {
+Route::get('/{any?}/{slug?}/{id?}', function ($any = null, $slug = null, $id = null) {
     return view('welcome');
-});
+})->where([
+    'any' => '.*',     // Match anything for 'any'
+    'slug' => '[a-zA-Z0-9-]+',  // Example regex for 'slug'
+    'id' => '[0-9]+'   // Example regex for 'id' (only digits)
+]);

@@ -1,0 +1,121 @@
+.savedJobContainer {
+  padding: var(--space-32);
+  max-width: 100rem;
+  margin: 0 auto;
+}
+
+.favHeader {
+  margin-bottom: var(--space-32);
+}
+
+.favHeader h2 {
+  font-size: var(--font-2xl);
+  font-weight: 600;
+  color: var(--color-grey-900);
+}
+
+.savedJobsCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-grey-0);
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16) var(--space-32);
+  margin-bottom: var(--space-16);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.savedJobsCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.left {
+  display: flex;
+  flex-direction: row;
+  column-gap: var(--space-32);
+  align-items: center;
+  flex: 1;
+}
+
+.job-img img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-grey-200);
+}
+
+.job-desc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.job-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--color-grey-900);
+}
+
+.job-company {
+  font-size: var(--font-base);
+  font-weight: 500;
+  color: var(--color-grey-700);
+}
+
+.job-meta {
+  font-size: var(--font-sm);
+  color: var(--color-grey-500);
+}
+
+.right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: var(--space-12);
+}
+
+.right svg {
+  width: 3.6rem;
+  height: 3.6rem;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* Heart Icon */
+.faveIcon {
+  color: var(--color-success);
+  background-color: var(--color-grey-50);
+}
+
+.faveIcon:hover {
+  background-color: var(--color-primary-light);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* Unfavorite Icon */
+.unfaveIcon {
+  color: var(--color-error);
+  background-color: var(--color-grey-50);
+}
+
+.unfaveIcon:hover {
+  background-color: #f87171;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.loading,
+.error,
+.no-jobs {
+  text-align: center;
+  margin-top: var(--space-32);
+  font-size: var(--font-base);
+  color: var(--color-grey-600);
+}

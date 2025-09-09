@@ -1,0 +1,136 @@
+.dashboardContainer {
+  max-width: 110rem;
+  margin: 0 auto;
+  padding: 2rem;
+  height: 85vh;
+  overflow: hidden;
+}
+
+.welcomeMessage {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-grey-900);
+}
+
+/* === Statistics Cards === */
+.statisticsBox {
+  margin-top: 2.4rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--color-grey-0);
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+.box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.box .icon {
+  font-size: 3rem;
+  color: var(--color-primary);
+}
+
+.number {
+  font-size: 2.4rem;
+  font-weight: 600;
+}
+
+.name {
+  font-size: 1.4rem;
+  color: var(--color-grey-600);
+}
+
+/* === Active Section === */
+.activeBox {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* Left - Recent Projects */
+.recentProjects {
+  background: var(--color-grey-0);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.recentProjects h3 {
+  margin-bottom: 1.5rem;
+}
+
+.recentProjects ul li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+.status {
+  font-size: 1.2rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.status.in-progress {
+  background: #fff3cd;
+  color: #856404;
+}
+.status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+.status.pending {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Right Side */
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Upcoming Projects */
+.upcomingProjects,
+.teamActivity {
+  background: var(--color-grey-0);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.upcomingProjects ul li,
+.teamActivity ul li {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+/* Team Activity */
+.avatar {
+  background: var(--color-primary-light);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.6rem;
+}

@@ -1,0 +1,89 @@
+.accordion {
+  max-width: 100rem;
+  margin: 9.6rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  font-family: "Inter", sans-serif;
+}
+
+.item {
+  box-shadow: 0 0 2.4rem rgba(0, 0, 0, 0.1);
+  padding: 1.4rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  border-radius: 0.5rem;
+  position: relative;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+.item:hover {
+  transform: translateY(-0.3rem);
+  box-shadow: 0 0 4rem rgba(0, 0, 0, 0.12);
+}
+
+.number,
+.text {
+  font-weight: 500;
+  font-size: 2.4rem;
+}
+
+.number {
+  color: #ced4da;
+}
+
+.text {
+  margin-left: 2.5rem;
+}
+
+.icon {
+  font-size: 2rem;
+  color: #087f5b;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.item.open .icon {
+  transform: rotate(180deg);
+}
+
+.hidden-box {
+  grid-column: 2/3;
+  overflow: hidden;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: max-height 0.5s ease, padding 0.5s ease;
+}
+
+.hidden-box.open {
+  max-height: 50rem;
+  padding-top: 1.6rem;
+  padding-bottom: 1.6rem;
+}
+
+.hidden-box p {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  margin-bottom: 1.6rem;
+  color: #343a40;
+}
+
+.hidden-box ul {
+  color: #868e96;
+  margin-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  font-size: 1.6rem;
+}
+
+.fac-title {
+  font-size: var(--font-xl);
+  font-weight: 900;
+  line-height: 0.5;
+  text-align: center;
+  margin-bottom: -5rem;
+  color: #1f2937;
+}
