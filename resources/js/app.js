@@ -1,2 +1,2 @@
+import "./App.jsx";
 import "./bootstrap";
-import "./components/HelloReact";
