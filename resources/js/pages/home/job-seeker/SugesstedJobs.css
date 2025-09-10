@@ -1,0 +1,111 @@
+.sugessted-jobs {
+    max-width: 100rem;
+    margin: var(--space-32) auto;
+    padding: 0 var(--space-16);
+}
+
+.sugessted-job-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+.sugess-header {
+    margin-bottom: var(--space-16);
+}
+
+.sugess-header h2 {
+    font-size: var(--font-lg);
+    color: var(--color-grey-900);
+}
+
+.sugess-header p {
+    font-size: var(--font-sm);
+    color: var(--color-grey-600);
+    margin-top: var(--space-4);
+}
+
+/* Job Card */
+.sugessted-card {
+    margin-top: var(--space-16);
+    border-left: 4px solid var(--color-primary-light);
+    border-radius: var(--radius-md);
+    background-color: var(--color-grey-0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-16) var(--space-20);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 42rem;
+}
+
+.sugessted-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Left Section */
+.sugessted-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+    flex: 1;
+}
+
+.left-image {
+    flex-shrink: 0;
+}
+
+.company-image {
+    width: 6rem;
+    height: 6rem;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: var(--color-grey-100);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-sm);
+}
+
+.left-desc .job-title {
+    font-size: var(--font-md);
+    font-weight: 600;
+    color: var(--color-grey-900);
+}
+
+.left-desc .company {
+    font-size: var(--font-sm);
+    color: var(--color-grey-600);
+}
+
+.left-desc .location {
+    font-size: var(--font-sm);
+    color: var(--color-grey-500);
+}
+
+/* Right Section */
+.sugessted-right {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.posted {
+    font-size: var(--font-xs);
+    color: var(--color-grey-500);
+}
+
+.learn-more-btn {
+    display: inline-block;
+    margin-top: var(--space-4); /* smaller margin */
+    padding: var(--space-4) var(--space-12); /* smaller padding */
+    background-color: var(--color-primary-light);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs); /* smaller font size */
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.learn-more-btn:hover {
+    background-color: var(--color-primary);
+    transform: translateY(-2px);
+}

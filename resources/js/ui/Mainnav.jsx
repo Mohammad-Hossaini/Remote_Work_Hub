@@ -1,99 +1,107 @@
 import { BsBriefcase } from "react-icons/bs";
 import { HiOutlineHeart } from "react-icons/hi";
+import { MdOutlineBookmarkAdded } from "react-icons/md";
+
 import {
-  HiOutlineCheckCircle,
-  HiOutlineCog6Tooth,
-  HiOutlineHome,
+    HiOutlineCheckCircle,
+    HiOutlineCog6Tooth,
+    HiOutlineHome,
 } from "react-icons/hi2";
 
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 const NavList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  border-top: 1px solid var(--color-grey-100);
-  padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    border-top: 1px solid var(--color-grey-100);
+    padding-top: 2rem;
 `;
 
 const StyledNavLink = styled(NavLink)`
-  &:link,
-  &:visited {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    color: var(--color-grey-600);
-    font-size: 1.6rem;
-    font-weight: 500;
-    padding: 1.2rem 2.4rem;
-    transition: all 0.3s;
-  }
+    &:link,
+    &:visited {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        color: var(--color-grey-600);
+        font-size: 1.6rem;
+        font-weight: 500;
+        padding: 1.2rem 2.4rem;
+        transition: all 0.3s;
+    }
 
-  &:hover,
-  &:active,
-  &.active:link,
-  &.active:visited {
-    color: var(--color-grey-800);
-    background-color: var(--color-grey-30);
-    border-radius: var(--border-radius-sm);
-  }
+    &:hover,
+    &:active,
+    &.active:link,
+    &.active:visited {
+        color: var(--color-grey-800);
+        background-color: var(--color-grey-30);
+        border-radius: var(--border-radius-sm);
+    }
 
-  & svg {
-    width: 2.4rem;
-    height: 2.4rem;
-    color: var(--color-grey-400);
-    transition: all 0.3s;
-  }
+    & svg {
+        width: 2.4rem;
+        height: 2.4rem;
+        color: var(--color-grey-400);
+        transition: all 0.3s;
+    }
 
-  &:hover svg,
-  &:active svg,
-  &.active:link svg,
-  &.active:visited svg {
-    color: var(--color-brand-600);
-  }
+    &:hover svg,
+    &:active svg,
+    &.active:link svg,
+    &.active:visited svg {
+        color: var(--color-brand-600);
+    }
 `;
 
 function MainNav() {
-  return (
-    <nav>
-      <NavList>
-        <li>
-          <StyledNavLink to="/app/jobSeekerDashboard">
-            <HiOutlineHome />
-            <span>Home</span>
-          </StyledNavLink>
-        </li>
+    return (
+        <nav>
+            <NavList>
+                <li>
+                    <StyledNavLink to="/app/jobSeekerDashboard">
+                        <HiOutlineHome />
+                        <span>Home</span>
+                    </StyledNavLink>
+                </li>
 
-        <li>
-          <StyledNavLink to="/app/allJobs">
-            <BsBriefcase />
-            <span>All Jobs</span>
-          </StyledNavLink>
-        </li>
+                <li>
+                    <StyledNavLink to="/app/allJobs">
+                        <BsBriefcase />
+                        <span>All Jobs</span>
+                    </StyledNavLink>
+                </li>
 
-        <li>
-          <StyledNavLink to="/app/savedJobs">
-            <HiOutlineHeart />
-            <span>Favorite Jobs</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/app/appliedJobs">
-            <HiOutlineCheckCircle />
-            <span>Applied Jobs</span>
-          </StyledNavLink>
-        </li>
+                <li>
+                    <StyledNavLink to="/app/savedJobs">
+                        <HiOutlineHeart />
+                        <span>Favorite Jobs</span>
+                    </StyledNavLink>
+                </li>
+                <li>
+                    <StyledNavLink to="/app/appliedJobs">
+                        <HiOutlineCheckCircle />
+                        <span>Applied Jobs</span>
+                    </StyledNavLink>
+                </li>
+                <li>
+                    <StyledNavLink to="/app/sugessteddJobs">
+                        <MdOutlineBookmarkAdded />
+                        <span>Sugessted Jobs</span>
+                    </StyledNavLink>
+                </li>
 
-        <li>
-          <StyledNavLink to="/settings">
-            <HiOutlineCog6Tooth />
-            <span>Settings</span>
-          </StyledNavLink>
-        </li>
-      </NavList>
-    </nav>
-  );
+                <li>
+                    <StyledNavLink to="/settings">
+                        <HiOutlineCog6Tooth />
+                        <span>Settings</span>
+                    </StyledNavLink>
+                </li>
+            </NavList>
+        </nav>
+    );
 }
 
 export default MainNav;
