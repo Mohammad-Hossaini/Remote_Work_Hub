@@ -16,6 +16,7 @@ import JobSeekerDashboard from "./pages/home/job-seeker/JobSeekerDashboard";
 import SavedJobs from "./pages/home/job-seeker/SavedJobs";
 import SugesstedJobs from "./pages/home/job-seeker/SugesstedJobs";
 import Welcome from "./pages/home/welcomPage/Welcome";
+import Profile from "./pages/profile setting/Profile";
 import GlobalStyles from "./styles/GlobalStyles";
 import AppLayout from "./ui/AppLayout";
 import EmployerAppLayout from "./ui/EmployerAppLayout";
@@ -58,6 +59,8 @@ export default function App() {
                             element={<PostedNewJobs />}
                         />
                         <Route path="allJobs" element={<AllJobs />} />
+                        <Route path="/app/profile" element={<Profile />} />
+
                         <Route path="appliedJobs" element={<AppliedJobs />} />
                         <Route
                             path="allJobs/jobDetails/:id"
@@ -70,7 +73,7 @@ export default function App() {
                             element={<SugesstedJobs />}
                         />
                     </Route>
-                    <Route path="/employerApp" element={<EmployerAppLayout />}>
+                    {/* <Route path="/employerApp" element={<EmployerAppLayout />}>
                         <Route index element={<EmployerDashboard />} />
                         <Route
                             path="employerDashboard"
@@ -81,6 +84,20 @@ export default function App() {
                             path="allJobs/jobDetails/:id"
                             element={<JobDetails />}
                         />{" "}
+                    </Route> */}
+                    <Route path="/employerApp" element={<EmployerAppLayout />}>
+                        <Route index element={<EmployerDashboard />} />
+                        <Route
+                            path="employerDashboard"
+                            element={<EmployerDashboard />}
+                        />
+                        <Route path="allJobs" element={<AllJobs />} />
+                        <Route
+                            path="allJobs/jobDetails/:id"
+                            element={<JobDetails />}
+                        />
+                        <Route path="profile" element={<Profile />} />{" "}
+                        {/* <-- NEW employer profile route */}
                     </Route>
 
                     {/* 404 fallback */}

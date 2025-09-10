@@ -1,99 +1,134 @@
 .navbar-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  align-items: center;
-  /* padding: var(--space-12) var(--space-24); */
-  background-color: var(--color-grey-0);
-  /* border-bottom: 1px solid var(--color-grey-50); */
-  gap: var(--space-16);
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+    /* padding: var(--space-12) var(--space-24); */
+    background-color: var(--color-grey-0);
+    /* border-bottom: 1px solid var(--color-grey-50); */
+    gap: var(--space-16);
 }
 
 /* Left links */
 .left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-16);
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
 }
 
 .nav-link {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  font-size: var(--font-md);
-  font-weight: 500;
-  color: var(--color-grey-900);
-  cursor: pointer;
-  transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: var(--font-md);
+    font-weight: 500;
+    color: var(--color-grey-900);
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .arrow-icon {
-  font-size: var(--font-sm);
-  color: var(--color-grey-600);
+    font-size: var(--font-sm);
+    color: var(--color-grey-600);
 }
 
 /* Center search bar */
 .center {
-  justify-self: center;
-  width: 100%;
+    justify-self: center;
+    width: 100%;
 }
 
-
 .headerInput {
-  border: 1px solid #ccc;
-  padding: 0.8rem 1.3rem;
-  font-size: 1.6rem;
-  border-radius: 30px;
-  outline: none;
-  width: 90%;
-  font-size: var(--font-base);
-  background: transparent;
+    border: 1px solid #ccc;
+    padding: 0.8rem 1.3rem;
+    font-size: 1.6rem;
+    border-radius: 30px;
+    outline: none;
+    width: 90%;
+    font-size: var(--font-base);
+    background: transparent;
 }
 
 /* Right icons and avatar */
 .right {
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: var(--space-16);
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
 }
 
 .icons {
-  display: flex;
-  gap: var(--space-12);
+    display: flex;
+    gap: var(--space-12);
 }
 
 .Icon {
-  font-size: var(--font-lg);
-  cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease;
+    font-size: var(--font-lg);
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
 
 .Icon:hover {
-  color: var(--color-primary);
-  transform: scale(1.1);
+    color: var(--color-primary);
+    transform: scale(1.1);
 }
 
 .Avatar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    background-color: var(--color-grey-50);
+    border-radius: 25px;
 }
 
 .Avatar img {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  border: 2px solid var(--color-grey-800);
-  object-fit: cover;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-grey-800);
+    object-fit: cover;
 }
 
 .Avatar p {
-  font-size: var(--font-md);
-  font-weight: 700;
-  line-height: 1.05;
-  color: var(--color-grey-900);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--color-grey-900);
+}
+
+/* Avatar (trigger for profile dialog) */
+.avatar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s ease;
+}
+
+.avatar-wrapper:hover {
+    background-color: var(--color-grey-100); /* subtle hover */
+}
+
+.avatar-img {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--color-grey-300);
+}
+
+.avatar-name {
+    font-size: var(--font-sm);
+    font-weight: 500;
+    color: var(--color-grey-900);
+}
+
+.avatar-caret {
+    font-size: 1.4rem;
+    color: var(--color-grey-600);
 }

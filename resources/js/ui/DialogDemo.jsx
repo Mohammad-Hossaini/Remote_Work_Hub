@@ -60,7 +60,6 @@ const DialogDescription = styled(RadixDialog.Description)`
     color: #555;
 `;
 
-// Buttons
 const Button = styled.button`
     all: unset;
     cursor: pointer;
