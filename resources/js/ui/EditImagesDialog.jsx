@@ -13,7 +13,7 @@ const Content = styled(RadixDialog.Content)`
     position: fixed;
     top: 50%;
     left: 80%;
-    transform: translate(-50%, -310%);
+    transform: translate(-50%, -260%);
     width: 48rem;
     background: var(--color-grey-0);
     padding: 1.5rem 2rem;
@@ -115,6 +115,15 @@ export default function EditImagesDialog({ trigger }) {
                     <CloseButton asChild>
                         <FaTimes />
                     </CloseButton>
+                    <InputGroup>
+                        <Label>Profile Image</Label>
+                        <FileInput
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setProfileImage(e.target.files[0])}
+                        />
+                    </InputGroup>
+
                     <InputGroup>
                         <Label>Background Image</Label>
                         <FileInput
