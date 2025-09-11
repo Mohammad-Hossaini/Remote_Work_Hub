@@ -1,7 +1,12 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
+import { loginUser } from "../features/authintication/apiLogin";
 
 /* Overlay */
 const Overlay = styled(RadixDialog.Overlay)`
@@ -17,14 +22,14 @@ const Content = styled(RadixDialog.Content)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40rem; /* increased width */
+    width: 40rem;
     max-width: 95vw;
     background-color: var(--color-grey-0);
     border-radius: var(--radius-md);
-    padding: 3.5rem 3rem; /* increased padding */
+    padding: 3.5rem 3rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem; /* increased gap */
+    gap: 2rem;
     z-index: 1000;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--color-grey-200);
@@ -38,13 +43,13 @@ const CloseButton = styled(RadixDialog.Close)`
     top: 1rem;
     right: 1rem;
     background: var(--color-grey-100);
-    width: 2.4rem; /* slightly bigger */
-    height: 2.4rem; 
+    width: 2.4rem;
+    height: 2.4rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem; /* bigger icon */
+    font-size: 1.4rem;
     color: var(--color-grey-700);
     cursor: pointer;
     transition: all 0.2s ease;
@@ -58,20 +63,20 @@ const CloseButton = styled(RadixDialog.Close)`
 const InputGroup = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 0.6rem; /* bigger gap */
+    gap: 0.6rem;
 `;
 
 /* Label */
 const Label = styled.label`
     font-weight: 600;
-    font-size: 1.2rem; /* slightly larger */
+    font-size: 1.2rem;
     color: var(--color-grey-900);
 `;
 
 /* Input */
 const Input = styled.input`
-    padding: 1rem 1.4rem; /* increased padding */
-    font-size: 1.1rem; /* larger font */
+    padding: 1rem 1.4rem;
+    font-size: 1.1rem;
     border: 1px solid var(--color-grey-300);
     border-radius: var(--radius-sm);
     outline: none;
@@ -86,15 +91,20 @@ const Button = styled.button`
     margin-top: 1rem;
     background-color: var(--color-primary);
     color: #fff;
-    padding: 1rem 1.8rem; /* larger padding */
+    padding: 1rem 1.8rem;
     border-radius: var(--radius-xxl);
     font-weight: 500;
-    font-size: 1.1rem; /* larger font */
+    font-size: 1.1rem;
     cursor: pointer;
     transition: 0.2s ease;
 
     &:hover {
         background-color: var(--color-primary-dark);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 `;
 
@@ -103,15 +113,57 @@ export default function LoginDialog({ trigger }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
-    /* Prevent page scroll when dialog is open */
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "auto";
     }, [open]);
 
-    const handleLogin = () => {
-        console.log({ name, email, password });
-        // TODO: call API to login
+    const validate = () => {
+        let result = true;
+        if (!name) {
+            result = false;
+            toast.error("Name is required!");
+        }
+        if (!email) {
+            result = false;
+            toast.error("Email is required!");
+        }
+        if (!password) {
+            result = false;
+            toast.error("Password is required!");
+        }
+        return result;
+    };
+
+    const mutation = useMutation({
+        mutationFn: loginUser,
+        onSuccess: (user) => {
+            if (!user) {
+                toast.error("Invalid credentials!");
+                return;
+            }
+
+            toast.success("Login successful!");
+
+            // Navigate based on role
+            if (user.role === "employer") navigate("/employerApp");
+            else if (user.role === "jobseeker") navigate("/app");
+
+            setOpen(false);
+            setName("");
+            setEmail("");
+            setPassword("");
+        },
+        onError: (err) => {
+            toast.error("Login failed: " + err.message);
+        },
+    });
+
+    const handleLogin = (e) => {
+        e.preventDefault();
+        if (!validate()) return;
+        mutation.mutate({ name, email, password });
     };
 
     return (
@@ -132,6 +184,7 @@ export default function LoginDialog({ trigger }) {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Enter your name"
+                            autoComplete="name"
                         />
                     </InputGroup>
 
@@ -142,6 +195,7 @@ export default function LoginDialog({ trigger }) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
+                            autoComplete="email"
                         />
                     </InputGroup>
 
@@ -152,10 +206,16 @@ export default function LoginDialog({ trigger }) {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter your password"
+                            autoComplete="current-password"
                         />
                     </InputGroup>
 
-                    <Button onClick={handleLogin}>Login</Button>
+                    <Button
+                        onClick={handleLogin}
+                        disabled={mutation.isLoading} // disable button while loading
+                    >
+                        {mutation.isLoading ? "Logging in..." : "Login"}
+                    </Button>
                 </Content>
             </RadixDialog.Portal>
         </RadixDialog.Root>
