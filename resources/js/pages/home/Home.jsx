@@ -13,6 +13,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FaCheck } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import LoginDialog from "../../ui/LoginDialog";
+import RegistrationDialog from "../../ui/RegistrationDialog";
 import SectionFac from "./FAC/SectionFac";
 import "./Home.css";
 function Home() {
@@ -75,9 +76,19 @@ function Home() {
                         }
                     />
 
-                    <a href="" className="nav-btn no-decoration btn-sign-up">
+                    {/* <a href="" className="nav-btn no-decoration btn-sign-up">
                         Sign up &rarr;
-                    </a>
+                    </a> */}
+                    <RegistrationDialog
+                        trigger={
+                            <NavLink
+                                to="#"
+                                className="nav-btn no-decoration btn-sign-up"
+                            >
+                                Sign up &rarr;
+                            </NavLink>
+                        }
+                    />
                 </div>
             </div>
             <main>
