@@ -35,6 +35,42 @@
       "companyLogo": null,
       "contactPerson": "Mohammad",
       "role": "employer"
+    },
+    {
+      "id": "ecbb",
+      "email": "",
+      "password": "",
+      "firstName": "",
+      "lastName": "",
+      "phone": "",
+      "description": "",
+      "resume": null,
+      "skills": "",
+      "experience": "",
+      "companyName": "",
+      "website": "",
+      "location": "",
+      "companyLogo": null,
+      "contactPerson": "",
+      "role": ""
+    },
+    {
+      "id": "2646",
+      "email": "mohammad@gmail.com",
+      "password": "12345678",
+      "firstName": "mohammad",
+      "lastName": "sirath",
+      "phone": "0797295355",
+      "description": "I am a react developer | js developer",
+      "resume": null,
+      "skills": "HTML, CSS, JS, REACT",
+      "experience": "1 years",
+      "companyName": "",
+      "website": "",
+      "location": "",
+      "companyLogo": null,
+      "contactPerson": "",
+      "role": "jobseeker"
     }
   ],
   "jobs": [

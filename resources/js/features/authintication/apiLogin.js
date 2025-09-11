@@ -1,9 +1,19 @@
 const BASE_URL = "http://localhost:5000/users";
 
 export async function loginUser({ name, email, password }) {
-    const res = await fetch(`${BASE_URL}?name=${name}&email=${email}`);
-    if (!res.ok) throw new Error("Failed to fetch users");
+    // JSON Server query
+    const res = await fetch(`${BASE_URL}?email=${email}&password=${password}`);
     const users = await res.json();
-    const user = users.find((u) => u.password === password);
-    return user || null;
+
+    if (users.length === 0) return null;
+
+    const user = users[0];
+    const token = btoa(`${user.email}:${user.password}`); 
+
+    return { ...user, token };
+}
+
+export function logout() {
+    localStorage.removeItem("authUser");
+    window.location.href = "/"; 
 }

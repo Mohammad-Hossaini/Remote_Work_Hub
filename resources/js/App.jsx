@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import PageNotFound from "./components/PageNotFound";
 import Settings from "./components/Settings";
+import EmployerPrivateRoute from "./features/authintication/EmployerPrivateRoute";
+import JobseekerPrivateRoute from "./features/authintication/JobseekerPrivateRoute";
 import Applicant from "./pages/home/employer/Applicant";
 import EmployerDashboard from "./pages/home/employer/EmployerDashboard";
 import PostedJobs from "./pages/home/employer/PostedJobs";
@@ -41,63 +43,60 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/settings" element={<Settings />} />
 
-                    {/* Protected "app" pages */}
-                    <Route path="/app" element={<AppLayout />}>
-                        {/* Default page when visiting /app */}
+                    {/* Job Seeker Protected Routes */}
+                    <Route
+                        path="/app"
+                        element={
+                            <JobseekerPrivateRoute role="jobseeker">
+                                <AppLayout />
+                            </JobseekerPrivateRoute>
+                        }
+                    >
                         <Route index element={<JobSeekerDashboard />} />
-
-                        {/* Explicit path for jobSeekerDashboard */}
                         <Route
                             path="jobSeekerDashboard"
                             element={<JobSeekerDashboard />}
                         />
+                        <Route path="allJobs" element={<AllJobs />} />
+                        <Route path="appliedJobs" element={<AppliedJobs />} />
+                        <Route path="savedJobs" element={<SavedJobs />} />
+                        <Route
+                            path="allJobs/jobDetails/:id"
+                            element={<JobDetails />}
+                        />
+                        <Route path="profile" element={<Profile />} />
+                        <Route
+                            path="sugessteddJobs"
+                            element={<SugesstedJobs />}
+                        />
+                    </Route>
 
+                    {/* Employer Protected Routes */}
+                    <Route
+                        path="/employerApp"
+                        element={
+                            <EmployerPrivateRoute>
+                                <EmployerAppLayout />
+                            </EmployerPrivateRoute>
+                        }
+                    >
+                        <Route index element={<EmployerDashboard />} />
+                        <Route
+                            path="employerDashboard"
+                            element={<EmployerDashboard />}
+                        />
+                        <Route path="allJobs" element={<AllJobs />} />
+                        <Route
+                            path="allJobs/jobDetails/:id"
+                            element={<JobDetails />}
+                        />
                         <Route path="applicant" element={<Applicant />} />
                         <Route path="postedJobs" element={<PostedJobs />} />
                         <Route
                             path="postedNewJobs"
                             element={<PostedNewJobs />}
                         />
-                        <Route path="allJobs" element={<AllJobs />} />
-                        <Route path="/app/profile" element={<Profile />} />
-
-                        <Route path="appliedJobs" element={<AppliedJobs />} />
-                        <Route
-                            path="allJobs/jobDetails/:id"
-                            element={<JobDetails />}
-                        />
-                        <Route path="appliedJobs" element={<AppliedJobs />} />
-                        <Route path="savedJobs" element={<SavedJobs />} />
-                        <Route
-                            path="/app/sugessteddJobs"
-                            element={<SugesstedJobs />}
-                        />
-                    </Route>
-                    {/* <Route path="/employerApp" element={<EmployerAppLayout />}>
-                        <Route index element={<EmployerDashboard />} />
-                        <Route
-                            path="employerDashboard"
-                            element={<EmployerDashboard />}
-                        />
-                        <Route path="allJobs" element={<AllJobs />} />{" "}
-                        <Route
-                            path="allJobs/jobDetails/:id"
-                            element={<JobDetails />}
-                        />{" "}
-                    </Route> */}
-                    <Route path="/employerApp" element={<EmployerAppLayout />}>
-                        <Route index element={<EmployerDashboard />} />
-                        <Route
-                            path="employerDashboard"
-                            element={<EmployerDashboard />}
-                        />
-                        <Route path="allJobs" element={<AllJobs />} />
-                        <Route
-                            path="allJobs/jobDetails/:id"
-                            element={<JobDetails />}
-                        />
-                        <Route path="profile" element={<Profile />} />{" "}
-                        {/* <-- NEW employer profile route */}
+                        <Route path="profile" element={<Profile />} />
                     </Route>
 
                     {/* 404 fallback */}

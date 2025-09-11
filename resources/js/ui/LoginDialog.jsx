@@ -1,9 +1,11 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { CiWarning } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { loginUser } from "../features/authintication/apiLogin";
@@ -63,7 +65,7 @@ const CloseButton = styled(RadixDialog.Close)`
 const InputGroup = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.3rem;
 `;
 
 /* Label */
@@ -77,13 +79,23 @@ const Label = styled.label`
 const Input = styled.input`
     padding: 1rem 1.4rem;
     font-size: 1.1rem;
-    border: 1px solid var(--color-grey-300);
+    border: 1px solid
+        ${(props) => (props.error ? "red" : "var(--color-grey-300)")};
     border-radius: var(--radius-sm);
     outline: none;
 
     &:focus {
         border-color: var(--color-primary);
     }
+`;
+
+/* Warning message */
+const StyledWarning = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    color: #b91c1c;
 `;
 
 /* Login Button */
@@ -109,115 +121,125 @@ const Button = styled.button`
 `;
 
 export default function LoginDialog({ trigger }) {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm();
 
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "auto";
     }, [open]);
 
-    const validate = () => {
-        let result = true;
-        if (!name) {
-            result = false;
-            toast.error("Name is required!");
-        }
-        if (!email) {
-            result = false;
-            toast.error("Email is required!");
-        }
-        if (!password) {
-            result = false;
-            toast.error("Password is required!");
-        }
-        return result;
-    };
-
     const mutation = useMutation({
         mutationFn: loginUser,
         onSuccess: (user) => {
-            if (!user) {
+            if (!user || !user.token) {
                 toast.error("Invalid credentials!");
                 return;
             }
-
+            localStorage.setItem("authUser", JSON.stringify(user));
             toast.success("Login successful!");
-
-            // Navigate based on role
-            if (user.role === "employer") navigate("/employerApp");
-            else if (user.role === "jobseeker") navigate("/app");
-
+            reset();
             setOpen(false);
-            setName("");
-            setEmail("");
-            setPassword("");
+            if (user.role === "employer") navigate("/employerApp");
+            else navigate("/app");
         },
         onError: (err) => {
-            toast.error("Login failed: " + err.message);
+            toast.error("Login failed: " + (err.message || "Server error"));
         },
     });
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        if (!validate()) return;
-        mutation.mutate({ name, email, password });
+    const onSubmit = (data) => {
+        mutation.mutate(data);
     };
 
     return (
-        <RadixDialog.Root open={open} onOpenChange={setOpen}>
-            <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>
-            <RadixDialog.Portal>
-                <Overlay />
-                <Content>
-                    <h2>Login</h2>
-                    <CloseButton asChild>
-                        <IoMdClose />
-                    </CloseButton>
+        <>
+            <RadixDialog.Root open={open} onOpenChange={setOpen}>
+                <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>
+                <RadixDialog.Portal>
+                    <Overlay />
+                    <Content>
+                        <h2>Login</h2>
+                        <CloseButton asChild>
+                            <IoMdClose />
+                        </CloseButton>
 
-                    <InputGroup>
-                        <Label>Name</Label>
-                        <Input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your name"
-                            autoComplete="name"
-                        />
-                    </InputGroup>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            {/* Name */}
+                            <InputGroup>
+                                <Label>Name</Label>
+                                <Input
+                                    type="text"
+                                    {...register("name", {
+                                        required: "Name is required",
+                                    })}
+                                    error={errors.name}
+                                    placeholder="Enter your name"
+                                />
+                                {errors.name && (
+                                    <StyledWarning>
+                                        <CiWarning />
+                                        {errors.name.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
 
-                    <InputGroup>
-                        <Label>Email</Label>
-                        <Input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            autoComplete="email"
-                        />
-                    </InputGroup>
+                            {/* Email */}
+                            <InputGroup>
+                                <Label>Email</Label>
+                                <Input
+                                    type="email"
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+                                            message: "Invalid email address",
+                                        },
+                                    })}
+                                    error={errors.email}
+                                    placeholder="Enter your email"
+                                />
+                                {errors.email && (
+                                    <StyledWarning>
+                                        <CiWarning />
+                                        {errors.email.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
 
-                    <InputGroup>
-                        <Label>Password</Label>
-                        <Input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            autoComplete="current-password"
-                        />
-                    </InputGroup>
+                            {/* Password */}
+                            <InputGroup>
+                                <Label>Password</Label>
+                                <Input
+                                    type="password"
+                                    {...register("password", {
+                                        required: "Password is required",
+                                    })}
+                                    error={errors.password}
+                                    placeholder="Enter your password"
+                                />
+                                {errors.password && (
+                                    <StyledWarning>
+                                        <CiWarning />
+                                        {errors.password.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
 
-                    <Button
-                        onClick={handleLogin}
-                        disabled={mutation.isLoading} // disable button while loading
-                    >
-                        {mutation.isLoading ? "Logging in..." : "Login"}
-                    </Button>
-                </Content>
-            </RadixDialog.Portal>
-        </RadixDialog.Root>
+                            <Button type="submit" disabled={mutation.isLoading}>
+                                {mutation.isLoading ? "Logging in..." : "Login"}
+                            </Button>
+                        </form>
+                    </Content>
+                </RadixDialog.Portal>
+            </RadixDialog.Root>
+            <ToastContainer position="top-right" autoClose={2000} />
+        </>
     );
 }

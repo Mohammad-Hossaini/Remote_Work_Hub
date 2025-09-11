@@ -1,6 +1,8 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { Link } from "react-router-dom";
+import { MdOutlineLogout } from "react-icons/md";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { logout } from "../features/authintication/apiLogin";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: transparent;
@@ -11,7 +13,7 @@ const DialogOverlay = styled(RadixDialog.Overlay)`
 const DialogContent = styled(RadixDialog.Content)`
     position: absolute;
     top: 60px;
-    right: 1rem;
+    right: 2.5rem;
     width: 24rem;
     max-width: 90vw;
     border: 1px solid var(--color-grey-200);
@@ -89,9 +91,42 @@ const OutlineButton = styled(BaseButton)`
         color: #fff;
     }
 `;
+
+// New Logout Button
+const LogoutButton = styled.button`
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-radius: var(--radius-xxl);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    border: 1px solid var(--color-error);
+    background-color: transparent;
+    color: var(--color-error);
+    margin-top: var(--space-12);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-error);
+        color: #fff;
+    }
+`;
+
 export default function ProfileDialog({ children, role = "jobseeker" }) {
+    const navigate = useNavigate();
     const profilePath =
         role === "employer" ? "/employerApp/profile" : "/app/profile";
+
+    const handleLogout = () => {
+        // Clear any auth tokens/localStorage here if needed
+        localStorage.removeItem("token");
+        toast.success("Logged out successfully!");
+        navigate("/login"); // Redirect to login page
+    };
 
     return (
         <RadixDialog.Root>
@@ -119,6 +154,16 @@ export default function ProfileDialog({ children, role = "jobseeker" }) {
                         </PrimaryButton>
                         <OutlineButton to="/settings">Settings</OutlineButton>
                     </ButtonContainer>
+
+                    {/* Logout Button */}
+                    {/* <LogoutButton onClick={handleLogout}>
+                        <MdOutlineLogout />
+                        Logout
+                    </LogoutButton> */}
+                    <LogoutButton onClick={logout}>
+                        <MdOutlineLogout />
+                        Logout
+                    </LogoutButton>
                 </DialogContent>
             </RadixDialog.Portal>
         </RadixDialog.Root>
