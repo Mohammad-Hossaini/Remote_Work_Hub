@@ -16,4 +16,20 @@ export async function createNewUser(userData) {
     return res.json();
 }
 
+// Fetch user by ID
+export async function getUserById(userId) {
+    const res = await fetch(`${BASE_URL}/${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch user");
+    return res.json();
+}
 
+// Update user (PATCH only changed fields)
+export async function updateUser(userId, updatedData) {
+    const res = await fetch(`${BASE_URL}/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+    });
+    if (!res.ok) throw new Error("Failed to update user");
+    return res.json();
+}
