@@ -130,7 +130,7 @@ function Navbar() {
                 <ProfileDialog>
                     <div className="avatar-wrapper">
                         <img
-                            src="/profile/profile-2.jpg"
+                            src="/profile/default.jpg"
                             alt="Profile"
                             className="avatar-img"
                         />

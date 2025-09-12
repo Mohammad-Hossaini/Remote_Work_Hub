@@ -139,7 +139,7 @@ export default function ProfileDialog({ children }) {
                 <DialogContent>
                     <ProfileImageWrapper>
                         <ProfileImage
-                            src="/profile/profile-2.jpg"
+                            src="/profile/default.jpg"
                             alt="Profile"
                         />
                     </ProfileImageWrapper>

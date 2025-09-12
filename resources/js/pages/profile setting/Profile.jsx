@@ -1,6 +1,6 @@
 import { FaPen } from "react-icons/fa";
 import EditImagesDialog from "../../ui/EditImagesDialog";
-import EditUserInfoDialog from "../../ui/EditUserInfoDialog";
+import UpdateImagesDialog from "../../ui/UpdateImagesDialog";
 import "./Profile.css";
 
 function Profile() {
@@ -21,11 +21,11 @@ function Profile() {
                 />
 
                 <img
-                    src="/profile/profile-4.jpg"
+                    src="/profile/default.jpg"
                     alt="Profile"
                     className="profile-photo"
                 />
-                <EditUserInfoDialog
+                <UpdateImagesDialog
                     trigger={
                         <button className="edit-btn edit-photo">
                             <FaPen />
