@@ -1,9 +1,19 @@
+import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import EditImagesDialog from "../../ui/EditImagesDialog";
 import UpdateImagesDialog from "../../ui/UpdateImagesDialog";
 import "./Profile.css";
 
 function Profile() {
+    // State for profile photo
+    const [profilePhoto, setProfilePhoto] = useState("/profile/default.jpg");
+
+    useEffect(() => {
+        // Load initial photo from localStorage if user is logged in
+        const authUser = JSON.parse(localStorage.getItem("authUser"));
+        if (authUser?.profilePhoto) setProfilePhoto(authUser.profilePhoto);
+    }, []);
+
     return (
         <div className="profile-container">
             <div className="profile-header">
@@ -12,6 +22,7 @@ function Profile() {
                     alt="Background"
                     className="bg-image"
                 />
+
                 <EditImagesDialog
                     trigger={
                         <button className="edit-btn edit-bg">
@@ -21,7 +32,7 @@ function Profile() {
                 />
 
                 <img
-                    src="/profile/default.jpg"
+                    src={profilePhoto}
                     alt="Profile"
                     className="profile-photo"
                 />
@@ -31,6 +42,7 @@ function Profile() {
                             <FaPen />
                         </button>
                     }
+                    onPhotoUpdate={(newPhoto) => setProfilePhoto(newPhoto)}
                 />
             </div>
 

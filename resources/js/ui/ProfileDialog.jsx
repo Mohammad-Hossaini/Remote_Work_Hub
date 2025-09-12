@@ -1,4 +1,5 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { MdOutlineLogout } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
@@ -117,7 +118,6 @@ const LogoutButton = styled.button`
 
 export default function ProfileDialog({ children }) {
     const navigate = useNavigate();
-
     // Get role dynamically from localStorage
     const currentUser = JSON.parse(localStorage.getItem("authUser"));
     const role = currentUser?.role || "jobseeker";
@@ -139,7 +139,7 @@ export default function ProfileDialog({ children }) {
                 <DialogContent>
                     <ProfileImageWrapper>
                         <ProfileImage
-                            src="/profile/default.jpg"
+                            src="/profile/profile-2.jpg"
                             alt="Profile"
                         />
                     </ProfileImageWrapper>
