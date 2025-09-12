@@ -1,6 +1,9 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
+import { CiWarning } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import styled from "styled-components";
 import { createNewUser } from "../services/apiUsers";
@@ -68,7 +71,7 @@ const FormGrid = styled.div`
 const InputGroup = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.3rem;
 `;
 
 /* Label */
@@ -82,7 +85,8 @@ const Label = styled.label`
 const Input = styled.input`
     padding: 1rem 1.4rem;
     font-size: 1.1rem;
-    border: 1px solid var(--color-grey-300);
+    border: 1px solid
+        ${(props) => (props.error ? "red" : "var(--color-grey-300)")};
     border-radius: var(--radius-sm);
     outline: none;
 
@@ -105,11 +109,12 @@ const TextArea = styled.textarea`
     }
 `;
 
-/* Select styled like input */
+/* Select */
 const Select = styled.select`
     padding: 1rem 1.4rem;
     font-size: 1.1rem;
-    border: 1px solid var(--color-grey-300);
+    border: 1px solid
+        ${(props) => (props.error ? "red" : "var(--color-grey-300)")};
     border-radius: var(--radius-sm);
     outline: none;
     background-color: #fff;
@@ -117,6 +122,15 @@ const Select = styled.select`
     &:focus {
         border-color: var(--color-primary);
     }
+`;
+
+/* Warning message */
+const StyledWarning = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    color: #b91c1c;
 `;
 
 /* Button */
@@ -134,45 +148,36 @@ const Button = styled.button`
     &:hover {
         background-color: var(--color-primary-dark);
     }
-`;
 
-// ✅ Initial form data
-const initialFormData = {
-    email: "",
-    password: "",
-    confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    description: "",
-    resume: null,
-    skills: "",
-    experience: "",
-    companyName: "",
-    website: "",
-    location: "",
-    companyLogo: null,
-    contactPerson: "",
-};
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+`;
 
 export default function RegistrationDialog({ trigger }) {
     const [open, setOpen] = useState(false);
     const [role, setRole] = useState("");
-    const [formData, setFormData] = useState(initialFormData);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm();
 
     const mutation = useMutation({
         mutationFn: createNewUser,
         onSuccess: (data) => {
-            console.log("User created successfully:", data);
-
-            // ✅ Reset form and role after successful submission
-            setFormData(initialFormData);
+            toast.success("User registered successfully!");
+            reset();
             setRole("");
-
             setOpen(false);
         },
         onError: (err) => {
-            console.error("Error creating user:", err.message);
+            toast.error(
+                "Registration failed: " + (err.message || "Server error")
+            );
         },
     });
 
@@ -180,23 +185,14 @@ export default function RegistrationDialog({ trigger }) {
         document.body.style.overflow = open ? "hidden" : "auto";
     }, [open]);
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: files ? files[0] : value,
-        }));
-    };
-
-    const handleSubmit = () => {
-        if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+    const onSubmit = (data) => {
+        if (data.password !== data.confirmPassword) {
+            toast.error("Passwords do not match!");
             return;
         }
 
-        const { confirmPassword, ...userData } = formData;
+        const { confirmPassword, ...userData } = data;
         userData.role = role;
-
         mutation.mutate(userData);
     };
 
@@ -210,206 +206,215 @@ export default function RegistrationDialog({ trigger }) {
                     <CloseButton asChild>
                         <IoMdClose />
                     </CloseButton>
-                    <FormGrid>
-                        {/* First Column */}
-                        <InputGroup>
-                            <Label>First Name</Label>
-                            <Input
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                placeholder="Enter your first name"
-                                required
-                            />
-                        </InputGroup>
 
-                        <InputGroup>
-                            <Label>Password</Label>
-                            <Input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="Enter your password"
-                                required
-                            />
-                        </InputGroup>
-
-                        <InputGroup>
-                            <Label>Last Name</Label>
-                            <Input
-                                type="text"
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                                placeholder="Enter your last name"
-                                required
-                            />
-                        </InputGroup>
-
-                        <InputGroup>
-                            <Label>Confirm Password</Label>
-                            <Input
-                                type="password"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                placeholder="Confirm your password"
-                                required
-                            />
-                        </InputGroup>
-
-                        <InputGroup>
-                            <Label>Phone Number</Label>
-                            <Input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                placeholder="Enter your phone number"
-                            />
-                        </InputGroup>
-
-                        <InputGroup>
-                            <Label>Email</Label>
-                            <Input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="Enter your email"
-                                required
-                            />
-                        </InputGroup>
-
-                        {/* Role / User Type */}
-                        <InputGroup>
-                            <Label>Role / User Type</Label>
-                            <Select
-                                name="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                required
-                            >
-                                <option value="">Select Role</option>
-                                <option value="jobseeker">Job Seeker</option>
-                                <option value="employer">Employer</option>
-                            </Select>
-                        </InputGroup>
-                    </FormGrid>
-
-                    {role === "jobseeker" && (
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <FormGrid>
                             <InputGroup>
-                                <Label>Description</Label>
-                                <TextArea
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    placeholder="Describe yourself"
-                                    rows={3}
-                                />
-                            </InputGroup>
-
-                            <InputGroup>
-                                <Label>Resume</Label>
-                                <Input
-                                    type="file"
-                                    name="resume"
-                                    onChange={handleChange}
-                                    accept=".pdf,.doc,.docx"
-                                />
-                            </InputGroup>
-
-                            <InputGroup>
-                                <Label>Skills</Label>
+                                <Label>First Name</Label>
                                 <Input
                                     type="text"
-                                    name="skills"
-                                    value={formData.skills}
-                                    onChange={handleChange}
-                                    placeholder="Enter skills"
+                                    {...register("firstName", {
+                                        required: "First name is required",
+                                    })}
+                                    error={errors.firstName}
+                                    placeholder="Enter your first name"
+                                />
+                                {errors.firstName && (
+                                    <StyledWarning>
+                                        <CiWarning /> {errors.firstName.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
+
+                            <InputGroup>
+                                <Label>Password</Label>
+                                <Input
+                                    type="password"
+                                    {...register("password", {
+                                        required: "Password is required",
+                                    })}
+                                    error={errors.password}
+                                    placeholder="Enter your password"
+                                />
+                                {errors.password && (
+                                    <StyledWarning>
+                                        <CiWarning /> {errors.password.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
+
+                            <InputGroup>
+                                <Label>Last Name</Label>
+                                <Input
+                                    type="text"
+                                    {...register("lastName", {
+                                        required: "Last name is required",
+                                    })}
+                                    error={errors.lastName}
+                                    placeholder="Enter your last name"
+                                />
+                                {errors.lastName && (
+                                    <StyledWarning>
+                                        <CiWarning /> {errors.lastName.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
+
+                            <InputGroup>
+                                <Label>Confirm Password</Label>
+                                <Input
+                                    type="password"
+                                    {...register("confirmPassword", {
+                                        required: "Confirm password",
+                                    })}
+                                    error={errors.confirmPassword}
+                                    placeholder="Confirm your password"
+                                />
+                                {errors.confirmPassword && (
+                                    <StyledWarning>
+                                        <CiWarning />{" "}
+                                        {errors.confirmPassword.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
+
+                            <InputGroup>
+                                <Label>Phone Number</Label>
+                                <Input
+                                    type="tel"
+                                    {...register("phone")}
+                                    placeholder="Enter your phone number"
                                 />
                             </InputGroup>
 
                             <InputGroup>
-                                <Label>Experience (Optional)</Label>
+                                <Label>Email</Label>
                                 <Input
-                                    type="text"
-                                    name="experience"
-                                    value={formData.experience}
-                                    onChange={handleChange}
-                                    placeholder="Enter your experience"
+                                    type="email"
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+                                            message: "Invalid email address",
+                                        },
+                                    })}
+                                    error={errors.email}
+                                    placeholder="Enter your email"
                                 />
+                                {errors.email && (
+                                    <StyledWarning>
+                                        <CiWarning /> {errors.email.message}
+                                    </StyledWarning>
+                                )}
+                            </InputGroup>
+
+                            <InputGroup>
+                                <Label>Role / User Type</Label>
+                                <Select
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value)}
+                                    error={!role && errors.role}
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value="jobseeker">
+                                        Job Seeker
+                                    </option>
+                                    <option value="employer">Employer</option>
+                                </Select>
+                                {!role && errors.role && (
+                                    <StyledWarning>
+                                        <CiWarning /> {errors.role.message}
+                                    </StyledWarning>
+                                )}
                             </InputGroup>
                         </FormGrid>
-                    )}
 
-                    {role === "employer" && (
-                        <FormGrid>
-                            <InputGroup>
-                                <Label>Company Name</Label>
-                                <Input
-                                    type="text"
-                                    name="companyName"
-                                    value={formData.companyName}
-                                    onChange={handleChange}
-                                    placeholder="Enter company name"
-                                />
-                            </InputGroup>
+                        {/* Role-specific fields */}
+                        {role === "jobseeker" && (
+                            <FormGrid>
+                                <InputGroup>
+                                    <Label>Description</Label>
+                                    <TextArea
+                                        {...register("description")}
+                                        placeholder="Describe yourself"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Resume (Optional)</Label>
+                                    <Input
+                                        type="file"
+                                        {...register("resume")}
+                                        accept=".pdf,.doc,.docx"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Skills</Label>
+                                    <Input
+                                        type="text"
+                                        {...register("skills")}
+                                        placeholder="Enter skills"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Experience (Optional)</Label>
+                                    <Input
+                                        type="text"
+                                        {...register("experience")}
+                                        placeholder="Enter experience"
+                                    />
+                                </InputGroup>
+                            </FormGrid>
+                        )}
 
-                            <InputGroup>
-                                <Label>Website (Optional)</Label>
-                                <Input
-                                    type="text"
-                                    name="website"
-                                    value={formData.website}
-                                    onChange={handleChange}
-                                    placeholder="Enter website URL"
-                                />
-                            </InputGroup>
+                        {role === "employer" && (
+                            <FormGrid>
+                                <InputGroup>
+                                    <Label>Company Name</Label>
+                                    <Input
+                                        type="text"
+                                        {...register("companyName")}
+                                        placeholder="Enter company name"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Website (Optional)</Label>
+                                    <Input
+                                        type="text"
+                                        {...register("website")}
+                                        placeholder="Enter website"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Location</Label>
+                                    <Input
+                                        type="text"
+                                        {...register("location")}
+                                        placeholder="Enter location"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Company Logo</Label>
+                                    <Input
+                                        type="file"
+                                        {...register("companyLogo")}
+                                        accept="image/*"
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Contact Person</Label>
+                                    <Input
+                                        type="text"
+                                        {...register("contactPerson")}
+                                        placeholder="Enter contact person"
+                                    />
+                                </InputGroup>
+                            </FormGrid>
+                        )}
 
-                            <InputGroup>
-                                <Label>Location</Label>
-                                <Input
-                                    type="text"
-                                    name="location"
-                                    value={formData.location}
-                                    onChange={handleChange}
-                                    placeholder="Enter location"
-                                />
-                            </InputGroup>
-
-                            <InputGroup>
-                                <Label>Company Logo / Banner</Label>
-                                <Input
-                                    type="file"
-                                    name="companyLogo"
-                                    onChange={handleChange}
-                                    accept="image/*"
-                                />
-                            </InputGroup>
-
-                            <InputGroup>
-                                <Label>Contact Person</Label>
-                                <Input
-                                    type="text"
-                                    name="contactPerson"
-                                    value={formData.contactPerson}
-                                    onChange={handleChange}
-                                    placeholder="Enter contact person"
-                                />
-                            </InputGroup>
-                        </FormGrid>
-                    )}
-
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={mutation.isLoading}
-                    >
-                        {mutation.isLoading ? "Registering..." : "Register"}
-                    </Button>
+                        <Button type="submit" disabled={mutation.isLoading}>
+                            {mutation.isLoading ? "Registering..." : "Register"}
+                        </Button>
+                    </form>
                 </Content>
             </RadixDialog.Portal>
         </RadixDialog.Root>

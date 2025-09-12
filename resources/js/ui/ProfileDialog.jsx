@@ -1,8 +1,8 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { toast } from "react-hot-toast";
 import { MdOutlineLogout } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { logout } from "../features/authintication/apiLogin";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: transparent;
@@ -92,7 +92,6 @@ const OutlineButton = styled(BaseButton)`
     }
 `;
 
-// New Logout Button
 const LogoutButton = styled.button`
     width: 100%;
     text-align: center;
@@ -116,16 +115,20 @@ const LogoutButton = styled.button`
     }
 `;
 
-export default function ProfileDialog({ children, role = "jobseeker" }) {
+export default function ProfileDialog({ children }) {
     const navigate = useNavigate();
-    const profilePath =
-        role === "employer" ? "/employerApp/profile" : "/app/profile";
+
+    // Get role dynamically from localStorage
+    const currentUser = JSON.parse(localStorage.getItem("authUser"));
+    const role = currentUser?.role || "jobseeker";
+    const basePath = role === "employer" ? "/employerApp" : "/app";
+    const profilePath = `${basePath}/profile`;
 
     const handleLogout = () => {
-        // Clear any auth tokens/localStorage here if needed
         localStorage.removeItem("token");
+        localStorage.removeItem("authUser");
         toast.success("Logged out successfully!");
-        navigate("/login"); // Redirect to login page
+        navigate("/");
     };
 
     return (
@@ -149,18 +152,13 @@ export default function ProfileDialog({ children, role = "jobseeker" }) {
                     </Description>
 
                     <ButtonContainer>
-                        <PrimaryButton asChild>
-                            <Link to={profilePath}>View Profile</Link>
+                        <PrimaryButton to={profilePath}>
+                            View Profile
                         </PrimaryButton>
                         <OutlineButton to="/settings">Settings</OutlineButton>
                     </ButtonContainer>
 
-                    {/* Logout Button */}
-                    {/* <LogoutButton onClick={handleLogout}>
-                        <MdOutlineLogout />
-                        Logout
-                    </LogoutButton> */}
-                    <LogoutButton onClick={logout}>
+                    <LogoutButton onClick={handleLogout}>
                         <MdOutlineLogout />
                         Logout
                     </LogoutButton>
