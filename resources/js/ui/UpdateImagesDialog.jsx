@@ -18,66 +18,37 @@ const DialogContent = styled(RadixDialog.Content)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 36rem;
-    max-width: 90vw;
+    width: 40rem;
+    max-width: 95vw;
     background-color: var(--color-grey-0);
     border-radius: var(--radius-md);
-    padding: 2rem;
+    padding: 3rem;
     box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     z-index: 1000;
+    text-align: center;
 `;
 
 const PhotoWrapper = styled.div`
     position: relative;
     width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: center;
 `;
 
 const ProfileImage = styled.img`
-    width: 12rem;
-    height: 12rem;
+    width: 16rem;
+    height: 16rem;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-grey-200);
 `;
 
-const Input = styled.input`
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--color-grey-300);
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    outline: none;
-    width: 100%;
-`;
-
-const Textarea = styled.textarea`
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--color-grey-300);
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    outline: none;
-    width: 100%;
-    min-height: 100px;
-    resize: vertical;
-`;
-
-const Label = styled.label`
-    font-weight: 500;
-    margin-bottom: 0.3rem;
-    display: block;
-`;
-
-const Row = styled.div`
-    display: flex;
-    gap: 1rem;
-`;
-
 const ActionButtons = styled.div`
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 1rem;
     margin-top: 1rem;
 
@@ -114,28 +85,25 @@ const ActionButtons = styled.div`
     }
 `;
 
-export default function UpdateImagesDialog({ trigger }) {
+export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
     const { user, login } = useAuth();
     const [previewImage, setPreviewImage] = useState("/profile/default.jpg");
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [description, setDescription] = useState("");
     const fileInputRef = useRef(null);
 
     useEffect(() => {
         if (user) {
             setPreviewImage(user.profilePhoto || "/profile/default.jpg");
-            setFirstName(user.firstName || "");
-            setLastName(user.lastName || "");
-            setDescription(user.description || "");
         }
     }, [user]);
 
+    // Delete profile photo immediately
     const handleDelete = async () => {
         try {
-            const updatedUser = await updateUser(user.id, { profilePhoto: "" });
+            await updateUser(user.id, { profilePhoto: "" });
+            const updatedUser = { ...user, profilePhoto: "" };
             login(updatedUser);
             setPreviewImage("/profile/default.jpg");
+            if (onPhotoUpdate) onPhotoUpdate("/profile/default.jpg"); // notify parent
             toast.success("Profile photo deleted!");
         } catch (err) {
             console.error(err);
@@ -158,19 +126,18 @@ export default function UpdateImagesDialog({ trigger }) {
         }
     };
 
+    // Save new profile photo
     const handleSave = async () => {
         try {
             const updatedUser = await updateUser(user.id, {
                 profilePhoto: previewImage,
-                firstName,
-                lastName,
-                description,
             });
             login(updatedUser);
-            toast.success("Profile updated successfully!");
+            if (onPhotoUpdate) onPhotoUpdate(previewImage); // notify parent
+            toast.success("Profile photo updated!");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to update profile.");
+            toast.error("Failed to update profile photo.");
         }
     };
 
@@ -180,7 +147,7 @@ export default function UpdateImagesDialog({ trigger }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    <h2>Edit Profile</h2>
+                    <h2>Update Your Profile</h2>
 
                     <PhotoWrapper>
                         <ProfileImage src={previewImage} alt="Profile" />
@@ -193,39 +160,12 @@ export default function UpdateImagesDialog({ trigger }) {
                         />
                     </PhotoWrapper>
 
-                    <Row>
-                        <div style={{ flex: 1 }}>
-                            <Label>First Name</Label>
-                            <Input
-                                type="text"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                            />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <Label>Last Name</Label>
-                            <Input
-                                type="text"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                            />
-                        </div>
-                    </Row>
-
-                    <div>
-                        <Label>Description</Label>
-                        <Textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </div>
-
                     <ActionButtons>
                         <button className="delete" onClick={handleDelete}>
-                            <MdDelete /> Delete Photo
+                            <MdDelete /> Delete
                         </button>
                         <button className="edit" onClick={handleEditPhoto}>
-                            <MdEdit /> Edit Photo
+                            <MdEdit /> Choose
                         </button>
                         <button className="save" onClick={handleSave}>
                             <MdSave /> Save

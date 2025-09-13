@@ -22,99 +22,133 @@ import JobSeekerDashboard from "./pages/home/job-seeker/JobSeekerDashboard";
 import SavedJobs from "./pages/home/job-seeker/SavedJobs";
 import SugesstedJobs from "./pages/home/job-seeker/SugesstedJobs";
 import Welcome from "./pages/home/welcomPage/Welcome";
-
 import Messages from "./pages/messages/Messages";
-import Profile from "./pages/profile setting/Profile";
 
 import { AuthProvider } from "./hook/AuthContext";
+import BackGroundInfo from "./pages/background information/BackGroundInfo";
 import GlobalStyles from "./styles/GlobalStyles";
 import AppLayout from "./ui/AppLayout";
 import EmployerAppLayout from "./ui/EmployerAppLayout";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 60 * 1000 } },
+    defaultOptions: { queries: { staleTime: 60 * 1000 } },
 });
 
 export default function App() {
-  return (
-    <AuthProvider> {/* ✅ AuthProvider wraps everything */}
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <GlobalStyles />
+    return (
+        <AuthProvider>
+            {" "}
+            {/* ✅ AuthProvider wraps everything */}
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <GlobalStyles />
 
-          <Routes>
-            {/* Public pages */}
-            <Route path="/" element={<Home />} />
-            <Route path="/welcome" element={<Welcome />} />
-            <Route path="/settings" element={<Settings />} />
+                    <Routes>
+                        {/* Public pages */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/welcome" element={<Welcome />} />
+                        <Route path="/settings" element={<Settings />} />
 
-            {/* Job Seeker Routes */}
-            <Route
-              path="/app/*"
-              element={
-                <JobseekerPrivateRoute role="jobseeker">
-                  <AppLayout />
-                </JobseekerPrivateRoute>
-              }
-            >
-              <Route index element={<JobSeekerDashboard />} />
-              <Route path="jobSeekerDashboard" element={<JobSeekerDashboard />} />
-              <Route path="allJobs" element={<AllJobs />} />
-              <Route path="allJobs/jobDetails/:id" element={<JobDetails />} />
-              <Route path="appliedJobs" element={<AppliedJobs />} />
-              <Route path="savedJobs" element={<SavedJobs />} />
-              <Route path="sugessteddJobs" element={<SugesstedJobs />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="messages" element={<Messages />} />
-              <Route path="application" element={<Application />} />
-            </Route>
+                        {/* Job Seeker Routes */}
+                        <Route
+                            path="/app/*"
+                            element={
+                                <JobseekerPrivateRoute role="jobseeker">
+                                    <AppLayout />
+                                </JobseekerPrivateRoute>
+                            }
+                        >
+                            <Route index element={<JobSeekerDashboard />} />
+                            <Route
+                                path="jobSeekerDashboard"
+                                element={<JobSeekerDashboard />}
+                            />
+                            <Route path="allJobs" element={<AllJobs />} />
+                            <Route
+                                path="allJobs/jobDetails/:id"
+                                element={<JobDetails />}
+                            />
+                            <Route
+                                path="appliedJobs"
+                                element={<AppliedJobs />}
+                            />
+                            <Route path="savedJobs" element={<SavedJobs />} />
+                            <Route
+                                path="sugessteddJobs"
+                                element={<SugesstedJobs />}
+                            />
+                            <Route
+                                path="profile"
+                                element={<BackGroundInfo />}
+                            />
+                            <Route path="messages" element={<Messages />} />
+                            <Route
+                                path="application"
+                                element={<Application />}
+                            />
+                        </Route>
 
-            {/* Employer Routes */}
-            <Route
-              path="/employerApp/*"
-              element={
-                <EmployerPrivateRoute>
-                  <EmployerAppLayout />
-                </EmployerPrivateRoute>
-              }
-            >
-              <Route index element={<EmployerDashboard />} />
-              <Route path="employerDashboard" element={<EmployerDashboard />} />
-              <Route path="allJobs" element={<AllJobs />} />
-              <Route path="allJobs/jobDetails/:id" element={<JobDetails />} />
-              <Route path="messages" element={<Messages />} />
-              <Route path="application" element={<Application />} />
-              <Route path="applicant" element={<Applicant />} />
-              <Route path="postedJobs" element={<PostedJobs />} />
-              <Route path="postedNewJobs" element={<PostedNewJobs />} />
-              <Route path="profile" element={<Profile />} />
-            </Route>
+                        {/* Employer Routes */}
+                        <Route
+                            path="/employerApp/*"
+                            element={
+                                <EmployerPrivateRoute>
+                                    <EmployerAppLayout />
+                                </EmployerPrivateRoute>
+                            }
+                        >
+                            <Route index element={<EmployerDashboard />} />
+                            <Route
+                                path="employerDashboard"
+                                element={<EmployerDashboard />}
+                            />
+                            <Route path="allJobs" element={<AllJobs />} />
+                            <Route
+                                path="allJobs/jobDetails/:id"
+                                element={<JobDetails />}
+                            />
+                            <Route path="messages" element={<Messages />} />
+                            <Route
+                                path="application"
+                                element={<Application />}
+                            />
+                            <Route path="applicant" element={<Applicant />} />
+                            <Route path="postedJobs" element={<PostedJobs />} />
+                            <Route
+                                path="postedNewJobs"
+                                element={<PostedNewJobs />}
+                            />
+                            <Route
+                                path="profile"
+                                element={<BackGroundInfo />}
+                            />
+                        </Route>
 
-            {/* 404 fallback */}
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </BrowserRouter>
+                        {/* 404 fallback */}
+                        <Route path="*" element={<PageNotFound />} />
+                    </Routes>
+                </BrowserRouter>
 
-        {/* Notifications */}
-        <Toaster
-          position="top-right"
-          gutter={12}
-          containerStyle={{ margin: "8px" }}
-          toastOptions={{
-            success: { duration: 3000 },
-            error: { duration: 5000 },
-            style: {
-              fontSize: "16px",
-              maxWidth: "500px",
-              padding: "16px 24px",
-              backgroundColor: "var(--color-grey-0)",
-              color: "var(--color-grey-700)",
-            },
-          }}
-        />
+                {/* Notifications */}
+                <Toaster
+                    position="top-right"
+                    gutter={12}
+                    containerStyle={{ margin: "8px" }}
+                    toastOptions={{
+                        success: { duration: 3000 },
+                        error: { duration: 5000 },
+                        style: {
+                            fontSize: "16px",
+                            maxWidth: "500px",
+                            padding: "16px 24px",
+                            backgroundColor: "var(--color-grey-0)",
+                            color: "var(--color-grey-700)",
+                        },
+                    }}
+                />
 
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </AuthProvider>
-  );
+                <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+        </AuthProvider>
+    );
 }
