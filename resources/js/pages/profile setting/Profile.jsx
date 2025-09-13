@@ -1,27 +1,24 @@
 import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
+import { useAuth } from "../../hook/AuthContext";
 import EditImagesDialog from "../../ui/EditImagesDialog";
 import UpdateImagesDialog from "../../ui/UpdateImagesDialog";
 import "./Profile.css";
 
 function Profile() {
-    // State for profile photo
+    const { user } = useAuth(); // Get logged-in user from context
+    console .log("User data in Profile:", user);
     const [profilePhoto, setProfilePhoto] = useState("/profile/default.jpg");
 
     useEffect(() => {
-        // Load initial photo from localStorage if user is logged in
-        const authUser = JSON.parse(localStorage.getItem("authUser"));
-        if (authUser?.profilePhoto) setProfilePhoto(authUser.profilePhoto);
-    }, []);
+        if (user?.profilePhoto) setProfilePhoto(user.profilePhoto);
+    }, [user]);
 
     return (
         <div className="profile-container">
+            {/* Profile Header */}
             <div className="profile-header">
-                <img
-                    src="/bg-image2.jfif"
-                    alt="Background"
-                    className="bg-image"
-                />
+                <img src="/bg-image2.jfif" alt="Background" className="bg-image" />
 
                 <EditImagesDialog
                     trigger={
@@ -31,11 +28,8 @@ function Profile() {
                     }
                 />
 
-                <img
-                    src={profilePhoto}
-                    alt="Profile"
-                    className="profile-photo"
-                />
+                <img src={profilePhoto} alt="Profile" className="profile-photo" />
+
                 <UpdateImagesDialog
                     trigger={
                         <button className="edit-btn edit-photo">
@@ -46,47 +40,52 @@ function Profile() {
                 />
             </div>
 
+            {/* Profile Info */}
             <div className="profile-box">
                 <div className="profile-left">
                     <div className="user-details">
-                        <h2 className="user-name">Mohammad Sirath</h2>
+                        <h2 className="user-name">
+                            {user?.firstName || "User"} {user?.lastName || "Name"}
+                        </h2>
                         <p className="user-description">
-                            Front-End Developer | HTML, CSS, JavaScript, React,
-                            SQL | Building Responsive & Interactive Web
-                            Experiences | Passionate About User-Centric Design &
-                            Database Management
+                            {user?.description || "User Description"}
                         </p>
-
                         <div className="user-tags">
-                            <span className="tag">#Frontend</span>
-                            <span className="tag">#React</span>
-                            <span className="tag">#SQL</span>
-                            <span className="tag">#UI/UX</span>
+                            {user?.skills?.map((skill, index) => (
+                                <span key={index} className="tag">
+                                    #{skill}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>
 
                 <div className="profile-right">
                     <h3>Additional Info</h3>
-                    <p>Here you can place stats, connections, or activity.</p>
+                    <p>
+                        <strong>Email:</strong> {user?.email || "N/A"} <br />
+                        <strong>Phone:</strong> {user?.phone || "N/A"} <br />
+                        <strong>Role:</strong> {user?.role || "N/A"} <br />
+                        <strong>Experience:</strong> {user?.experience || "N/A"}
+                    </p>
                 </div>
             </div>
 
-            {/* Bottom boxes */}
+            {/* Bottom Boxes */}
             <div className="profile-bottom">
                 <div className="activity-box">
                     <h3>User Activity</h3>
                     <div className="activity-stats">
                         <div className="stat">
-                            <h4>120</h4>
+                            <h4>{user?.posts || 0}</h4>
                             <p>Posts</p>
                         </div>
                         <div className="stat">
-                            <h4>45</h4>
+                            <h4>{user?.comments || 0}</h4>
                             <p>Comments</p>
                         </div>
                         <div className="stat">
-                            <h4>32</h4>
+                            <h4>{user?.projects || 0}</h4>
                             <p>Projects</p>
                         </div>
                     </div>
@@ -95,9 +94,16 @@ function Profile() {
                 <div className="community-box">
                     <h3>Community Contributions</h3>
                     <ul className="community-list">
-                        <li>React Developers Group</li>
-                        <li>Open Source Contributors</li>
-                        <li>Frontend Mentorship Program</li>
+                        {user?.community?.length > 0
+                            ? user.community.map((item, idx) => <li key={idx}>{item}</li>)
+                            : (
+                                <>
+                                    <li>React Developers Group</li>
+                                    <li>Open Source Contributors</li>
+                                    <li>Frontend Mentorship Program</li>
+                                </>
+                              )
+                        }
                     </ul>
                 </div>
             </div>

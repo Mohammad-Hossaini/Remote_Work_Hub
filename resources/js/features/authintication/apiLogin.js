@@ -8,12 +8,12 @@ export async function loginUser({ name, email, password }) {
     if (users.length === 0) return null;
 
     const user = users[0];
-    const token = btoa(`${user.email}:${user.password}`); 
+    const token = btoa(`${user.email}:${user.password}`);
 
     return { ...user, token };
 }
 
 export function logout() {
     localStorage.removeItem("authUser");
-    window.location.href = "/"; 
+    window.location.href = "/";
 }

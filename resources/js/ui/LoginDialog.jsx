@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { loginUser } from "../features/authintication/apiLogin";
+import { useAuth } from "../hook/AuthContext";
 
 /* Overlay */
 const Overlay = styled(RadixDialog.Overlay)`
@@ -123,6 +124,7 @@ const Button = styled.button`
 export default function LoginDialog({ trigger }) {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth(); // ✅ Get login function from context
 
     const {
         register,
@@ -142,10 +144,12 @@ export default function LoginDialog({ trigger }) {
                 toast.error("Invalid credentials!");
                 return;
             }
-            localStorage.setItem("authUser", JSON.stringify(user));
+
+            login(user); // ✅ Store user in context
             toast.success("Login successful!");
             reset();
             setOpen(false);
+
             if (user.role === "employer") navigate("/employerApp");
             else navigate("/app");
         },

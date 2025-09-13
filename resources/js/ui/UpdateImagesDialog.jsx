@@ -1,10 +1,12 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useRef, useState } from "react";
-import { toast } from "react-hot-toast"; // <-- import toast
-import { MdDelete, MdEdit } from "react-icons/md";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
+import { MdDelete, MdEdit, MdSave } from "react-icons/md";
 import styled from "styled-components";
-import { updateUser } from "../services/apiUsers"; // <-- your API function
+import { useAuth } from "../hook/AuthContext";
+import { updateUser } from "../services/apiUsers";
 
+// Styled components
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: rgba(0, 0, 0, 0.5);
     position: fixed;
@@ -16,7 +18,7 @@ const DialogContent = styled(RadixDialog.Content)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 32rem;
+    width: 36rem;
     max-width: 90vw;
     background-color: var(--color-grey-0);
     border-radius: var(--radius-md);
@@ -24,7 +26,7 @@ const DialogContent = styled(RadixDialog.Content)`
     box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     z-index: 1000;
 `;
 
@@ -42,9 +44,40 @@ const ProfileImage = styled.img`
     border: 2px solid var(--color-grey-200);
 `;
 
+const Input = styled.input`
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--color-grey-300);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+`;
+
+const Textarea = styled.textarea`
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--color-grey-300);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+`;
+
+const Label = styled.label`
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    display: block;
+`;
+
+const Row = styled.div`
+    display: flex;
+    gap: 1rem;
+`;
+
 const ActionButtons = styled.div`
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 1rem;
     margin-top: 1rem;
 
@@ -71,8 +104,8 @@ const ActionButtons = styled.div`
         }
 
         &.save {
-            background-color: var(--color-green-600, #16a34a);
-            color: #fff;
+            background-color: #ffd43b;
+            color: var(--color-green-600);
         }
 
         &:hover {
@@ -81,24 +114,28 @@ const ActionButtons = styled.div`
     }
 `;
 
-export default function EditImagesDialog({ trigger, onPhotoUpdate }) {
-    const authUser = JSON.parse(localStorage.getItem("authUser"));
-
-    const [previewImage, setPreviewImage] = useState(
-        authUser?.profilePhoto || "/profile/default.jpg"
-    );
+export default function UpdateImagesDialog({ trigger }) {
+    const { user, login } = useAuth();
+    const [previewImage, setPreviewImage] = useState("/profile/default.jpg");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [description, setDescription] = useState("");
     const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (user) {
+            setPreviewImage(user.profilePhoto || "/profile/default.jpg");
+            setFirstName(user.firstName || "");
+            setLastName(user.lastName || "");
+            setDescription(user.description || "");
+        }
+    }, [user]);
 
     const handleDelete = async () => {
         try {
-            const updatedUser = await updateUser(authUser.id, {
-                profilePhoto: "",
-            });
-
-            localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            const updatedUser = await updateUser(user.id, { profilePhoto: "" });
+            login(updatedUser);
             setPreviewImage("/profile/default.jpg");
-            if (onPhotoUpdate) onPhotoUpdate("/profile/default.jpg");
-
             toast.success("Profile photo deleted!");
         } catch (err) {
             console.error(err);
@@ -106,7 +143,7 @@ export default function EditImagesDialog({ trigger, onPhotoUpdate }) {
         }
     };
 
-    const handleEdit = () => {
+    const handleEditPhoto = () => {
         fileInputRef.current.click();
     };
 
@@ -123,17 +160,17 @@ export default function EditImagesDialog({ trigger, onPhotoUpdate }) {
 
     const handleSave = async () => {
         try {
-            const updatedUser = await updateUser(authUser.id, {
+            const updatedUser = await updateUser(user.id, {
                 profilePhoto: previewImage,
+                firstName,
+                lastName,
+                description,
             });
-
-            localStorage.setItem("authUser", JSON.stringify(updatedUser));
-            if (onPhotoUpdate) onPhotoUpdate(previewImage);
-
-            toast.success("Profile photo updated!");
+            login(updatedUser);
+            toast.success("Profile updated successfully!");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to update profile photo.");
+            toast.error("Failed to update profile.");
         }
     };
 
@@ -143,7 +180,8 @@ export default function EditImagesDialog({ trigger, onPhotoUpdate }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    <h2>Edit Photo</h2>
+                    <h2>Edit Profile</h2>
+
                     <PhotoWrapper>
                         <ProfileImage src={previewImage} alt="Profile" />
                         <input
@@ -154,15 +192,43 @@ export default function EditImagesDialog({ trigger, onPhotoUpdate }) {
                             onChange={handleFileChange}
                         />
                     </PhotoWrapper>
+
+                    <Row>
+                        <div style={{ flex: 1 }}>
+                            <Label>First Name</Label>
+                            <Input
+                                type="text"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <Label>Last Name</Label>
+                            <Input
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </div>
+                    </Row>
+
+                    <div>
+                        <Label>Description</Label>
+                        <Textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </div>
+
                     <ActionButtons>
                         <button className="delete" onClick={handleDelete}>
-                            <MdDelete /> Delete
+                            <MdDelete /> Delete Photo
                         </button>
-                        <button className="edit" onClick={handleEdit}>
-                            <MdEdit /> Edit
+                        <button className="edit" onClick={handleEditPhoto}>
+                            <MdEdit /> Edit Photo
                         </button>
                         <button className="save" onClick={handleSave}>
-                            Save
+                            <MdSave /> Save
                         </button>
                     </ActionButtons>
                 </DialogContent>

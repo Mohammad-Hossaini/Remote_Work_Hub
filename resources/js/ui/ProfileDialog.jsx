@@ -1,9 +1,9 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { MdOutlineLogout } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../hook/AuthContext";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: transparent;
@@ -117,8 +117,8 @@ const LogoutButton = styled.button`
 `;
 
 export default function ProfileDialog({ children }) {
+    const { user } = useAuth();
     const navigate = useNavigate();
-    // Get role dynamically from localStorage
     const currentUser = JSON.parse(localStorage.getItem("authUser"));
     const role = currentUser?.role || "jobseeker";
     const basePath = role === "employer" ? "/employerApp" : "/app";
@@ -139,16 +139,13 @@ export default function ProfileDialog({ children }) {
                 <DialogContent>
                     <ProfileImageWrapper>
                         <ProfileImage
-                            src="/profile/profile-2.jpg"
+                            src={user?.profilePhoto || "/profile/default.jpg"}
                             alt="Profile"
                         />
                     </ProfileImageWrapper>
 
                     <Description>
-                        Front-End Developer | HTML, CSS, JavaScript, React, SQL
-                        | Building Responsive & Interactive Web Experiences |
-                        Passionate About User-Centric Design & Database
-                        Management
+                        {user?.description || "No description available."}
                     </Description>
 
                     <ButtonContainer>

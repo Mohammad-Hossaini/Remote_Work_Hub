@@ -1,5 +1,5 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
 import { IoIosMoon, IoMdNotifications } from "react-icons/io";
 import { RxCaretRight } from "react-icons/rx";
@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import ProfileDialog from "../../ui/ProfileDialog";
 
+import { useAuth } from "../../hook/AuthContext";
 import "./Navbar.css";
 
 // Styled components for notification dialog
@@ -72,6 +73,7 @@ function Navbar() {
         { id: 1, text: "New applicant applied for Frontend Developer" },
         { id: 2, text: "Your job posting has been approved" },
     ]);
+    const { user } = useAuth();
     return (
         <div className="navbar-container">
             {/* Left links */}
@@ -128,7 +130,7 @@ function Navbar() {
                 <ProfileDialog>
                     <div className="avatar-wrapper">
                         <img
-                            src="/profile/profile-2.jpg"
+                            src={user?.profilePhoto || "/profile/default.jpg"}
                             alt="Profile"
                             className="avatar-img"
                         />
