@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { FaPen } from "react-icons/fa";
+import { IoMdCamera } from "react-icons/io";
 import { useAuth } from "../../hook/AuthContext";
 import EditImagesDialog from "../../ui/EditImagesDialog";
+
 import UpdateImagesDialog from "../../ui/UpdateImagesDialog";
 import "./BackGroundInfo.css";
 
@@ -21,6 +22,9 @@ function BackGroundInfo() {
         else setBgPhoto("/default_bg_image.jpeg"); // fallback default
     }, [user]);
 
+    // Ensure skills is always an array
+    const skills = Array.isArray(user?.skills) ? user.skills : [];
+
     return (
         <div className="profile-container">
             <div className="profile-header">
@@ -33,7 +37,7 @@ function BackGroundInfo() {
                 <EditImagesDialog
                     trigger={
                         <button className="edit-btn edit-bg">
-                            <FaPen />
+                            <IoMdCamera />
                         </button>
                     }
                     onBgUpdate={(newBg) => setBgPhoto(newBg)} // immediately update bg
@@ -48,7 +52,7 @@ function BackGroundInfo() {
                 <UpdateImagesDialog
                     trigger={
                         <button className="edit-btn edit-photo">
-                            <FaPen />
+                            <IoMdCamera />
                         </button>
                     }
                     onPhotoUpdate={(newPhoto) => setProfilePhoto(newPhoto)} // immediately update profile
@@ -66,7 +70,7 @@ function BackGroundInfo() {
                             {user?.description || "User Description"}
                         </p>
                         <div className="user-tags">
-                            {user?.skills?.map((skill, index) => (
+                            {skills.map((skill, index) => (
                                 <span key={index} className="tag">
                                     #{skill}
                                 </span>
@@ -78,8 +82,8 @@ function BackGroundInfo() {
                 <div className="profile-right">
                     <h3>Additional Info</h3>
                     <p>
-                        <strong>Email:</strong> {user?.gmail || "N/A"} <br />
-                        <strong>Phone:</strong> {user?.mobile || "N/A"} <br />
+                        <strong>Email:</strong> {user?.email || "N/A"} <br />
+                        <strong>Phone:</strong> {user?.phone || "N/A"} <br />
                         <strong>Role:</strong> {user?.role || "N/A"} <br />
                         <strong>Experience:</strong> {user?.experience || "N/A"}
                     </p>

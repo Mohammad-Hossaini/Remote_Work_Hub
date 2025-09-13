@@ -4,6 +4,7 @@ import { MdOutlineLogout } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
+import UpdateProfileDialog from "./UpdateProfileDialog";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: transparent;
@@ -16,7 +17,7 @@ const DialogContent = styled(RadixDialog.Content)`
     top: 60px;
     right: 2.5rem;
     width: 24rem;
-    max-width: 90vw;
+    max-width: 95vw;
     border: 1px solid var(--color-grey-200);
     background-color: var(--color-grey-0);
     border-radius: var(--radius-md);
@@ -117,7 +118,7 @@ const LogoutButton = styled.button`
 `;
 
 export default function ProfileDialog({ children }) {
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
     const navigate = useNavigate();
     const currentUser = JSON.parse(localStorage.getItem("authUser"));
     const role = currentUser?.role || "jobseeker";
@@ -129,6 +130,12 @@ export default function ProfileDialog({ children }) {
         localStorage.removeItem("authUser");
         toast.success("Logged out successfully!");
         navigate("/");
+    };
+
+    const handleUserUpdate = (updatedUser) => {
+        setUser(updatedUser);
+        localStorage.setItem("authUser", JSON.stringify(updatedUser));
+        toast.success("Profile updated successfully!"); // only one toast
     };
 
     return (
@@ -152,7 +159,14 @@ export default function ProfileDialog({ children }) {
                         <PrimaryButton to={profilePath}>
                             View Profile
                         </PrimaryButton>
-                        <OutlineButton to="/settings">Settings</OutlineButton>
+
+                        <UpdateProfileDialog
+                            trigger={
+                                <OutlineButton asChild>Settings</OutlineButton>
+                            }
+                            user={user}
+                            onUpdate={handleUserUpdate}
+                        />
                     </ButtonContainer>
 
                     <LogoutButton onClick={handleLogout}>
