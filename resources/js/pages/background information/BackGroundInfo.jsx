@@ -10,7 +10,6 @@ function BackGroundInfo() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
-    // گرفتن دیتای یوزر
     const {
         data: fullUser,
         isLoading,
@@ -21,15 +20,13 @@ function BackGroundInfo() {
         refetchOnWindowFocus: true,
     });
 
-    // میوتیشن برای آپدیت دیتا
+
     const mutation = useMutation(({ id, data }) => updateUser(id, data), {
         onSuccess: (updatedData) => {
-            // بلافاصله cache را بروز کن
             queryClient.setQueryData(["user", user.id], (oldData) => ({
                 ...oldData,
                 ...updatedData,
             }));
-            // اگر نیاز است دوباره fetch کند
             queryClient.invalidateQueries(["user", user.id]);
         },
     });
