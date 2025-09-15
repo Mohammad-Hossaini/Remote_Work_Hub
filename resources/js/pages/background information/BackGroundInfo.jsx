@@ -1,35 +1,50 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoMdCamera } from "react-icons/io";
 import { useAuth } from "../../hook/AuthContext";
+import { getUserById, updateUser } from "../../services/apiUsers";
 import EditImagesDialog from "../../ui/EditImagesDialog";
-
 import UpdateImagesDialog from "../../ui/UpdateImagesDialog";
 import "./BackGroundInfo.css";
 
 function BackGroundInfo() {
     const { user } = useAuth();
-    const [profilePhoto, setProfilePhoto] = useState("/profile/default.jpg");
-    const [bgPhoto, setBgPhoto] = useState("/default_bg_image.jpeg"); // default bg
+    const queryClient = useQueryClient();
 
-    // Set initial profile photo
-    useEffect(() => {
-        if (user?.profilePhoto) setProfilePhoto(user.profilePhoto);
-    }, [user]);
+    // گرفتن دیتای یوزر
+    const {
+        data: fullUser,
+        isLoading,
+        isError,
+    } = useQuery(["user", user?.id], () => getUserById(user.id), {
+        enabled: !!user?.id,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+    });
 
-    // Set initial background photo
-    useEffect(() => {
-        if (user?.bg_image) setBgPhoto(user.bg_image);
-        else setBgPhoto("/default_bg_image.jpeg"); // fallback default
-    }, [user]);
+    // میوتیشن برای آپدیت دیتا
+    const mutation = useMutation(({ id, data }) => updateUser(id, data), {
+        onSuccess: (updatedData) => {
+            // بلافاصله cache را بروز کن
+            queryClient.setQueryData(["user", user.id], (oldData) => ({
+                ...oldData,
+                ...updatedData,
+            }));
+            // اگر نیاز است دوباره fetch کند
+            queryClient.invalidateQueries(["user", user.id]);
+        },
+    });
 
-    // Ensure skills is always an array
-    const skills = Array.isArray(user?.skills) ? user.skills : [];
+    if (isLoading) return <p>Loading profile...</p>;
+    if (isError) return <p>Failed to load user</p>;
+    if (!fullUser) return <p>No user found</p>;
+
+    const skills = Array.isArray(fullUser.skills) ? fullUser.skills : [];
 
     return (
         <div className="profile-container">
             <div className="profile-header">
                 <img
-                    src={bgPhoto || "/default_bg_image.jpeg"}
+                    src={fullUser.bg_image || "/default_bg_image.jpeg"}
                     alt="Background"
                     className="bg-image"
                 />
@@ -40,11 +55,16 @@ function BackGroundInfo() {
                             <IoMdCamera />
                         </button>
                     }
-                    onBgUpdate={(newBg) => setBgPhoto(newBg)} // immediately update bg
+                    onBgUpdate={(newBg) =>
+                        mutation.mutate({
+                            id: user.id,
+                            data: { bg_image: newBg },
+                        })
+                    }
                 />
 
                 <img
-                    src={profilePhoto}
+                    src={fullUser.profilePhoto || "/profile/default.jpg"}
                     alt="Profile"
                     className="profile-photo"
                 />
@@ -55,7 +75,12 @@ function BackGroundInfo() {
                             <IoMdCamera />
                         </button>
                     }
-                    onPhotoUpdate={(newPhoto) => setProfilePhoto(newPhoto)} // immediately update profile
+                    onPhotoUpdate={(newPhoto) =>
+                        mutation.mutate({
+                            id: user.id,
+                            data: { profilePhoto: newPhoto },
+                        })
+                    }
                 />
             </div>
 
@@ -63,11 +88,11 @@ function BackGroundInfo() {
                 <div className="profile-left">
                     <div className="user-details">
                         <h2 className="user-name">
-                            {user?.firstName || "User"}{" "}
-                            {user?.lastName || "Name"}
+                            {fullUser.firstName || "User"}{" "}
+                            {fullUser.lastName || "Name"}
                         </h2>
                         <p className="user-description">
-                            {user?.description || "User Description"}
+                            {fullUser.description || "User Description"}
                         </p>
                         <div className="user-tags">
                             {skills.map((skill, index) => (
@@ -82,10 +107,11 @@ function BackGroundInfo() {
                 <div className="profile-right">
                     <h3>Additional Info</h3>
                     <p>
-                        <strong>Email:</strong> {user?.email || "N/A"} <br />
-                        <strong>Phone:</strong> {user?.phone || "N/A"} <br />
-                        <strong>Role:</strong> {user?.role || "N/A"} <br />
-                        <strong>Experience:</strong> {user?.experience || "N/A"}
+                        <strong>Email:</strong> {fullUser.email || "N/A"} <br />
+                        <strong>Phone:</strong> {fullUser.phone || "N/A"} <br />
+                        <strong>Role:</strong> {fullUser.role || "N/A"} <br />
+                        <strong>Experience:</strong>{" "}
+                        {fullUser.experience || "N/A"}
                     </p>
                 </div>
             </div>
@@ -95,15 +121,15 @@ function BackGroundInfo() {
                     <h3>User Activity</h3>
                     <div className="activity-stats">
                         <div className="stat">
-                            <h4>{user?.user_posts || 0}</h4>
+                            <h4>{fullUser.posts || 0}</h4>
                             <p>Posts</p>
                         </div>
                         <div className="stat">
-                            <h4>{user?.comments || 0}</h4>
+                            <h4>{fullUser.comments || 0}</h4>
                             <p>Comments</p>
                         </div>
                         <div className="stat">
-                            <h4>{user?.projects || 0}</h4>
+                            <h4>{fullUser.projects || 0}</h4>
                             <p>Projects</p>
                         </div>
                     </div>
@@ -112,8 +138,8 @@ function BackGroundInfo() {
                 <div className="community-box">
                     <h3>Community Contributions</h3>
                     <ul className="community-list">
-                        {user?.community?.length > 0 ? (
-                            user.community.map((item, idx) => (
+                        {fullUser?.community?.length > 0 ? (
+                            fullUser.community.map((item, idx) => (
                                 <li key={idx}>{item}</li>
                             ))
                         ) : (

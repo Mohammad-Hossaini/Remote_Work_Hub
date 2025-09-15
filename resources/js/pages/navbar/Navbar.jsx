@@ -1,3 +1,4 @@
+
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
@@ -7,16 +8,17 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import ProfileDialog from "../../ui/ProfileDialog";
 
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../hook/AuthContext";
+import { getUserById } from "../../services/apiUsers";
 import "./Navbar.css";
 
-// Styled components for notification dialog
+// Styled components
 const Overlay = styled(RadixDialog.Overlay)`
     background: rgba(0, 0, 0, 0.2);
     position: fixed;
     inset: 0;
 `;
-
 const Content = styled(RadixDialog.Content)`
     position: fixed;
     top: 60px;
@@ -32,7 +34,6 @@ const Content = styled(RadixDialog.Content)`
     gap: 0.5rem;
     z-index: 1000;
 `;
-
 const NotificationItem = styled.div`
     padding: 0.4rem 0.3rem;
     border-radius: var(--radius-sm);
@@ -41,18 +42,15 @@ const NotificationItem = styled.div`
     transition: all 0.2s ease;
     font-size: 1rem;
     color: var(--color-grey-900);
-
     &:hover {
         background-color: var(--color-grey-200);
     }
 `;
-
 const NotificationWrapper = styled.div`
     position: relative;
     cursor: pointer;
     display: inline-block;
 `;
-
 const Badge = styled.span`
     position: absolute;
     top: -1px;
@@ -73,7 +71,20 @@ function Navbar() {
         { id: 1, text: "New applicant applied for Frontend Developer" },
         { id: 2, text: "Your job posting has been approved" },
     ]);
+
     const { user } = useAuth();
+
+    // Fetch user data using React Query
+    const { data: fullUser } = useQuery(
+        ["user", user?.id],
+        () => getUserById(user.id),
+        {
+            enabled: !!user?.id, // فقط اگر user.id موجود بود
+            refetchOnWindowFocus: true, // همیشه دیتای جدید بگیر
+            staleTime: 0,
+        }
+    );
+
     return (
         <div className="navbar-container">
             {/* Left links */}
@@ -130,7 +141,9 @@ function Navbar() {
                 <ProfileDialog>
                     <div className="avatar-wrapper">
                         <img
-                            src={user?.profilePhoto || "/profile/default.jpg"}
+                            src={
+                                fullUser?.profilePhoto || "/profile/default.jpg"
+                            }
                             alt="Profile"
                             className="avatar-img"
                         />

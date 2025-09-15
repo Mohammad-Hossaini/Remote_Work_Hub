@@ -1,8 +1,11 @@
 
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import styled from "styled-components";
+import { updateUser } from "../services/apiUsers"; // مسیر فایل شما
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: rgba(0, 0, 0, 0.3);
@@ -81,42 +84,70 @@ const Section = styled.div`
     }
 `;
 
-export default function UpdateProfileDialog({ trigger, user, onUpdate }) {
+export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
     const [open, setOpen] = useState(false);
     const [slideIndex, setSlideIndex] = useState(0);
-
     const slides = ["basic", "work", "education"];
 
-    // Initialize formData with user info
-    const [formData, setFormData] = useState({
-        ...user,
-        Work_Experience: user.Work_Experience?.length ? user.Work_Experience : [{}],
-        Educations: user.Educations?.length ? user.Educations : [{}],
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        formState: { isSubmitting },
+    } = useForm({
+        defaultValues: {
+            ...user,
+            Work_Experience: user.Work_Experience?.length ? user.Work_Experience : [{}],
+            Educations: user.Educations?.length ? user.Educations : [{}],
+        },
     });
 
-    const handleNext = () =>
-        setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
+    const workArray = useFieldArray({ control, name: "Work_Experience" });
+    const eduArray = useFieldArray({ control, name: "Educations" });
+
+    useEffect(() => {
+        reset({
+            ...user,
+            Work_Experience: user.Work_Experience?.length ? user.Work_Experience : [{}],
+            Educations: user.Educations?.length ? user.Educations : [{}],
+        });
+    }, [user, reset]);
+
+    const handleNext = () => setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
     const handlePrev = () => setSlideIndex((prev) => Math.max(prev - 1, 0));
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+    const onSubmit = async (data) => {
+        try {
+            const payload = {
+                ...data,
+                Work_Experience: data.Work_Experience.map((w) => ({
+                    jobTitle: w.jobTitle || "",
+                    company: w.company || "",
+                    from: w.from || "",
+                    to: w.to || "",
+                    jobLevel: w.jobLevel || "",
+                })),
+                Educations: data.Educations.map((e) => ({
+                    school: e.school || "",
+                    educationalAttainment: e.educationalAttainment || "",
+                    from: e.from || "",
+                    to: e.to || "",
+                    description: e.description || "",
+                })),
+            };
 
-    const handleWorkChange = (e, index, field) => {
-        const updated = { ...formData };
-        updated.Work_Experience[index][field] = e.target.value;
-        setFormData(updated);
-    };
+            const updated = await updateUser(user.id, payload);
 
-    const handleEducationChange = (e, index, field) => {
-        const updated = { ...formData };
-        updated.Educations[index][field] = e.target.value;
-        setFormData(updated);
-    };
+            // اصلاح شده: بررسی وجود onUpdate
+            if (onUpdate) onUpdate(updated);
 
-    const handleSave = () => {
-        onUpdate(formData); 
+            setOpen(false);
+            toast.success("Profile updated successfully!");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update user.");
+        }
     };
 
     return (
@@ -125,165 +156,86 @@ export default function UpdateProfileDialog({ trigger, user, onUpdate }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    {/* Basic Info Slide */}
-                    <Slide active={slides[slideIndex] === "basic"}>
-                        <Section>
-                            <h2>Basic Info</h2>
-                            <label>First Name</label>
-                            <input
-                                name="firstName"
-                                value={formData.firstName || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Last Name</label>
-                            <input
-                                name="lastName"
-                                value={formData.lastName || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Email</label>
-                            <input
-                                name="email"
-                                value={formData.email || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Location</label>
-                            <input
-                                name="location"
-                                value={formData.location || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Mobile</label>
-                            <input
-                                name="mobile"
-                                value={formData.mobile || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Description</label>
-                            <textarea
-                                name="description"
-                                value={formData.description || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Profile Photo URL</label>
-                            <input
-                                name="profilePhoto"
-                                value={formData.profilePhoto || ""}
-                                onChange={handleChange}
-                            />
-                            <label>Background Image URL</label>
-                            <input
-                                name="bg_image"
-                                value={formData.bg_image || ""}
-                                onChange={handleChange}
-                            />
-                        </Section>
-                    </Slide>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        {/* Basic Info */}
+                        <Slide active={slides[slideIndex] === "basic"}>
+                            <Section>
+                                <h2>Basic Info</h2>
+                                <label>First Name</label>
+                                <input {...register("firstName")} />
+                                <label>Last Name</label>
+                                <input {...register("lastName")} />
+                                <label>Email</label>
+                                <input {...register("email")} />
+                                <label>Location</label>
+                                <input {...register("location")} />
+                                <label>Mobile</label>
+                                <input {...register("mobile")} />
+                                <label>Description</label>
+                                <textarea {...register("description")} />
+                                <label>Profile Photo URL</label>
+                                <input {...register("profilePhoto")} />
+                                <label>Background Image URL</label>
+                                <input {...register("bg_image")} />
+                            </Section>
+                        </Slide>
 
-                    {/* Work Experience Slide */}
-                    <Slide active={slides[slideIndex] === "work"}>
-                        <Section>
-                            <h2>Work Experience</h2>
-                            {formData.Work_Experience.map((work, index) => (
-                                <div key={index}>
-                                    <label>Job Title</label>
-                                    <input
-                                        value={work.jobTitle || ""}
-                                        onChange={(e) =>
-                                            handleWorkChange(e, index, "jobTitle")
-                                        }
-                                    />
-                                    <label>Company</label>
-                                    <input
-                                        value={work.company || ""}
-                                        onChange={(e) =>
-                                            handleWorkChange(e, index, "company")
-                                        }
-                                    />
-                                    <label>From</label>
-                                    <input
-                                        value={work.from || ""}
-                                        onChange={(e) => handleWorkChange(e, index, "from")}
-                                    />
-                                    <label>To</label>
-                                    <input
-                                        value={work.to || ""}
-                                        onChange={(e) => handleWorkChange(e, index, "to")}
-                                    />
-                                    <label>Job Level</label>
-                                    <input
-                                        value={work.jobLevel || ""}
-                                        onChange={(e) =>
-                                            handleWorkChange(e, index, "jobLevel")
-                                        }
-                                    />
-                                </div>
-                            ))}
-                        </Section>
-                    </Slide>
+                        {/* Work Experience */}
+                        <Slide active={slides[slideIndex] === "work"}>
+                            <Section>
+                                <h2>Work Experience</h2>
+                                {workArray.fields.map((field, index) => (
+                                    <div key={field.id}>
+                                        <label>Job Title</label>
+                                        <input {...register(`Work_Experience.${index}.jobTitle`)} />
+                                        <label>Company</label>
+                                        <input {...register(`Work_Experience.${index}.company`)} />
+                                        <label>From</label>
+                                        <input {...register(`Work_Experience.${index}.from`)} />
+                                        <label>To</label>
+                                        <input {...register(`Work_Experience.${index}.to`)} />
+                                        <label>Job Level</label>
+                                        <input {...register(`Work_Experience.${index}.jobLevel`)} />
+                                    </div>
+                                ))}
+                            </Section>
+                        </Slide>
 
-                    {/* Education Slide */}
-                    <Slide active={slides[slideIndex] === "education"}>
-                        <Section>
-                            <h2>Education</h2>
-                            {formData.Educations.map((edu, index) => (
-                                <div key={index}>
-                                    <label>School</label>
-                                    <input
-                                        value={edu.school || ""}
-                                        onChange={(e) =>
-                                            handleEducationChange(e, index, "school")
-                                        }
-                                    />
-                                    <label>Degree</label>
-                                    <input
-                                        value={edu.educationalAttainment || ""}
-                                        onChange={(e) =>
-                                            handleEducationChange(
-                                                e,
-                                                index,
-                                                "educationalAttainment"
-                                            )
-                                        }
-                                    />
-                                    <label>From</label>
-                                    <input
-                                        value={edu.from || ""}
-                                        onChange={(e) =>
-                                            handleEducationChange(e, index, "from")
-                                        }
-                                    />
-                                    <label>To</label>
-                                    <input
-                                        value={edu.to || ""}
-                                        onChange={(e) =>
-                                            handleEducationChange(e, index, "to")
-                                        }
-                                    />
-                                    <label>Description</label>
-                                    <textarea
-                                        value={edu.description || ""}
-                                        onChange={(e) =>
-                                            handleEducationChange(e, index, "description")
-                                        }
-                                    />
-                                </div>
-                            ))}
-                        </Section>
-                    </Slide>
+                        {/* Education */}
+                        <Slide active={slides[slideIndex] === "education"}>
+                            <Section>
+                                <h2>Education</h2>
+                                {eduArray.fields.map((field, index) => (
+                                    <div key={field.id}>
+                                        <label>School</label>
+                                        <input {...register(`Educations.${index}.school`)} />
+                                        <label>Degree</label>
+                                        <input {...register(`Educations.${index}.educationalAttainment`)} />
+                                        <label>From</label>
+                                        <input {...register(`Educations.${index}.from`)} />
+                                        <label>To</label>
+                                        <input {...register(`Educations.${index}.to`)} />
+                                        <label>Description</label>
+                                        <textarea {...register(`Educations.${index}.description`)} />
+                                    </div>
+                                ))}
+                            </Section>
+                        </Slide>
 
-                    <CarouselControls>
-                        <button onClick={handlePrev} disabled={slideIndex === 0}>
-                            <FaChevronLeft /> Prev
-                        </button>
-                        {slideIndex === slides.length - 1 ? (
-                            <button onClick={handleSave}>Save</button>
-                        ) : (
-                            <button onClick={handleNext}>
-                                Next <FaChevronRight />
+                        <CarouselControls>
+                            <button type="button" onClick={handlePrev} disabled={slideIndex === 0}>
+                                <FaChevronLeft /> Prev
                             </button>
-                        )}
-                    </CarouselControls>
+
+                            {slideIndex === slides.length - 1 ? (
+                                <button type="submit" disabled={isSubmitting}>Save</button>
+                            ) : (
+                                <button type="button" onClick={handleNext}>
+                                    Next <FaChevronRight />
+                                </button>
+                            )}
+                        </CarouselControls>
+                    </form>
                 </DialogContent>
             </RadixDialog.Portal>
         </RadixDialog.Root>

@@ -31,7 +31,13 @@ import AppLayout from "./ui/AppLayout";
 import EmployerAppLayout from "./ui/EmployerAppLayout";
 
 const queryClient = new QueryClient({
-    defaultOptions: { queries: { staleTime: 60 * 1000 } },
+    defaultOptions: {
+        queries: {
+            staleTime: 0, // هیچ کشی نگه ندارد
+            cacheTime: 5 * 60 * 1000, // دیتا تا 5 دقیقه در حافظه بماند
+            refetchOnWindowFocus: true, // وقتی کاربر برمیگرده روی صفحه، دیتا تازه شود
+        },
+    },
 });
 
 export default function App() {

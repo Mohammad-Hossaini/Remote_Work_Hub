@@ -1,9 +1,11 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { MdOutlineLogout } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
+import { getUserById } from "../services/apiUsers";
 import UpdateProfileDialog from "./UpdateProfileDialog";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
@@ -77,7 +79,6 @@ const BaseButton = styled(Link)`
 const PrimaryButton = styled(BaseButton)`
     background-color: var(--color-primary);
     color: #fff;
-
     &:hover {
         background-color: var(--color-primary-dark);
     }
@@ -87,7 +88,6 @@ const OutlineButton = styled(BaseButton)`
     border: 1px solid var(--color-primary);
     background-color: transparent;
     color: var(--color-primary);
-
     &:hover {
         background-color: var(--color-primary-light);
         color: #fff;
@@ -110,7 +110,6 @@ const LogoutButton = styled.button`
     color: var(--color-error);
     margin-top: var(--space-12);
     transition: all 0.2s ease;
-
     &:hover {
         background-color: var(--color-error);
         color: #fff;
@@ -120,8 +119,19 @@ const LogoutButton = styled.button`
 export default function ProfileDialog({ children }) {
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
-    const currentUser = JSON.parse(localStorage.getItem("authUser"));
-    const role = currentUser?.role || "jobseeker";
+
+    // Fetch latest user data
+    const { data: fullUser, refetch } = useQuery(
+        ["user", user?.id],
+        () => getUserById(user.id),
+        {
+            enabled: !!user?.id,
+            refetchOnWindowFocus: true,
+            staleTime: 0,
+        }
+    );
+
+    const role = fullUser?.role || "jobseeker";
     const basePath = role === "employer" ? "/employerApp" : "/app";
     const profilePath = `${basePath}/profile`;
 
@@ -132,10 +142,16 @@ export default function ProfileDialog({ children }) {
         navigate("/");
     };
 
+    // اصلاح شده: بررسی setUser و refetch بعد از update
     const handleUserUpdate = (updatedUser) => {
-        setUser(updatedUser);
-        localStorage.setItem("authUser", JSON.stringify(updatedUser));
-        toast.success("Profile updated successfully!"); // only one toast
+        if (setUser) {
+            setUser(updatedUser);
+            localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            toast.success("Profile updated successfully!");
+            refetch(); // برای اطمینان از آپدیت کامل اطلاعات
+        } else {
+            console.warn("setUser is not defined!");
+        }
     };
 
     return (
@@ -146,13 +162,15 @@ export default function ProfileDialog({ children }) {
                 <DialogContent>
                     <ProfileImageWrapper>
                         <ProfileImage
-                            src={user?.profilePhoto || "/profile/default.jpg"}
+                            src={
+                                fullUser?.profilePhoto || "/profile/default.jpg"
+                            }
                             alt="Profile"
                         />
                     </ProfileImageWrapper>
 
                     <Description>
-                        {user?.description || "No description available."}
+                        {fullUser?.description || "No description available."}
                     </Description>
 
                     <ButtonContainer>
@@ -164,7 +182,7 @@ export default function ProfileDialog({ children }) {
                             trigger={
                                 <OutlineButton asChild>Settings</OutlineButton>
                             }
-                            user={user}
+                            user={fullUser || {}}
                             onUpdate={handleUserUpdate}
                         />
                     </ButtonContainer>
