@@ -1,10 +1,13 @@
+
+
+//v2
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
-import { CiWarning } from "react-icons/ci";
+import toast from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
+import { TiWarningOutline } from "react-icons/ti";
 import styled from "styled-components";
 import { createNewUser } from "../services/apiUsers";
 
@@ -85,8 +88,7 @@ const Label = styled.label`
 const Input = styled.input`
     padding: 1rem 1.4rem;
     font-size: 1.1rem;
-    border: 1px solid
-        ${(props) => (props.error ? "red" : "var(--color-grey-300)")};
+    border: 1px solid var(--color-grey-300);
     border-radius: var(--radius-sm);
     outline: none;
 
@@ -113,8 +115,7 @@ const TextArea = styled.textarea`
 const Select = styled.select`
     padding: 1rem 1.4rem;
     font-size: 1.1rem;
-    border: 1px solid
-        ${(props) => (props.error ? "red" : "var(--color-grey-300)")};
+    border: 1px solid var(--color-grey-300);
     border-radius: var(--radius-sm);
     outline: none;
     background-color: #fff;
@@ -124,25 +125,23 @@ const Select = styled.select`
     }
 `;
 
-/* Warning message */
-const StyledWarning = styled.div`
+/* Buttons Container */
+const StyledButtons = styled.div`
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.95rem;
-    color: #b91c1c;
+    column-gap: 1.5rem;
+    margin-top: 2rem;
 `;
 
-/* Button */
-const Button = styled.button`
-    margin-top: 1rem;
+/* Register Button */
+const RegisterButton = styled.button`
     background-color: var(--color-primary);
     color: #fff;
-    padding: 1rem 1.8rem;
+    padding: 1rem 2rem;
     border-radius: var(--radius-xxl);
     font-weight: 500;
     font-size: 1.1rem;
     cursor: pointer;
+    border: none;
     transition: 0.2s ease;
 
     &:hover {
@@ -155,46 +154,67 @@ const Button = styled.button`
     }
 `;
 
+/* Cancel Button */
+const CancelButton = styled.button`
+    background-color: var(--color-grey-200);
+    color: var(--color-grey-700);
+    padding: 1rem 2rem;
+    border-radius: var(--radius-xxl);
+    font-weight: 500;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-grey-300);
+    }
+`;
+
+/* Error Message */
+const ErrorMessage = styled.span`
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-error);
+    font-size: 1rem;
+    margin-top: 0.3rem;
+`;
+
 export default function RegistrationDialog({ trigger }) {
     const [open, setOpen] = useState(false);
     const [role, setRole] = useState("");
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset,
-    } = useForm();
-
-    const mutation = useMutation({
-        mutationFn: createNewUser,
-        onSuccess: (data) => {
-            toast.success("User registered successfully!");
-            reset();
-            setRole("");
-            setOpen(false);
-        },
-        onError: (err) => {
-            toast.error(
-                "Registration failed: " + (err.message || "Server error")
-            );
-        },
-    });
-
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "auto";
     }, [open]);
 
-    const onSubmit = (data) => {
-        if (data.password !== data.confirmPassword) {
-            toast.error("Passwords do not match!");
-            return;
-        }
+    const {
+        handleSubmit,
+        reset,
+        register,
+        watch,
+        formState: { errors },
+    } = useForm();
 
-        const { confirmPassword, ...userData } = data;
-        userData.role = role;
-        mutation.mutate(userData);
+    const password = watch("password");
+
+    const queryClient = useQueryClient();
+    const { mutate, isLoading: isCreating } = useMutation({
+        mutationFn: createNewUser,
+        onSuccess: () => {
+            toast.success("You have registered successfully");
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            reset();
+        },
+        onError: (err) => toast.error(err.message),
+    });
+
+    const onSubmit = (data, e) => {
+        e.preventDefault();
+        mutate(data);
     };
+
+    const onError = (error) => console.log(error);
 
     return (
         <RadixDialog.Root open={open} onOpenChange={setOpen}>
@@ -202,118 +222,136 @@ export default function RegistrationDialog({ trigger }) {
             <RadixDialog.Portal>
                 <Overlay />
                 <Content>
-                    <h2>Register</h2>
+                    <RadixDialog.Title>Register</RadixDialog.Title>
                     <CloseButton asChild>
                         <IoMdClose />
                     </CloseButton>
 
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit, onError)}>
                         <FormGrid>
+                            {/* First Name */}
                             <InputGroup>
                                 <Label>First Name</Label>
                                 <Input
+                                    id="firstName"
                                     type="text"
-                                    {...register("firstName", {
-                                        required: "First name is required",
-                                    })}
-                                    error={errors.firstName}
                                     placeholder="Enter your first name"
+                                    {...register("firstName", {
+                                        required: "This field is required",
+                                    })}
                                 />
                                 {errors.firstName && (
-                                    <StyledWarning>
-                                        <CiWarning /> {errors.firstName.message}
-                                    </StyledWarning>
+                                    <ErrorMessage>
+                                        <TiWarningOutline />{" "}
+                                        {errors.firstName.message}
+                                    </ErrorMessage>
                                 )}
                             </InputGroup>
 
-                            <InputGroup>
-                                <Label>Password</Label>
-                                <Input
-                                    type="password"
-                                    {...register("password", {
-                                        required: "Password is required",
-                                    })}
-                                    error={errors.password}
-                                    placeholder="Enter your password"
-                                />
-                                {errors.password && (
-                                    <StyledWarning>
-                                        <CiWarning /> {errors.password.message}
-                                    </StyledWarning>
-                                )}
-                            </InputGroup>
-
+                            {/* Last Name */}
                             <InputGroup>
                                 <Label>Last Name</Label>
                                 <Input
+                                    id="lastName"
                                     type="text"
-                                    {...register("lastName", {
-                                        required: "Last name is required",
-                                    })}
-                                    error={errors.lastName}
                                     placeholder="Enter your last name"
+                                    {...register("lastName", {
+                                        required: "This field is required",
+                                    })}
                                 />
                                 {errors.lastName && (
-                                    <StyledWarning>
-                                        <CiWarning /> {errors.lastName.message}
-                                    </StyledWarning>
+                                    <ErrorMessage>
+                                        <TiWarningOutline />{" "}
+                                        {errors.lastName.message}
+                                    </ErrorMessage>
                                 )}
                             </InputGroup>
 
+                            {/* Password */}
+                            <InputGroup>
+                                <Label>Password</Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder="Enter your password"
+                                    {...register("password", {
+                                        required: "This field is required",
+                                    })}
+                                />
+                                {errors.password && (
+                                    <ErrorMessage>
+                                        <TiWarningOutline />{" "}
+                                        {errors.password.message}
+                                    </ErrorMessage>
+                                )}
+                            </InputGroup>
+
+                            {/* Confirm Password */}
                             <InputGroup>
                                 <Label>Confirm Password</Label>
                                 <Input
+                                    id="confirmPassword"
                                     type="password"
-                                    {...register("confirmPassword", {
-                                        required: "Confirm password",
-                                    })}
-                                    error={errors.confirmPassword}
                                     placeholder="Confirm your password"
+                                    {...register("confirmPassword", {
+                                        required: "This field is required",
+                                        validate: (value) =>
+                                            value === password ||
+                                            "Passwords do not match",
+                                    })}
                                 />
                                 {errors.confirmPassword && (
-                                    <StyledWarning>
-                                        <CiWarning />{" "}
+                                    <ErrorMessage>
+                                        <TiWarningOutline />{" "}
                                         {errors.confirmPassword.message}
-                                    </StyledWarning>
+                                    </ErrorMessage>
                                 )}
                             </InputGroup>
 
+                            {/* Phone */}
                             <InputGroup>
                                 <Label>Phone Number</Label>
                                 <Input
+                                    id="phone"
                                     type="tel"
-                                    {...register("phone")}
                                     placeholder="Enter your phone number"
-                                />
-                            </InputGroup>
-
-                            <InputGroup>
-                                <Label>Email</Label>
-                                <Input
-                                    type="email"
-                                    {...register("email", {
-                                        required: "Email is required",
-                                        pattern: {
-                                            value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
-                                            message: "Invalid email address",
-                                        },
+                                    {...register("phone", {
+                                        required: "This field is required",
                                     })}
-                                    error={errors.email}
-                                    placeholder="Enter your email"
                                 />
-                                {errors.email && (
-                                    <StyledWarning>
-                                        <CiWarning /> {errors.email.message}
-                                    </StyledWarning>
+                                {errors.phone && (
+                                    <ErrorMessage>
+                                        <TiWarningOutline />{" "}
+                                        {errors.phone.message}
+                                    </ErrorMessage>
                                 )}
                             </InputGroup>
 
+                            {/* Email */}
+                            <InputGroup>
+                                <Label>Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    {...register("email", {
+                                        required: "This field is required",
+                                    })}
+                                />
+                                {errors.email && (
+                                    <ErrorMessage>
+                                        <TiWarningOutline />{" "}
+                                        {errors.email.message}
+                                    </ErrorMessage>
+                                )}
+                            </InputGroup>
+
+                            {/* Role */}
                             <InputGroup>
                                 <Label>Role / User Type</Label>
                                 <Select
                                     value={role}
                                     onChange={(e) => setRole(e.target.value)}
-                                    error={!role && errors.role}
                                 >
                                     <option value="">Select Role</option>
                                     <option value="jobseeker">
@@ -321,99 +359,137 @@ export default function RegistrationDialog({ trigger }) {
                                     </option>
                                     <option value="employer">Employer</option>
                                 </Select>
-                                {!role && errors.role && (
-                                    <StyledWarning>
-                                        <CiWarning /> {errors.role.message}
-                                    </StyledWarning>
-                                )}
                             </InputGroup>
                         </FormGrid>
 
-                        {/* Role-specific fields */}
+                        {/* Jobseeker Fields */}
                         {role === "jobseeker" && (
                             <FormGrid>
                                 <InputGroup>
                                     <Label>Description</Label>
                                     <TextArea
-                                        {...register("description")}
                                         placeholder="Describe yourself"
+                                        {...register("description")}
                                     />
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Resume (Optional)</Label>
                                     <Input
                                         type="file"
-                                        {...register("resume")}
                                         accept=".pdf,.doc,.docx"
+                                        {...register("resume")}
                                     />
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Skills</Label>
                                     <Input
                                         type="text"
-                                        {...register("skills")}
                                         placeholder="Enter skills"
+                                        {...register("skills", {
+                                            required: "This field is required",
+                                        })}
                                     />
+                                    {errors.skills && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.skills.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Experience (Optional)</Label>
                                     <Input
                                         type="text"
-                                        {...register("experience")}
                                         placeholder="Enter experience"
+                                        {...register("experience")}
                                     />
                                 </InputGroup>
                             </FormGrid>
                         )}
 
+                        {/* Employer Fields */}
                         {role === "employer" && (
                             <FormGrid>
                                 <InputGroup>
                                     <Label>Company Name</Label>
                                     <Input
                                         type="text"
-                                        {...register("companyName")}
                                         placeholder="Enter company name"
+                                        {...register("company_name", {
+                                            required: "This field is required",
+                                        })}
                                     />
+                                    {errors.company_name && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.company_name.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Website (Optional)</Label>
                                     <Input
                                         type="text"
-                                        {...register("website")}
                                         placeholder="Enter website"
+                                        {...register("website")}
                                     />
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Location</Label>
                                     <Input
                                         type="text"
-                                        {...register("location")}
                                         placeholder="Enter location"
+                                        {...register("location", {
+                                            required: "This field is required",
+                                        })}
                                     />
+                                    {errors.location && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.location.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
+
                                 <InputGroup>
-                                    <Label>Company Logo</Label>
+                                    <Label>Religon (Optional)</Label>
                                     <Input
-                                        type="file"
-                                        {...register("companyLogo")}
-                                        accept="image/*"
+                                        type="tex"
+                                        id="religon"
+                                        {...register("religon")}
                                     />
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Contact Person</Label>
                                     <Input
                                         type="text"
-                                        {...register("contactPerson")}
                                         placeholder="Enter contact person"
+                                        {...register("contact_person", {
+                                            required: "This field is required",
+                                        })}
                                     />
+                                    {errors.contact_person && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.contact_person.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
                             </FormGrid>
                         )}
 
-                        <Button type="submit" disabled={mutation.isLoading}>
-                            {mutation.isLoading ? "Registering..." : "Register"}
-                        </Button>
+                        <StyledButtons>
+                            <CancelButton type="reset">Cancel</CancelButton>
+                            <RegisterButton type="submit" disabled={isCreating}>
+                                Register
+                            </RegisterButton>
+                        </StyledButtons>
                     </form>
                 </Content>
             </RadixDialog.Portal>
