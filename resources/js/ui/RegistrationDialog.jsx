@@ -1,6 +1,4 @@
-
-
-//v2
+//v3
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -56,7 +54,6 @@ const CloseButton = styled(RadixDialog.Close)`
     color: var(--color-grey-700);
     cursor: pointer;
     transition: all 0.2s ease;
-
     &:hover {
         background: var(--color-grey-200);
     }
@@ -91,7 +88,6 @@ const Input = styled.input`
     border: 1px solid var(--color-grey-300);
     border-radius: var(--radius-sm);
     outline: none;
-
     &:focus {
         border-color: var(--color-primary);
     }
@@ -105,7 +101,6 @@ const TextArea = styled.textarea`
     border-radius: var(--radius-sm);
     outline: none;
     resize: vertical;
-
     &:focus {
         border-color: var(--color-primary);
     }
@@ -119,7 +114,6 @@ const Select = styled.select`
     border-radius: var(--radius-sm);
     outline: none;
     background-color: #fff;
-
     &:focus {
         border-color: var(--color-primary);
     }
@@ -143,11 +137,9 @@ const RegisterButton = styled.button`
     cursor: pointer;
     border: none;
     transition: 0.2s ease;
-
     &:hover {
         background-color: var(--color-primary-dark);
     }
-
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
@@ -165,7 +157,6 @@ const CancelButton = styled.button`
     cursor: pointer;
     border: none;
     transition: 0.2s ease;
-
     &:hover {
         background-color: var(--color-grey-300);
     }
@@ -184,6 +175,7 @@ const ErrorMessage = styled.span`
 export default function RegistrationDialog({ trigger }) {
     const [open, setOpen] = useState(false);
     const [role, setRole] = useState("");
+
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "auto";
     }, [open]);
@@ -205,16 +197,49 @@ export default function RegistrationDialog({ trigger }) {
             toast.success("You have registered successfully");
             queryClient.invalidateQueries({ queryKey: ["users"] });
             reset();
+            setOpen(false);
         },
         onError: (err) => toast.error(err.message),
     });
 
     const onSubmit = (data, e) => {
         e.preventDefault();
+
+        // Convert skills string to array
+        if (data.skills && typeof data.skills === "string") {
+            data.skills = data.skills.split(",").map((s) => s.trim());
+        }
+
+        // Add role
+        data.role = role;
+
+        // Default values
+        data.Work_Experience = data.Work_Experience || [
+            { jobTitle: "", company: "", from: "", to: "", jobLevel: "" },
+        ];
+        data.Educations = data.Educations || [
+            {
+                school: "",
+                educationalAttainment: "",
+                from: "",
+                to: "",
+                description: "",
+            },
+        ];
+        data.mobile = data.mobile || "";
+
+        // Generate simple token
+        data.token = Math.random().toString(36).substring(2, 15);
+
+        // Handle resume file (optional)
+        if (data.resume && data.resume.length > 0) {
+            data.resume = data.resume[0].name;
+        }
+
         mutate(data);
     };
 
-    const onError = (error) => console.log(error);
+    const onError = (err) => console.log(err);
 
     return (
         <RadixDialog.Root open={open} onOpenChange={setOpen}>
@@ -383,10 +408,10 @@ export default function RegistrationDialog({ trigger }) {
                                 </InputGroup>
 
                                 <InputGroup>
-                                    <Label>Skills</Label>
+                                    <Label>Skills (comma separated)</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter skills"
+                                        placeholder="JavaScript, React, Node.js"
                                         {...register("skills", {
                                             required: "This field is required",
                                         })}
@@ -459,8 +484,7 @@ export default function RegistrationDialog({ trigger }) {
                                 <InputGroup>
                                     <Label>Religon (Optional)</Label>
                                     <Input
-                                        type="tex"
-                                        id="religon"
+                                        type="text"
                                         {...register("religon")}
                                     />
                                 </InputGroup>
