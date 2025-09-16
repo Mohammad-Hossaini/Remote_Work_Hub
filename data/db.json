@@ -1,293 +1,342 @@
 {
-    "users": [
+  "users": [
+    {
+      "id": "1",
+      "firstName": "Shokria",
+      "lastName": "Hayat Khan",
+      "email": "sara@gmail.com",
+      "phone": "+1 (145) 723-1339",
+      "password": "12345678",
+      "role": "jobseeker",
+      "skills": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Next.js",
+        "Vue.js",
+        "Angular",
+        "Node.js",
+        "Express.js",
+        "MongoDB",
+        "PostgreSQL"
+      ],
+      "experience": "5 years",
+      "description": "React Developer | JavaScript, React, Redux, TypeScript, REST API | Building Dynamic & Performant Web Apps | Passionate About Component Architecture & State Management",
+      "location": "Kabul, Afghanistan",
+      "bg_image": "",
+      "views": 1245,
+      "country": "Afghanistan",
+      "province": "Kabul",
+      "city": "Kabul",
+      "street": "Street 23",
+      "birthday": "1995-06-15",
+      "gender": "Female",
+      "projects": 12,
+      "posts": 140,
+      "comments": 43,
+      "Work_Experience": [
         {
-            "id": "1",
-            "firstName": "Shokria",
-            "lastName": "Hayat Khan",
-            "email": "sara@gmail.com",
-            "phone": "+1 (145) 723-1339",
-            "password": "12345678",
-            "role": "jobseeker",
-            "skills": [
-                "HTML",
-                "CSS",
-                "JavaScript",
-                "TypeScript",
-                "React",
-                "Next.js",
-                "Vue.js",
-                "Angular",
-                "Node.js",
-                "Express.js",
-                "MongoDB",
-                "PostgreSQL"
-            ],
-            "experience": "5 years",
-            "description": "React Developer | JavaScript, React, Redux, TypeScript, REST API | Building Dynamic & Performant Web Apps | Passionate About Component Architecture & State Management",
-            "location": "Kabul, Afghanistan",
-            "bg_image": "",
-            "views": 1245,
-            "country": "Afghanistan",
-            "province": "Kabul",
-            "city": "Kabul",
-            "street": "Street 23",
-            "birthday": "1995-06-15",
-            "gender": "Female",
-            "projects": 12,
-            "posts": 140,
-            "comments": 43,
-            "Work_Experience": [
-                {
-                    "jobTitle": "",
-                    "company": "",
-                    "from": "",
-                    "to": "",
-                    "jobLevel": ""
-                }
-            ],
-            "Educations": [
-                {
-                    "school": "",
-                    "educationalAttainment": "",
-                    "from": "",
-                    "to": "",
-                    "description": ""
-                }
-            ],
-            "mobile": "",
-            "profilePhoto": ""
-        },
-        {
-            "id": "2",
-            "firstName": "Mohammad Jan",
-            "lastName": "Hossaini",
-            "email": "mohammad@gmail.com",
-            "phone": "078 15 98 774",
-            "password": "12345678",
-            "role": "employer",
-            "skills": [
-                "PostgreSQL",
-                "MySQL",
-                "REST API",
-                "GraphQL",
-                "Git",
-                "GitHub",
-                "Docker",
-                "Kubernetes",
-                "AWS",
-                "Tailwind CSS",
-                "Bootstrap",
-                "Sass"
-            ],
-            "experience": "1 years",
-            "description": "Front-End Developer | HTML, CSS, JavaScript, React, SQL | Building Responsive & Interactive Web Experiences | Passionate About User-Centric Design & Database Management",
-            "location": "Kabul, Afghanistan",
-            "views": 1245,
-            "country": "Afghanistan",
-            "province": "Kabul",
-            "city": "Kabul",
-            "street": "Street 23",
-            "birthday": "1995-06-15",
-            "gender": "Female",
-            "projects": 12,
-            "posts": 140,
-            "comments": 43,
-            "Work_Experience": [
-                {
-                    "jobTitle": "",
-                    "company": "",
-                    "from": "",
-                    "to": "",
-                    "jobLevel": ""
-                }
-            ],
-            "Educations": [
-                {
-                    "school": "",
-                    "educationalAttainment": "",
-                    "from": "",
-                    "to": "",
-                    "description": ""
-                }
-            ],
-            "mobile": "",
-            "profilePhoto": "",
-            "bg_image": ""
-        },
-        {
-            "id": "604c",
-            "firstName": "Gareth",
-            "lastName": "Herring",
-            "password": "Pa$$w0rd!",
-            "confirmPassword": "Pa$$w0rd!",
-            "phone": "+1 (326) 684-7678",
-            "email": "juxedyboqy@mailinator.com",
-            "description": "Software Engineer | Python, Django, JavaScript, React, PostgreSQL | Developing Full-Stack Applications | Focused on Clean Architecture & Optimized Database Design",
-            "resume": {},
-            "skills": ["Eveniet repudiandae"],
-            "experience": "Suscipit possimus v",
-            "role": "jobseeker",
-            "Work_Experience": [
-                {
-                    "jobTitle": "",
-                    "company": "",
-                    "from": "",
-                    "to": "",
-                    "jobLevel": ""
-                }
-            ],
-            "Educations": [
-                {
-                    "school": "",
-                    "educationalAttainment": "",
-                    "from": "",
-                    "to": "",
-                    "description": ""
-                }
-            ],
-            "mobile": "",
-            "token": "42c43qhrm0p",
-            "location": "",
-            "profilePhoto": "",
-            "bg_image": ""
+          "jobTitle": "",
+          "company": "",
+          "from": "",
+          "to": "",
+          "jobLevel": ""
         }
-    ],
-    "jobs": [
+      ],
+      "Educations": [
         {
-            "id": "job001",
-            "companyLogo": "/company-images/image(1).jfif",
-            "title": "Frontend Developer",
-            "position": "React.js Specialist",
-            "location": "Kabul",
-            "type": "Full Time",
-            "experience": "2+ years",
-            "companyName": "Microsoft",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "700 USD/month",
-            "skills": ["CSS", "HTML", "C++"]
-        },
-        {
-            "id": "2",
-            "companyLogo": "/company-images/image(2).jfif",
-            "title": "Backend Developer",
-            "position": "Node.js Specialist",
-            "location": "Herat",
-            "type": "Part Time",
-            "experience": "Internship",
-            "companyName": "Google",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "500 USD/month",
-            "skills": ["JavaScript", "Node.js", "SQL"]
-        },
-        {
-            "id": "3",
-            "companyLogo": "/company-images/image(3).jfif",
-            "title": "UI/UX Designer",
-            "position": "Figma & Adobe XD",
-            "location": "Remote",
-            "type": "Full Time",
-            "experience": "1+ years",
-            "companyName": "Meta (Facebook)",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "650 USD/month",
-            "skills": ["Figma", "Adobe XD", "CSS"]
-        },
-        {
-            "id": "4",
-            "companyLogo": "/company-images/image(4).jfif",
-            "title": "Full Stack Developer",
-            "position": "React + Node.js",
-            "location": "Mazar",
-            "type": "Full Time",
-            "experience": "4+ years",
-            "companyName": "IBM",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "1200 USD/month",
-            "skills": ["React", "Node.js", "MongoDB", "CSS"]
-        },
-        {
-            "id": "5",
-            "companyLogo": "/company-images/image(5).jfif",
-            "title": "Data Scientist",
-            "position": "Python & ML",
-            "location": "Remote",
-            "type": "Contract",
-            "experience": "3+ years",
-            "companyName": "Yahoo",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "1500 USD/month",
-            "skills": ["Python", "TensorFlow", "SQL"]
-        },
-        {
-            "id": "6",
-            "companyLogo": "/company-images/image(6).jfif",
-            "title": "Mobile Developer",
-            "position": "Flutter & React Native",
-            "location": "Kabul",
-            "type": "Internship",
-            "experience": "0-1 years",
-            "companyName": "Apple",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "300 USD/month",
-            "skills": ["Flutter", "React Native", "JavaScript"]
-        },
-        {
-            "id": "7",
-            "companyLogo": "/company-images/image (7).png",
-            "title": "DevOps Engineer",
-            "position": "AWS & Docker",
-            "location": "Herat",
-            "type": "Full Time",
-            "experience": "5+ years",
-            "companyName": "Amazon",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "2000 USD/month",
-            "skills": ["AWS", "Docker", "Kubernetes"]
-        },
-        {
-            "id": "8",
-            "companyLogo": "/company-images/image (8).png",
-            "title": "QA Engineer",
-            "position": "Automation & Manual Testing",
-            "location": "Mazar",
-            "type": "Part Time",
-            "experience": "2+ years",
-            "companyName": "Netflix",
-            "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
-            "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
-            "salary": "800 USD/month",
-            "skills": ["Selenium", "Cypress", "JavaScript"]
+          "school": "",
+          "educationalAttainment": "",
+          "from": "",
+          "to": "",
+          "description": ""
         }
-    ],
-    "appliedJobs": [
+      ],
+      "mobile": "",
+      "profilePhoto": ""
+    },
+    {
+      "id": "2",
+      "firstName": "Mohammad Jan",
+      "lastName": "Hossaini",
+      "email": "mohammad@gmail.com",
+      "phone": "078 15 98 774",
+      "password": "12345678",
+      "role": "employer",
+      "skills": [
+        "PostgreSQL",
+        "MySQL",
+        "REST API",
+        "GraphQL",
+        "Git",
+        "GitHub",
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "Tailwind CSS",
+        "Bootstrap",
+        "Sass"
+      ],
+      "experience": "1 years",
+      "description": "Front-End Developer | HTML, CSS, JavaScript, React, SQL | Building Responsive & Interactive Web Experiences | Passionate About User-Centric Design & Database Management",
+      "location": "Kabul, Afghanistan",
+      "views": 1245,
+      "country": "Afghanistan",
+      "province": "Kabul",
+      "city": "Kabul",
+      "street": "Street 23",
+      "birthday": "1995-06-15",
+      "gender": "Female",
+      "projects": 12,
+      "posts": 140,
+      "comments": 43,
+      "Work_Experience": [
         {
-            "id": "fb4884094bf73",
-            "userId": "1",
-            "jobId": "5",
-            "appliedAt": "2025-09-15T12:00:00Z",
-            "status": "Under Review",
-            "form": {
-                "firstName": "Shokria",
-                "lastName": "Hayat Khan",
-                "countryCode": "+1",
-                "mobile": "781598774",
-                "email": "sara@gmail.com"
-            }
+          "jobTitle": "",
+          "company": "",
+          "from": "",
+          "to": "",
+          "jobLevel": ""
         }
-    ],
-    "savedJobs": [
+      ],
+      "Educations": [
         {
-            "id": "save001",
-            "userId": "dfb5",
-            "jobId": "job003",
-            "savedAt": "2025-09-15T12:00:00Z"
+          "school": "",
+          "educationalAttainment": "",
+          "from": "",
+          "to": "",
+          "description": ""
         }
-    ]
+      ],
+      "mobile": "",
+      "profilePhoto": "",
+      "bg_image": ""
+    },
+    {
+      "id": "604c",
+      "firstName": "Ali",
+      "lastName": "Mohammadi",
+      "password": "12345678",
+      "confirmPassword": "Pa$$w0rd!",
+      "phone": "+1 (326) 684-7678",
+      "email": "ali@gmail.com",
+      "description": "Software Engineer | Python, Django, JavaScript, React, PostgreSQL | Developing Full-Stack Applications | Focused on Clean Architecture & Optimized Database Design",
+      "resume": {},
+      "skills": [
+        "Eveniet repudiandae"
+      ],
+      "experience": "Suscipit possimus v",
+      "role": "jobseeker",
+      "Work_Experience": [
+        {
+          "jobTitle": "",
+          "company": "",
+          "from": "",
+          "to": "",
+          "jobLevel": ""
+        }
+      ],
+      "Educations": [
+        {
+          "school": "",
+          "educationalAttainment": "",
+          "from": "",
+          "to": "",
+          "description": ""
+        }
+      ],
+      "mobile": "",
+      "token": "42c43qhrm0p",
+      "location": "",
+      "profilePhoto": "",
+      "bg_image": ""
+    }
+  ],
+  "jobs": [
+    {
+      "id": "job001",
+      "companyLogo": "/company-images/image(1).jfif",
+      "title": "Frontend Developer",
+      "position": "React.js Specialist",
+      "location": "Kabul",
+      "type": "Full Time",
+      "experience": "2+ years",
+      "companyName": "Microsoft",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "700 USD/month",
+      "skills": [
+        "CSS",
+        "HTML",
+        "C++"
+      ]
+    },
+    {
+      "id": "2",
+      "companyLogo": "/company-images/image(2).jfif",
+      "title": "Backend Developer",
+      "position": "Node.js Specialist",
+      "location": "Herat",
+      "type": "Part Time",
+      "experience": "Internship",
+      "companyName": "Google",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "500 USD/month",
+      "skills": [
+        "JavaScript",
+        "Node.js",
+        "SQL"
+      ]
+    },
+    {
+      "id": "3",
+      "companyLogo": "/company-images/image(3).jfif",
+      "title": "UI/UX Designer",
+      "position": "Figma & Adobe XD",
+      "location": "Remote",
+      "type": "Full Time",
+      "experience": "1+ years",
+      "companyName": "Meta (Facebook)",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "650 USD/month",
+      "skills": [
+        "Figma",
+        "Adobe XD",
+        "CSS"
+      ]
+    },
+    {
+      "id": "4",
+      "companyLogo": "/company-images/image(4).jfif",
+      "title": "Full Stack Developer",
+      "position": "React + Node.js",
+      "location": "Mazar",
+      "type": "Full Time",
+      "experience": "4+ years",
+      "companyName": "IBM",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "1200 USD/month",
+      "skills": [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "CSS"
+      ]
+    },
+    {
+      "id": "5",
+      "companyLogo": "/company-images/image(5).jfif",
+      "title": "Data Scientist",
+      "position": "Python & ML",
+      "location": "Remote",
+      "type": "Contract",
+      "experience": "3+ years",
+      "companyName": "Yahoo",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "1500 USD/month",
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "SQL"
+      ]
+    },
+    {
+      "id": "6",
+      "companyLogo": "/company-images/image(6).jfif",
+      "title": "Mobile Developer",
+      "position": "Flutter & React Native",
+      "location": "Kabul",
+      "type": "Internship",
+      "experience": "0-1 years",
+      "companyName": "Apple",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "300 USD/month",
+      "skills": [
+        "Flutter",
+        "React Native",
+        "JavaScript"
+      ]
+    },
+    {
+      "id": "7",
+      "companyLogo": "/company-images/image (7).png",
+      "title": "DevOps Engineer",
+      "position": "AWS & Docker",
+      "location": "Herat",
+      "type": "Full Time",
+      "experience": "5+ years",
+      "companyName": "Amazon",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "2000 USD/month",
+      "skills": [
+        "AWS",
+        "Docker",
+        "Kubernetes"
+      ]
+    },
+    {
+      "id": "8",
+      "companyLogo": "/company-images/image (8).png",
+      "title": "QA Engineer",
+      "position": "Automation & Manual Testing",
+      "location": "Mazar",
+      "type": "Part Time",
+      "experience": "2+ years",
+      "companyName": "Netflix",
+      "jobSummary": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea voluptas totam in nobis libero magnam quas dolorum odit non.",
+      "qualification": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis voluptas at dolores molestias veniam aliquam vero autem provident, optio blanditiis facere! Laboriosam reprehenderit, fugiat assumenda deserunt inventore vitae non praesentium.",
+      "salary": "800 USD/month",
+      "skills": [
+        "Selenium",
+        "Cypress",
+        "JavaScript"
+      ]
+    }
+  ],
+  "appliedJobs": [
+    {
+      "id": "fb4884094bf73",
+      "userId": "1",
+      "jobId": "5",
+      "appliedAt": "2025-09-15T12:00:00Z",
+      "status": "Under Review",
+      "form": {
+        "firstName": "Shokria",
+        "lastName": "Hayat Khan",
+        "countryCode": "+1",
+        "mobile": "781598774",
+        "email": "sara@gmail.com"
+      }
+    },
+    {
+      "id": "b826",
+      "userId": "604c",
+      "jobId": "8",
+      "appliedAt": "2025-09-16T05:04:42.175Z",
+      "status": "Under Review",
+      "form": {
+        "firstName": "Gareth",
+        "lastName": "Herring",
+        "email": "juxedyboqy@mailinator.com",
+        "mobile": "781598774",
+        "countryCode": "+91"
+      }
+    }
+  ],
+  "savedJobs": [
+    {
+      "id": "save001",
+      "userId": "dfb5",
+      "jobId": "job003",
+      "savedAt": "2025-09-15T12:00:00Z"
+    }
+  ]
 }

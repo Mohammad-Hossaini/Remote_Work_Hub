@@ -1,5 +1,6 @@
 // pages/AppliedJobs.jsx
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import toast, { Toaster } from "react-hot-toast"; // ✅ import toast
 import { HiOutlineTrash, HiOutlineUser } from "react-icons/hi";
 import { useAuth } from "../../../hook/AuthContext";
 import {
@@ -12,7 +13,6 @@ export default function AppliedJobs() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
-    // گرفتن لیست وظایف اپلای شده فقط برای کاربر جاری
     const {
         data: appliedJobs = [],
         isLoading,
@@ -24,10 +24,13 @@ export default function AppliedJobs() {
         staleTime: 0,
     });
 
-    // حذف اپلای
     const { mutate: removeJob } = useMutation(deleteAppliedJob, {
         onSuccess: () => {
             queryClient.invalidateQueries(["appliedJobs", user?.id]);
+            toast.success("Application deleted successfully!"); // ✅ show toast
+        },
+        onError: (err) => {
+            toast.error(err.message || "Failed to delete application"); // ✅ error toast
         },
     });
 
@@ -36,10 +39,11 @@ export default function AppliedJobs() {
 
     return (
         <div className="appliedJobContainer">
+            <Toaster position="top-right" reverseOrder={false} />{" "}
+            {/* ✅ Toaster container */}
             <div className="favHeader">
                 <h2>Applied Jobs</h2>
             </div>
-
             {appliedJobs.length === 0 ? (
                 <p className="no-jobs">No applications yet.</p>
             ) : (
@@ -56,16 +60,11 @@ export default function AppliedJobs() {
                                 />
                             </div>
                             <div className="job-desc">
-                                {/* <h3 className="job-title">
-                                    {app.job ? app.job.title : "Unknown Job"}
-                                </h3> */}
                                 <h3 className="job-title">
                                     {app.job?.title || "Unknown Job"}
                                 </h3>
                                 <p className="job-company">
-                                    {app.job
-                                        ? app.job.companyName
-                                        : "Unknown Company"}
+                                    {app.job?.companyName || "Unknown Company"}
                                 </p>
                                 <p className="job-meta">
                                     Applicant: {app.form?.firstName}{" "}

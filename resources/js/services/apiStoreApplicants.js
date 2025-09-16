@@ -29,10 +29,27 @@ export async function storeApplicant(application) {
 }
 
 export async function getAppliedJobsByUser(userId) {
-    const res = await fetch(`${BASE_URL}/appliedJobs?_expand=job`);
+    const res = await fetch(`${BASE_URL}/appliedJobs`);
     if (!res.ok) throw new Error("Failed to fetch applied jobs");
-    const all = await res.json();
-    return all.filter((app) => String(app.userId) === String(userId));
+    const appliedJobs = await res.json();
+
+    const jobsRes = await fetch(`${BASE_URL}/jobs`);
+    if (!jobsRes.ok) throw new Error("Failed to fetch jobs");
+    const jobs = await jobsRes.json();
+
+    return appliedJobs
+        .filter((app) => String(app.userId) === String(userId))
+        .map((app) => ({
+            ...app,
+            job: jobs.find((j) => String(j.id) === String(app.jobId)) || null,
+            form: app.form || {
+                firstName: app.firstName || "",
+                lastName: app.lastName || "",
+                email: app.email || "",
+                mobile: app.mobile || "",
+                countryCode: app.countryCode || "",
+            },
+        }));
 }
 
 // ✅ اضافه کردن تابع حذف
