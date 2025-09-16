@@ -156,10 +156,12 @@ export default function DialogDemo({ open, onOpenChange, jobId }) {
         onSuccess: () => {
             reset();
             onOpenChange(false);
-            toast.success("Application submitted successfully!");
-            // رفرش لیست وظایف اپلای شده فقط برای همین کاربر
+            setTimeout(() => {
+                toast.success("Application submitted successfully!");
+            }, 100); // 100ms delay
             queryClient.invalidateQueries(["appliedJobs", user?.id]);
         },
+
         onError: (err) => {
             setSubmitError(err.message || "Failed to submit application");
             toast.error(err.message || "Failed to submit application");
