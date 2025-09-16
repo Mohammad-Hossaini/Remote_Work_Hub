@@ -13,7 +13,7 @@ import {
 } from "../../../services/apiGetSavedJobs";
 import Button from "../../../ui/Button";
 
-// ================== Styled Components ==================
+// ================= Styled Components =================
 const JobsContainer = styled.div`
     max-width: 1200px;
     margin: 0 auto;
@@ -43,7 +43,6 @@ const SearchBar = styled.input`
     background-color: var(--color-grey-0);
     font-size: 1.6rem;
     box-shadow: var(--shadow-sm);
-
     &:focus {
         outline: none;
         border-color: var(--color-primary);
@@ -76,13 +75,11 @@ const TagButton = styled.button`
     border: 1px solid var(--color-grey-300);
     cursor: pointer;
     transition: all 0.2s ease;
-
     &:hover {
         background-color: var(--color-primary-light);
         color: #fff;
         border-color: var(--color-primary-light);
     }
-
     &.active {
         background-color: var(--color-primary);
         color: #fff;
@@ -97,11 +94,9 @@ const SortSelect = styled.select`
     font-size: 1.4rem;
     background-color: var(--color-grey-0);
     cursor: pointer;
-
     &:hover {
         border-color: var(--color-primary);
     }
-
     &:focus {
         outline: none;
         border-color: var(--color-primary);
@@ -127,7 +122,6 @@ const JobsCard = styled.div`
     margin: 0 auto 1.6rem;
     gap: 1.6rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-
     &:hover {
         transform: translateY(-5px);
         box-shadow: var(--shadow-lg);
@@ -178,13 +172,12 @@ const HeartIcon = styled(HiMiniHeart)`
     font-size: 2rem;
     color: ${(props) => (props.active ? "#2b8a3e" : "var(--color-grey-400)")};
     transition: color 0.2s ease;
-
     &:hover {
         color: #2b8a3e;
     }
 `;
 
-// ================== Component ==================
+// ================= Component =================
 function AllJobs() {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOption, setSortOption] = useState("date");
@@ -202,12 +195,12 @@ function AllJobs() {
         queryFn: getJobs,
     });
 
-    // Fetch saved jobs on mount
+    // Fetch saved jobs for current user
     useEffect(() => {
         if (!user?.id) return;
         getSavedJobsByUser(user.id)
             .then((saved) => setSavedJobIds(saved.map((s) => s.jobId)))
-            .catch((err) => console.error(err));
+            .catch(console.error);
     }, [user]);
 
     // Mutation to save job
@@ -224,8 +217,8 @@ function AllJobs() {
     // Mutation to delete saved job
     const deleteJobMutation = useMutation({
         mutationFn: deleteSavedJob,
-        onSuccess: (_, jobId) => {
-            setSavedJobIds((prev) => prev.filter((id) => id !== jobId));
+        onSuccess: (_, savedJobId) => {
+            setSavedJobIds((prev) => prev.filter((id) => id !== savedJobId));
             toast.success("Job removed from saved!");
             queryClient.invalidateQueries(["savedJobs", user?.id]);
         },
@@ -237,7 +230,6 @@ function AllJobs() {
         if (!savedJobIds.includes(job.id)) {
             saveJobMutation.mutate({ ...job, userId: user?.id });
         } else {
-            // Find the saved job entry (for json-server, id is same as saved job entry)
             getSavedJobsByUser(user.id).then((saved) => {
                 const savedEntry = saved.find((s) => s.jobId === job.id);
                 if (savedEntry) deleteJobMutation.mutate(savedEntry.id);
@@ -248,7 +240,6 @@ function AllJobs() {
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
 
-    // Filter & Sort
     const filteredJobs = jobs.filter(
         (job) =>
             job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -268,7 +259,6 @@ function AllJobs() {
 
     return (
         <JobsContainer>
-            {/* Search + Filter + Sort */}
             <ControlsWrapper>
                 <SearchWrapper>
                     <SearchBar
@@ -319,7 +309,6 @@ function AllJobs() {
                 </StyledSortContainer>
             </ControlsWrapper>
 
-            {/* Job Cards */}
             <JobList>
                 {sortedJobs.map((job) => (
                     <JobsCard key={job.id}>

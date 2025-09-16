@@ -303,20 +303,6 @@
   ],
   "appliedJobs": [
     {
-      "id": "fb4884094bf73",
-      "userId": "1",
-      "jobId": "5",
-      "appliedAt": "2025-09-15T12:00:00Z",
-      "status": "Under Review",
-      "form": {
-        "firstName": "Shokria",
-        "lastName": "Hayat Khan",
-        "countryCode": "+1",
-        "mobile": "781598774",
-        "email": "sara@gmail.com"
-      }
-    },
-    {
       "id": "b826",
       "userId": "604c",
       "jobId": "8",
@@ -339,16 +325,16 @@
       "savedAt": "2025-09-15T12:00:00Z"
     },
     {
-      "id": "ef95",
-      "userId": "604c",
-      "jobId": "2",
-      "savedAt": "2025-09-16T05:46:59.015Z"
+      "id": "e604",
+      "userId": "1",
+      "jobId": "job001",
+      "savedAt": "2025-09-16T06:16:29.454Z"
     },
     {
-      "id": "59dc",
+      "id": "797c",
       "userId": "1",
-      "jobId": "8",
-      "savedAt": "2025-09-16T06:00:26.721Z"
+      "jobId": "3",
+      "savedAt": "2025-09-16T06:16:33.859Z"
     }
   ]
 }

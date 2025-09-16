@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { HiOutlineHeart, HiOutlineXCircle } from "react-icons/hi";
+import { HiOutlineXCircle } from "react-icons/hi";
 import { useAuth } from "../../../hook/AuthContext";
 import { getJobs } from "../../../services/apiAllJobs";
 import {
@@ -13,7 +13,6 @@ function SavedJobs() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
-    // گرفتن saved jobs همان کارمند
     const {
         data: savedJobs = [],
         isLoading,
@@ -22,30 +21,26 @@ function SavedJobs() {
         queryKey: ["savedJobs", user?.id],
         queryFn: async () => {
             if (!user?.id) return [];
-            const saves = await getSavedJobsByUser(user.id); // فقط saved jobs خود کارمند
-            const jobs = await getJobs(); // تمام اطلاعات وظایف
+            const saves = await getSavedJobsByUser(user.id);
+            const jobs = await getJobs();
             return saves.map((s) => ({
+                savedJobId: s.id, 
                 ...s,
-                ...jobs.find((j) => j.id === s.jobId), // اضافه کردن جزئیات وظیفه
+                ...jobs.find((j) => j.id === s.jobId),
             }));
         },
         enabled: !!user?.id,
     });
 
-    // Mutation برای حذف وظیفه
-    const { mutate: removeJob } = useMutation({
-        mutationFn: deleteSavedJob,
+    const { mutate: removeJob } = useMutation(deleteSavedJob, {
         onSuccess: (_, savedJobId) => {
-            // بروزرسانی لیست local state
             queryClient.setQueryData(["savedJobs", user?.id], (old) =>
-                old.filter((job) => job.id !== savedJobId)
+                old.filter((job) => job.savedJobId !== savedJobId)
             );
             toast.success("Job removed from saved!");
-            queryClient.invalidateQueries(["savedJobs", user?.id]); // بازخوانی لیست
+            queryClient.invalidateQueries(["savedJobs", user?.id]);
         },
-        onError: (err) => {
-            toast.error(err.message || "Failed to remove job");
-        },
+        onError: (err) => toast.error(err.message || "Failed to remove job"),
     });
 
     if (isLoading) return <p className="loading">Loading saved jobs...</p>;
@@ -57,12 +52,11 @@ function SavedJobs() {
                 <h2>Saved Jobs</h2>
             </div>
 
-            {savedJobs?.length === 0 ? (
+            {savedJobs.length === 0 ? (
                 <p className="no-jobs">No saved jobs yet.</p>
             ) : (
                 savedJobs.map((job) => (
-                    <div key={job.id} className="savedJobsCard">
-                        {/* LEFT SIDE */}
+                    <div key={job.savedJobId} className="savedJobsCard">
                         <div className="left">
                             <div className="job-img">
                                 <img
@@ -80,15 +74,10 @@ function SavedJobs() {
                             </div>
                         </div>
 
-                        {/* RIGHT SIDE */}
                         <div className="right">
-                            <HiOutlineHeart
-                                className="faveIcon"
-                                onClick={() => removeJob(job.id)}
-                            />
                             <HiOutlineXCircle
                                 className="unfaveIcon"
-                                onClick={() => removeJob(job.id)}
+                                onClick={() => removeJob(job.savedJobId)} 
                             />
                         </div>
                     </div>
