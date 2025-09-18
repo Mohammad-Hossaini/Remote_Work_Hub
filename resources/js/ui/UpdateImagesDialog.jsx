@@ -103,7 +103,7 @@ export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
             const updatedUser = { ...user, profilePhoto: "" };
             login(updatedUser);
             setPreviewImage("/profile/default.jpg");
-            if (onPhotoUpdate) onPhotoUpdate("/profile/default.jpg"); // notify parent
+            if (onPhotoUpdate) onPhotoUpdate("/profile/default.jpg");
             toast.success("Profile photo deleted!");
         } catch (err) {
             console.error(err);
