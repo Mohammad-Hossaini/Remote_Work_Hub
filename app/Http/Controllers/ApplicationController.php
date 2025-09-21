@@ -3,63 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Job;
 use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Apply for a job (Job Seeker only)
+    public function store(Request $request, $jobId)
     {
-        //
+        $job = Job::findOrFail($jobId);
+
+        // Prevent duplicate applications
+        $existing = Application::where('user_id', $request->user()->id)
+            ->where('job_id', $job->id)
+            ->first();
+
+        if ($existing) {
+            return response()->json(['message' => 'Already applied'], 400);
+        }
+
+        $application = Application::create([
+            'user_id' => $request->user()->id,
+            'job_id' => $job->id,
+        ]);
+
+        return response()->json($application, 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Employer: view applications for their jobs
+    public function employerApplications(Request $request)
     {
-        //
+        $applications = Application::whereHas('job', function ($query) use ($request) {
+            $query->where('user_id', $request->user()->id);
+        })->with(['user', 'job'])->get();
+
+        return response()->json($applications);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Job seeker: view their own applications
+    public function myApplications(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Application $application)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Application $application)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Application $application)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Application $application)
-    {
-        //
+        return response()->json(
+            Application::with('job')->where('user_id', $request->user()->id)->get()
+        );
     }
 }
