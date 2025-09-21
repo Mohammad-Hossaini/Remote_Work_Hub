@@ -71,6 +71,24 @@
       "companyLogo": null,
       "contactPerson": "",
       "role": "jobseeker"
+    },
+    {
+      "id": "8424",
+      "email": "ramzi@gmail.com",
+      "password": "12345678",
+      "firstName": "Nisar Ahmad",
+      "lastName": "ramzi",
+      "phone": "0784165946",
+      "description": "i am seeking for a remote job ",
+      "resume": null,
+      "skills": "full Stack developer",
+      "experience": "1 year",
+      "companyName": "",
+      "website": "",
+      "location": "",
+      "companyLogo": null,
+      "contactPerson": "",
+      "role": "jobseeker"
     }
   ],
   "jobs": [
