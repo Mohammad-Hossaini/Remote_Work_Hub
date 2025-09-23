@@ -192,10 +192,19 @@ const ModalButtons = styled.div`
     gap: 1rem;
 `;
 
+// ================= Main Component =================
 export default function AllJobs() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [locationFilter, setLocationFilter] = useState("");
+    const [levelFilter, setLevelFilter] = useState("");
+    const [typeFilter, setTypeFilter] = useState("");
+    const [educationFilter, setEducationFilter] = useState("");
+    const [companyFilter, setCompanyFilter] = useState("");
+    const [salaryFilter, setSalaryFilter] = useState("");
+    const [sortOption, setSortOption] = useState("date");
     const [savedJobIds, setSavedJobIds] = useState([]);
     const [modalData, setModalData] = useState(null);
+
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const location = useLocation();
@@ -272,16 +281,66 @@ export default function AllJobs() {
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
 
+    // ================= Apply Search, Filter & Sort =================
+    const filteredJobs = jobs
+        .filter((job) => {
+            return (
+                (searchTerm === "" ||
+                    job.title
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    job.companyName
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())) &&
+                (locationFilter === "" || job.location === locationFilter) &&
+                (levelFilter === "" || job.experience === levelFilter) &&
+                (typeFilter === "" || job.type === typeFilter) &&
+                (educationFilter === "" || job.education === educationFilter) &&
+                (companyFilter === "" || job.companyName === companyFilter) &&
+                (salaryFilter === "" || job.salaryType === salaryFilter)
+            );
+        })
+        .sort((a, b) => {
+            switch (sortOption) {
+                case "date":
+                    return new Date(b.postedAt) - new Date(a.postedAt);
+                case "az":
+                    return a.title.localeCompare(b.title);
+                case "relevance":
+                    return 0; // شما می‌توانید الگوریتم دلخواه برای Relevance اضافه کنید
+                case "location":
+                    return a.location.localeCompare(b.location);
+                case "type":
+                    return a.type.localeCompare(b.type);
+                default:
+                    return 0;
+            }
+        });
+
     return (
         <AllJobsWrapper>
             <JobsContainer>
                 <JobsHeader
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
+                    locationFilter={locationFilter}
+                    setLocationFilter={setLocationFilter}
+                    levelFilter={levelFilter}
+                    setLevelFilter={setLevelFilter}
+                    typeFilter={typeFilter}
+                    setTypeFilter={setTypeFilter}
+                    educationFilter={educationFilter}
+                    setEducationFilter={setEducationFilter}
+                    companyFilter={companyFilter}
+                    setCompanyFilter={setCompanyFilter}
+                    salaryFilter={salaryFilter}
+                    setSalaryFilter={setSalaryFilter}
+                    sortOption={sortOption}
+                    setSortOption={setSortOption}
                 />
 
                 <JobList>
-                    {jobs.map((job) => (
+                    {filteredJobs.map((job) => (
                         <JobsCard key={job.id}>
                             <HeartIcon
                                 active={savedJobIds.includes(job.id)}
