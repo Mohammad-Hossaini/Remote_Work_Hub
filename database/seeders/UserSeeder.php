@@ -14,11 +14,28 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin user
         User::create([
-        'name' => 'Super Admin',
-        'email' => 'admin@remotehub.com',
-        'password' => Hash::make('password'),
-        'role' => 'admin'
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('12345678'),
+            'role' => 'admin',
+        ]);
+
+        // Employer user
+        User::create([
+            'name' => 'Employer',
+            'email' => 'employer@gmail.com',
+            'password' => Hash::make('12345678'),
+            'role' => 'employer',
+        ]);
+
+        // Job Seeker user
+         User::create([
+            'name' => 'Job Seeker ',
+            'email' => 'jobseeker@gmail.com',
+            'password' => Hash::make('12345678'),
+            'role' => 'job_seeker',
         ]);
     }
 }
