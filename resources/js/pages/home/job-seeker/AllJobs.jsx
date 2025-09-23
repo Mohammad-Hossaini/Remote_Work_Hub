@@ -209,6 +209,9 @@ export default function AllJobs() {
     const { user } = useAuth();
     const location = useLocation();
 
+    const isHomePage = location.pathname === "/";
+    const isDashboard = location.pathname.includes("/app");
+
     const {
         data: jobs = [],
         isLoading,
@@ -246,7 +249,7 @@ export default function AllJobs() {
     });
 
     const toggleFavorite = (job) => {
-        if (!user?.id && location.pathname === "/") {
+        if (!user?.id) {
             setModalData({
                 type: "save",
                 title: "Save this job with a Remote Work Hub account",
@@ -255,19 +258,17 @@ export default function AllJobs() {
             });
             return;
         }
-
-        if (!savedJobIds.includes(job.id)) {
+        if (!savedJobIds.includes(job.id))
             saveJobMutation.mutate({ ...job, userId: user?.id });
-        } else {
+        else
             getSavedJobsByUser(user.id).then((saved) => {
                 const savedEntry = saved.find((s) => s.jobId === job.id);
                 if (savedEntry) deleteJobMutation.mutate(savedEntry.id);
             });
-        }
     };
 
     const handleApplyNow = (job) => {
-        if (!user?.id && location.pathname === "/") {
+        if (!user?.id) {
             setModalData({
                 type: "apply",
                 title: "Apply to this job with a Remote Work Hub account",
@@ -281,7 +282,6 @@ export default function AllJobs() {
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
 
-    // ================= Apply Search, Filter & Sort =================
     const filteredJobs = jobs
         .filter((job) => {
             return (
@@ -307,7 +307,7 @@ export default function AllJobs() {
                 case "az":
                     return a.title.localeCompare(b.title);
                 case "relevance":
-                    return 0; // شما می‌توانید الگوریتم دلخواه برای Relevance اضافه کنید
+                    return 0;
                 case "location":
                     return a.location.localeCompare(b.location);
                 case "type":
@@ -319,61 +319,55 @@ export default function AllJobs() {
 
     return (
         <AllJobsWrapper>
-            <JobsContainer>
-                <JobsHeader
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    locationFilter={locationFilter}
-                    setLocationFilter={setLocationFilter}
-                    levelFilter={levelFilter}
-                    setLevelFilter={setLevelFilter}
-                    typeFilter={typeFilter}
-                    setTypeFilter={setTypeFilter}
-                    educationFilter={educationFilter}
-                    setEducationFilter={setEducationFilter}
-                    companyFilter={companyFilter}
-                    setCompanyFilter={setCompanyFilter}
-                    salaryFilter={salaryFilter}
-                    setSalaryFilter={setSalaryFilter}
-                    sortOption={sortOption}
-                    setSortOption={setSortOption}
-                />
+            <JobsHeader
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                locationFilter={locationFilter}
+                setLocationFilter={setLocationFilter}
+                levelFilter={levelFilter}
+                setLevelFilter={setLevelFilter}
+                typeFilter={typeFilter}
+                setTypeFilter={setTypeFilter}
+                educationFilter={educationFilter}
+                setEducationFilter={setEducationFilter}
+                companyFilter={companyFilter}
+                setCompanyFilter={setCompanyFilter}
+                salaryFilter={salaryFilter}
+                setSalaryFilter={setSalaryFilter}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
+            />
 
+            <JobsContainer>
                 <JobList>
                     {filteredJobs.map((job) => (
                         <JobsCard key={job.id}>
-                            <HeartIcon
-                                active={savedJobIds.includes(job.id)}
-                                onClick={() => toggleFavorite(job)}
-                            />
                             <JobLeft>
                                 <JobImg
                                     src={job.companyLogo}
-                                    alt="Company Logo"
+                                    alt={job.companyName}
                                 />
                                 <JobText>
                                     <JobTitle>{job.title}</JobTitle>
-                                    <JobPosition>{job.position}</JobPosition>
+                                    <JobPosition>{job.type}</JobPosition>
                                     <JobInfo>
-                                        <Location>{job.location}</Location> |{" "}
                                         <ImportantInfo>
-                                            {job.type}
+                                            {job.experience}
                                         </ImportantInfo>{" "}
                                         |{" "}
-                                        <ImportantInfo>
-                                            {job.experience} experience
-                                        </ImportantInfo>
-                                    </JobInfo>
-                                    <JobInfo>
                                         <CompanyName>
                                             {job.companyName}
                                         </CompanyName>{" "}
                                         | <Salary>{job.salary}</Salary> |{" "}
+                                        <Location>{job.location}</Location> |{" "}
                                         <PostedAt>{job.postedAt}</PostedAt>
                                     </JobInfo>
                                 </JobText>
                             </JobLeft>
-
+                            <HeartIcon
+                                active={savedJobIds.includes(job.id)}
+                                onClick={() => toggleFavorite(job)}
+                            />
                             <StyledLinkButtons className="hover-buttons">
                                 <Link to={`jobDetails/${job.id}`}>
                                     <Button variation="secondary" size="medium">
@@ -392,23 +386,42 @@ export default function AllJobs() {
                     ))}
                 </JobList>
             </JobsContainer>
-            <Footer />
+
+            {isHomePage && <Footer />}
 
             {/* Modal */}
             {modalData && (
-                <ModalOverlay onClick={() => setModalData(null)}>
-                    <ModalContent onClick={(e) => e.stopPropagation()}>
+                <ModalOverlay>
+                    <ModalContent>
                         <ModalTitle>{modalData.title}</ModalTitle>
                         <ModalDescription>
                             {modalData.description}
                         </ModalDescription>
                         <ModalButtons>
-                            <Link to="/login">
-                                <Button variation="secondary">Log In</Button>
-                            </Link>
-                            <Link to="/createAccount">
-                                <Button variation="primary">Sign Up</Button>
-                            </Link>
+                            {!user?.id ? (
+                                <>
+                                    <Link to="/login">
+                                        <Button
+                                            variation="secondary"
+                                            size="medium"
+                                        >
+                                            Log in
+                                        </Button>
+                                    </Link>
+                                    <Link to="/createAccount">
+                                        <Button
+                                            variation="primary"
+                                            size="medium"
+                                        >
+                                            Sign up
+                                        </Button>
+                                    </Link>
+                                </>
+                            ) : (
+                                <Button onClick={() => setModalData(null)}>
+                                    Close
+                                </Button>
+                            )}
                         </ModalButtons>
                     </ModalContent>
                 </ModalOverlay>

@@ -3,6 +3,7 @@ import { IoFilterOutline } from "react-icons/io5";
 import { RxCaretDown } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../hook/AuthContext";
 
 // ================= Styled Components =================
 const HeaderWrapper = styled.div`
@@ -31,7 +32,7 @@ const StyledH2 = styled.h2`
 `;
 
 const SearchBar = styled.input`
-    width: 40%;
+    width: 25rem;
     padding: 1.2rem 1.6rem;
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-grey-300);
@@ -85,7 +86,7 @@ const SignUpBtn = styled(NavBtn)`
 
 /* Filters Container */
 const StyledSortWrapper = styled.div`
-    border-bottom: 1px solid var(--color-grey-200); /* bottom border always visible */
+    border-bottom: 1px solid var(--color-grey-200);
     padding-bottom: 1rem;
 `;
 
@@ -142,7 +143,6 @@ const CaretIcon = styled(RxCaretDown)`
     color: var(--color-grey-500);
 `;
 
-// ================= Component =================
 export default function JobsHeader({
     searchTerm,
     setSearchTerm,
@@ -163,19 +163,28 @@ export default function JobsHeader({
 }) {
     const [showFilters, setShowFilters] = useState(true);
     const location = useLocation();
+    const { user } = useAuth();
 
     const toggleFilters = () => setShowFilters((prev) => !prev);
 
-    // فقط در روت "/" نمایش داده شود
-    const showFilterSection = location.pathname === "/";
+    const isHomePage = location.pathname === "/";
+    const isLoginPage = location.pathname === "/login";
+    const isRegisterPage = location.pathname === "/createAccount";
+    const isDashboard = location.pathname.includes("/app");
 
     return (
         <HeaderWrapper>
-            <TopRow>
+            {/* <TopRow>
                 <SearchWrapper>
-                    <StyledH2>Remote Work Hub</StyledH2>
+                    {(isHomePage || isDashboard) && (
+                        <StyledH2>
+                            {isHomePage || isLoginPage || isRegisterPage
+                                ? "Remote Work Hub"
+                                : ""}
+                        </StyledH2>
+                    )}
 
-                    {showFilterSection && (
+                    {(isHomePage || isDashboard) && (
                         <>
                             <SearchBar
                                 type="search"
@@ -188,13 +197,44 @@ export default function JobsHeader({
                     )}
                 </SearchWrapper>
 
-                <Buttons>
-                    <LoginBtn to="/login">Log in</LoginBtn>
-                    <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
-                </Buttons>
+                {isHomePage ||
+                    ((isLoginPage || isRegisterPage) && (
+                        <Buttons>
+                            <LoginBtn to="/login">Log in</LoginBtn>
+                            <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
+                        </Buttons>
+                    ))}
+            </TopRow> */}
+            <TopRow>
+                <SearchWrapper>
+                    <StyledH2>
+                        {isHomePage || isLoginPage || isRegisterPage
+                            ? "Remote Work Hub"
+                            : ""}
+                    </StyledH2>
+
+                    {(isHomePage || isDashboard) && (
+                        <>
+                            <SearchBar
+                                type="search"
+                                placeholder="Search for jobs..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <FilterIcon onClick={toggleFilters} />
+                        </>
+                    )}
+                </SearchWrapper>
+
+                {isHomePage || isLoginPage || isRegisterPage ? (
+                    <Buttons>
+                        <LoginBtn to="/login">Log in</LoginBtn>
+                        <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
+                    </Buttons>
+                ) : null}
             </TopRow>
 
-            {showFilterSection && (
+            {(isHomePage || isDashboard) && (
                 <StyledSortWrapper>
                     <StyledSortContainer show={showFilters}>
                         <FiltersWrapper>
@@ -222,19 +262,10 @@ export default function JobsHeader({
                                         setLevelFilter(e.target.value)
                                     }
                                 >
-                                    <option value="">All Job Levels</option>
-                                    <option value="Internship">
-                                        Internship
-                                    </option>
-                                    <option value="Entry Level / Junior">
-                                        Entry Level / Junior
-                                    </option>
-                                    <option value="Mid-Senior Level">
-                                        Mid-Senior Level
-                                    </option>
-                                    <option value="Director / Executive">
-                                        Director / Executive
-                                    </option>
+                                    <option value="">All Levels</option>
+                                    <option value="Junior">Junior</option>
+                                    <option value="Mid">Mid</option>
+                                    <option value="Senior">Senior</option>
                                 </StyledSelect>
                                 <CaretIcon />
                             </SelectWrapper>
@@ -246,12 +277,10 @@ export default function JobsHeader({
                                         setTypeFilter(e.target.value)
                                     }
                                 >
-                                    <option value="">
-                                        All Employment Types
-                                    </option>
-                                    <option value="Full Time">Full Time</option>
-                                    <option value="Part Time">Part Time</option>
-                                    <option value="Freelance">Freelance</option>
+                                    <option value="">All Types</option>
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Contract">Contract</option>
                                 </StyledSelect>
                                 <CaretIcon />
                             </SelectWrapper>
@@ -263,21 +292,10 @@ export default function JobsHeader({
                                         setEducationFilter(e.target.value)
                                     }
                                 >
-                                    <option value="">
-                                        All Education Levels
-                                    </option>
-                                    <option value="High School">
-                                        High School
-                                    </option>
-                                    <option value="Bachelor's studies">
-                                        Bachelor's studies
-                                    </option>
-                                    <option value="Bachelor's degree graduate">
-                                        Bachelor's degree graduate
-                                    </option>
-                                    <option value="Graduate studies (Masters)">
-                                        Graduate studies (Masters)
-                                    </option>
+                                    <option value="">All Education</option>
+                                    <option value="Bachelor">Bachelor</option>
+                                    <option value="Master">Master</option>
+                                    <option value="PhD">PhD</option>
                                 </StyledSelect>
                                 <CaretIcon />
                             </SelectWrapper>
@@ -291,10 +309,8 @@ export default function JobsHeader({
                                 >
                                     <option value="">All Companies</option>
                                     <option value="Google">Google</option>
-                                    <option value="Amazon">Amazon</option>
                                     <option value="Microsoft">Microsoft</option>
-                                    <option value="Apple">Apple</option>
-                                    <option value="Meta">Meta</option>
+                                    <option value="Amazon">Amazon</option>
                                 </StyledSelect>
                                 <CaretIcon />
                             </SelectWrapper>
@@ -307,9 +323,8 @@ export default function JobsHeader({
                                     }
                                 >
                                     <option value="">All Salary Types</option>
-                                    <option value="Hourly">Hourly</option>
                                     <option value="Monthly">Monthly</option>
-                                    <option value="Yearly">Yearly</option>
+                                    <option value="Hourly">Hourly</option>
                                 </StyledSelect>
                                 <CaretIcon />
                             </SelectWrapper>
