@@ -2,13 +2,12 @@
 const BASE_URL = "http://localhost:5000/users";
 
 // Login function
-export async function loginUser({ name, email, password }) {
+export async function loginUser({ email, password }) {
     const res = await fetch(BASE_URL);
     const users = await res.json();
 
     const user = users.find(
-        (u) =>
-            u.firstName === name && u.email === email && u.password === password
+        (u) => u.email === email && u.password === password
     );
 
     if (!user) return null;
@@ -21,5 +20,5 @@ export async function loginUser({ name, email, password }) {
 }
 export function logout() {
     localStorage.removeItem("authUser");
-    window.location.href = "/";
+    window.location.href = "/login";
 }

@@ -13,8 +13,6 @@ import Applicant from "./pages/home/employer/Applicant";
 import EmployerDashboard from "./pages/home/employer/EmployerDashboard";
 import PostedJobs from "./pages/home/employer/PostedJobs";
 import PostedNewJobs from "./pages/home/employer/PostedNewJobs";
-
-import Home from "./pages/home/Home";
 import AllJobs from "./pages/home/job-seeker/AllJobs";
 import AppliedJobs from "./pages/home/job-seeker/AppliedJobs";
 import JobDetails from "./pages/home/job-seeker/JobDetails";
@@ -26,6 +24,9 @@ import Messages from "./pages/messages/Messages";
 
 import { AuthProvider } from "./hook/AuthContext";
 import BackGroundInfo from "./pages/background information/BackGroundInfo";
+import CreateAccountPage from "./pages/CreateAccountPage";
+import Home from "./pages/home/Home";
+import LoginPage from "./pages/LoginPage";
 import GlobalStyles from "./styles/GlobalStyles";
 import AppLayout from "./ui/AppLayout";
 import EmployerAppLayout from "./ui/EmployerAppLayout";
@@ -33,9 +34,9 @@ import EmployerAppLayout from "./ui/EmployerAppLayout";
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 0, // هیچ کشی نگه ندارد
-            cacheTime: 5 * 60 * 1000, // دیتا تا 5 دقیقه در حافظه بماند
-            refetchOnWindowFocus: true, // وقتی کاربر برمیگرده روی صفحه، دیتا تازه شود
+            staleTime: 0,
+            cacheTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: true,
         },
     },
 });
@@ -51,9 +52,19 @@ export default function App() {
 
                     <Routes>
                         {/* Public pages */}
-                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={<AllJobs />} />
+                        <Route path="/home" element={<Home />} />
                         <Route path="/welcome" element={<Welcome />} />
                         <Route path="/settings" element={<Settings />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route
+                            path="/createAccount"
+                            element={<CreateAccountPage />}
+                        />
+                        <Route
+                            path="/login/createAccount"
+                            element={<CreateAccountPage />}
+                        />
 
                         {/* Job Seeker Routes */}
                         <Route

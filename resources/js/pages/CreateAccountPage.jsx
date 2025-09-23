@@ -1,62 +1,42 @@
-//v3
-import * as RadixDialog from "@radix-ui/react-dialog";
+// CreateAccountPage.jsx
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { IoMdClose } from "react-icons/io";
 import { TiWarningOutline } from "react-icons/ti";
 import styled from "styled-components";
 import { createNewUser } from "../services/apiUsers";
+import Footer from "./Footer";
+import JobsHeader from "./JobsHeader";
 
-/* Overlay */
-const Overlay = styled(RadixDialog.Overlay)`
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 999;
+/* Page Wrapper */
+const PageWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    padding: 5rem 2rem 5rem; 
+    background-color: var(--color-grey-30);
+    min-height: 100vh;
 `;
 
-/* Dialog Content */
-const Content = styled(RadixDialog.Content)`
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60rem;
-    max-width: 95vw;
+/* Card */
+const Card = styled.div`
     background-color: var(--color-grey-0);
-    border-radius: var(--radius-md);
     padding: 3.5rem 3rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    width: 60rem;
+    max-width: 95%;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    z-index: 1000;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--color-grey-200);
-    max-height: 90vh;
-    overflow-y: auto;
 `;
 
-/* Close Button */
-const CloseButton = styled(RadixDialog.Close)`
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--color-grey-100);
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    color: var(--color-grey-700);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    &:hover {
-        background: var(--color-grey-200);
-    }
+/* Title */
+const Title = styled.h2`
+    font-size: 2.4rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-grey-900);
 `;
 
 /* Form Grid */
@@ -124,6 +104,7 @@ const StyledButtons = styled.div`
     display: flex;
     column-gap: 1.5rem;
     margin-top: 2rem;
+    justify-content: space-between;
 `;
 
 /* Register Button */
@@ -172,14 +153,8 @@ const ErrorMessage = styled.span`
     margin-top: 0.3rem;
 `;
 
-export default function RegistrationDialog({ trigger }) {
-    const [open, setOpen] = useState(false);
+export default function CreateAccountPage() {
     const [role, setRole] = useState("");
-
-    useEffect(() => {
-        document.body.style.overflow = open ? "hidden" : "auto";
-    }, [open]);
-
     const {
         handleSubmit,
         reset,
@@ -197,7 +172,6 @@ export default function RegistrationDialog({ trigger }) {
             toast.success("You have registered successfully");
             queryClient.invalidateQueries({ queryKey: ["users"] });
             reset();
-            setOpen(false);
         },
         onError: (err) => toast.error(err.message),
     });
@@ -205,33 +179,12 @@ export default function RegistrationDialog({ trigger }) {
     const onSubmit = (data, e) => {
         e.preventDefault();
 
-        // Convert skills string to array
         if (data.skills && typeof data.skills === "string") {
             data.skills = data.skills.split(",").map((s) => s.trim());
         }
-
-        // Add role
         data.role = role;
-
-        // Default values
-        data.Work_Experience = data.Work_Experience || [
-            { jobTitle: "", company: "", from: "", to: "", jobLevel: "" },
-        ];
-        data.Educations = data.Educations || [
-            {
-                school: "",
-                educationalAttainment: "",
-                from: "",
-                to: "",
-                description: "",
-            },
-        ];
-        data.mobile = data.mobile || "";
-
-        // Generate simple token
         data.token = Math.random().toString(36).substring(2, 15);
 
-        // Handle resume file (optional)
         if (data.resume && data.resume.length > 0) {
             data.resume = data.resume[0].name;
         }
@@ -239,26 +192,18 @@ export default function RegistrationDialog({ trigger }) {
         mutate(data);
     };
 
-    const onError = (err) => console.log(err);
-
     return (
-        <RadixDialog.Root open={open} onOpenChange={setOpen}>
-            <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>
-            <RadixDialog.Portal>
-                <Overlay />
-                <Content>
-                    <RadixDialog.Title>Register</RadixDialog.Title>
-                    <CloseButton asChild>
-                        <IoMdClose />
-                    </CloseButton>
-
-                    <form onSubmit={handleSubmit(onSubmit, onError)}>
+        <>
+            <JobsHeader />
+            <PageWrapper>
+                <Card>
+                    <Title>Create an Account</Title>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <FormGrid>
                             {/* First Name */}
                             <InputGroup>
                                 <Label>First Name</Label>
                                 <Input
-                                    id="firstName"
                                     type="text"
                                     placeholder="Enter your first name"
                                     {...register("firstName", {
@@ -277,7 +222,6 @@ export default function RegistrationDialog({ trigger }) {
                             <InputGroup>
                                 <Label>Last Name</Label>
                                 <Input
-                                    id="lastName"
                                     type="text"
                                     placeholder="Enter your last name"
                                     {...register("lastName", {
@@ -296,7 +240,6 @@ export default function RegistrationDialog({ trigger }) {
                             <InputGroup>
                                 <Label>Password</Label>
                                 <Input
-                                    id="password"
                                     type="password"
                                     placeholder="Enter your password"
                                     {...register("password", {
@@ -315,7 +258,6 @@ export default function RegistrationDialog({ trigger }) {
                             <InputGroup>
                                 <Label>Confirm Password</Label>
                                 <Input
-                                    id="confirmPassword"
                                     type="password"
                                     placeholder="Confirm your password"
                                     {...register("confirmPassword", {
@@ -337,7 +279,6 @@ export default function RegistrationDialog({ trigger }) {
                             <InputGroup>
                                 <Label>Phone Number</Label>
                                 <Input
-                                    id="phone"
                                     type="tel"
                                     placeholder="Enter your phone number"
                                     {...register("phone", {
@@ -356,7 +297,6 @@ export default function RegistrationDialog({ trigger }) {
                             <InputGroup>
                                 <Label>Email</Label>
                                 <Input
-                                    id="email"
                                     type="email"
                                     placeholder="Enter your email"
                                     {...register("email", {
@@ -387,7 +327,7 @@ export default function RegistrationDialog({ trigger }) {
                             </InputGroup>
                         </FormGrid>
 
-                        {/* Jobseeker Fields */}
+                        {/* Extra fields for Jobseeker */}
                         {role === "jobseeker" && (
                             <FormGrid>
                                 <InputGroup>
@@ -435,7 +375,7 @@ export default function RegistrationDialog({ trigger }) {
                             </FormGrid>
                         )}
 
-                        {/* Employer Fields */}
+                        {/* Extra fields for Employer */}
                         {role === "employer" && (
                             <FormGrid>
                                 <InputGroup>
@@ -482,10 +422,10 @@ export default function RegistrationDialog({ trigger }) {
                                 </InputGroup>
 
                                 <InputGroup>
-                                    <Label>Religon (Optional)</Label>
+                                    <Label>Religion (Optional)</Label>
                                     <Input
                                         type="text"
-                                        {...register("religon")}
+                                        {...register("religion")}
                                     />
                                 </InputGroup>
 
@@ -511,12 +451,13 @@ export default function RegistrationDialog({ trigger }) {
                         <StyledButtons>
                             <CancelButton type="reset">Cancel</CancelButton>
                             <RegisterButton type="submit" disabled={isCreating}>
-                                Register
+                                SIGN IN
                             </RegisterButton>
                         </StyledButtons>
                     </form>
-                </Content>
-            </RadixDialog.Portal>
-        </RadixDialog.Root>
+                </Card>
+            </PageWrapper>
+            <Footer />
+        </>
     );
 }
