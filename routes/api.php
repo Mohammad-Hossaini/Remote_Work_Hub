@@ -49,10 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     
     // Jobs
-    // Public for all logged-in users (job seekers, employers, admin)
-    Route::get('/jobs', [JobController::class, 'index']);              // List all jobs (default: only "open")
-    Route::get('/jobs/{id}', [JobController::class, 'show']);          // View single job details
-
     // Employer only
     Route::middleware('role:employer')->group(function () {
         Route::post('/jobs', [JobController::class, 'store']);         // Post a new job
@@ -81,7 +77,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // every one can access to these routes
-Route::get('/jobs', [JobController::class, 'index']);
+// Public for all logged-in users (job seekers, employers, admin)
+    Route::get('/jobs', [JobController::class, 'index']);              // List all jobs (default: only "open")
+    Route::get('/jobs/{id}', [JobController::class, 'show']);          // View single job details
 
 
 
