@@ -49,8 +49,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     
     // Jobs
-    Route::get('/jobs/{id}', [JobController::class, 'show']);
-    Route::post('/jobs', [JobController::class, 'store'])->middleware('role:employer');
+    // Public for all logged-in users (job seekers, employers, admin)
+    Route::get('/jobs', [JobController::class, 'index']);              // List all jobs (default: only "open")
+    Route::get('/jobs/{id}', [JobController::class, 'show']);          // View single job details
+
+    // Employer only
+    Route::middleware('role:employer')->group(function () {
+        Route::post('/jobs', [JobController::class, 'store']);         // Post a new job
+        Route::put('/jobs/{id}', [JobController::class, 'update']);    // Update job
+        Route::delete('/jobs/{id}', [JobController::class, 'destroy']); // Delete job
+
+        // Extra for employer
+        Route::get('/employer/jobs', [JobController::class, 'myJobs']); // List jobs posted by the logged-in employer
+        Route::patch('/admin/jobs/{id}/status', [JobController::class, 'changeStatus']);
+    });
     
     // Applications
     Route::post('/jobs/{id}/apply', [ApplicationController::class, 'store'])->middleware('role:job_seeker');
@@ -60,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Admin only
     Route::middleware('role:admin')->group(function () {
+         Route::get('/admin/jobs', [JobController::class, 'allJobs']);   // Admin: view all jobs (open, closed, draft)
         Route::get('/admin/users', [AuthController::class, 'allUsers']);
         Route::get('/admin/settings', fn() => response()->json(['settings' => 'site settings here']));
     });
