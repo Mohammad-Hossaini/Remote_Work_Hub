@@ -27,7 +27,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'me']);
 
@@ -37,20 +37,28 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('/jobs/{id}/apply', [ApplicationController::class, 'store'])->middleware('role:job_seeker');
 
     // Jobs
-    Route::get('/jobs', [JobController::class, 'index']);
     Route::get('/jobs/{id}', [JobController::class, 'show']);
-    Route::post('/jobs', [JobController::class, 'store'])->middleware('role:employer');
-
+    // Route::post('/jobs', [JobController::class, 'store'])->middleware('role:employer');
+    
     // Applications
     Route::post('/jobs/{id}/apply', [ApplicationController::class, 'store'])->middleware('role:job_seeker');
     Route::get('/my-applications', [ApplicationController::class, 'myApplications'])->middleware('role:job_seeker');
     Route::get('/employer/applications', [ApplicationController::class, 'employerApplications'])->middleware('role:employer');
-
-
+    
+    
     // Admin only
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/users', [AuthController::class, 'allUsers']);
         Route::get('/admin/settings', fn() => response()->json(['settings' => 'site settings here']));
     });
-});
+// });
 
+
+
+// every one can access to these routes
+Route::get('/jobs', [JobController::class, 'index']);
+
+
+
+//routes for testing purpose
+ Route::post('/jobs', [JobController::class, 'store']);
