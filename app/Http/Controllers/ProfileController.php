@@ -96,16 +96,20 @@ class ProfileController extends Controller
         //     $resumePath = $request->file('resume')->store('resumes', 'public');
         //     $profile->resume = $resumePath;
         // }
+        // Inside ProfileController@update
         if ($request->hasFile('resume')) {
+            // Delete old resume if exists
+            if ($profile->resume && file_exists(public_path($profile->resume))) {
+                unlink(public_path($profile->resume));
+            }
+
             $file = $request->file('resume');
             $filename = time() . '_' . $file->getClientOriginalName();
-
-            // Save directly in public/resumes
             $file->move(public_path('resumes'), $filename);
 
-            $resumePath = 'resumes/' . $filename; // save relative path in DB
-            $profile->resume = $resumePath;
+            $profile->resume = 'resumes/' . $filename;
         }
+
 
 
         $profile->update($request->only([
@@ -116,15 +120,25 @@ class ProfileController extends Controller
     }
 
     // Delete profile (owner only)
-    public function destroy($id)
-    {
-        $profile = Profile::findOrFail($id);
+    // app/Http/Controllers/ProfileController.php
 
-        if (Auth::id() !== $profile->user_id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+public function destroy($id)
+{
+    $profile = Profile::findOrFail($id);
 
-        $profile->delete();
-        return response()->json(['message' => 'Profile deleted successfully']);
+    // Ensure only the owner can delete
+    if (Auth::id() !== $profile->user_id) {
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
+
+    // Delete resume file if it exists
+    if ($profile->resume && file_exists(public_path($profile->resume))) {
+        unlink(public_path($profile->resume));
+    }
+
+    // Delete profile
+    $profile->delete();
+
+    return response()->json(['message' => 'Profile and resume deleted successfully']);
+}
 }

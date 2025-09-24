@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
@@ -36,8 +37,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profiles', [ProfileController::class, 'index'])->middleware('role:admin'); // maybe admin only later
     Route::get('/profiles/{id}', [ProfileController::class, 'show']);
     Route::post('/profiles', [ProfileController::class, 'store'])->middleware('role:job_seeker');
-    Route::put('/profiles/{id}', [ProfileController::class, 'update'])->middleware('role:job_seeker');
+    Route::post('/profiles/{id}', [ProfileController::class, 'update'])->middleware('role:job_seeker');
     Route::delete('/profiles/{id}', [ProfileController::class, 'destroy'])->middleware('role:job_seeker');
+
+    // Company
+    Route::get('/companies', [CompanyController::class, 'index']);
+    Route::get('/companies/{id}', [CompanyController::class, 'show']);
+    Route::post('/companies', [CompanyController::class, 'store'])->middleware('role:employer');
+    Route::post('/companies/{id}', [CompanyController::class, 'update'])->middleware('role:employer');
+    Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->middleware('role:employer');
 
     
     // Jobs
