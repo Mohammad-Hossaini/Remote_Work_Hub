@@ -57,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Extra for employer
         Route::get('/employer/jobs', [JobController::class, 'myJobs']); // List jobs posted by the logged-in employer
-        Route::patch('/admin/jobs/{id}/status', [JobController::class, 'changeStatus']);
+        Route::patch('/employer/jobs/{id}/status', [JobController::class, 'changeStatus']);
     });
     
     // Applications
@@ -68,7 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Admin only
     Route::middleware('role:admin')->group(function () {
-         Route::get('/admin/jobs', [JobController::class, 'allJobs']);   // Admin: view all jobs (open, closed, draft)
+         Route::get('/admin/allJobs', [JobController::class, 'allJobs']);   // Admin: view all jobs (open, closed, draft)
         Route::get('/admin/users', [AuthController::class, 'allUsers']);
         Route::get('/admin/settings', fn() => response()->json(['settings' => 'site settings here']));
     });

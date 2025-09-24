@@ -49,11 +49,13 @@ class JobController extends Controller
             'company_id'   => 'required|exists:companies,id',
             'title'        => 'required|string|max:255',
             'description'  => 'required|string',
+            'requirements' => 'nullable|string',
             'salary_min'   => 'nullable|numeric|min:0',
             'salary_max'   => 'nullable|numeric|min:0|gte:salary_min',
-            'job_type'     => 'required|in:full-time,part-time,contract,internship',
+            'job_type'     => 'required|in:full-time,part-time,contract,internship,remote',
             'location'     => 'required|string|max:255',
             'status'       => 'nullable|in:open,closed,draft',
+            'deadline'     => 'nullable|date|after:today',
         ]);
 
         if ($validator->fails()) {
@@ -65,11 +67,13 @@ class JobController extends Controller
             'user_id'     => $request->user()->id,
             'title'       => $request->title,
             'description' => $request->description,
+            'requirements'=> $request->requirements,
             'salary_min'  => $request->salary_min,
             'salary_max'  => $request->salary_max,
             'job_type'    => $request->job_type,
             'location'    => $request->location,
             'status'      => $request->status ?? 'draft',
+            'deadline'    => $request->deadline,
         ]);
 
         return response()->json($job, 201);
@@ -90,11 +94,13 @@ class JobController extends Controller
         $validator = Validator::make($request->all(), [
             'title'        => 'sometimes|required|string|max:255',
             'description'  => 'sometimes|required|string',
+            'requirements' => 'sometimes|nullable|string',
             'salary_min'   => 'nullable|numeric|min:0',
             'salary_max'   => 'nullable|numeric|min:0|gte:salary_min',
-            'job_type'     => 'sometimes|required|in:full-time,part-time,contract,internship',
+            'job_type'     => 'sometimes|required|in:full-time,part-time,contract,internship,remote',
             'location'     => 'sometimes|required|string|max:255',
             'status'       => 'sometimes|required|in:open,closed,draft',
+            'deadline'     => 'sometimes|nullable|date|after:today',
         ]);
 
         if ($validator->fails()) {
@@ -129,7 +135,7 @@ class JobController extends Controller
      */
     public function myJobs(Request $request)
     {
-        $jobs = Job::with('company')
+        $jobs = Job::with('company','user')
             ->where('user_id', $request->user()->id)
             ->latest()
             ->get();
@@ -164,7 +170,7 @@ class JobController extends Controller
         $job->status = $request->status;
         $job->save();
 
-        return response()->json(['message' => 'Job status updated', 'job' => $job]);
+        return response()->json(['message' => 'Job status updated', 'job' => $job ,  ]);
     }
 }
 
