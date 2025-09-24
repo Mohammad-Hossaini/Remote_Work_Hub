@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { HiMiniHeart } from "react-icons/hi2";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+
 import { useAuth } from "../../../hook/AuthContext";
 import { getJobs } from "../../../services/apiAllJobs";
 import {
@@ -12,8 +13,15 @@ import {
     putSavedJobs,
 } from "../../../services/apiGetSavedJobs";
 import Button from "../../../ui/Button";
+import Footer from "../../Footer";
+import JobsHeader from "../../JobsHeader";
 
 // ================= Styled Components =================
+const AllJobsWrapper = styled.div`
+    background-color: #f8f9fa;
+    min-height: 100vh;
+`;
+
 const JobsContainer = styled.div`
     max-width: 1200px;
     margin: 0 auto;
@@ -23,108 +31,35 @@ const JobsContainer = styled.div`
     padding: 2rem 1rem;
 `;
 
-const ControlsWrapper = styled.div`
-    flex-shrink: 0;
-    z-index: 10;
-    padding-bottom: 1rem;
-`;
-
-const SearchWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-`;
-
-const SearchBar = styled.input`
-    width: 70%;
-    padding: 1.2rem 1.6rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-grey-300);
-    background-color: var(--color-grey-0);
-    font-size: 1.6rem;
-    box-shadow: var(--shadow-sm);
-    &:focus {
-        outline: none;
-        border-color: var(--color-primary);
-        box-shadow: var(--shadow-md);
-    }
-`;
-
-const StyledSortContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    border-bottom: 1px solid var(--color-grey-200);
-    padding: 1rem 0;
-`;
-
-const FilterTags = styled.div`
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-`;
-
-const TagButton = styled.button`
-    padding: 0.6rem 1.2rem;
-    border-radius: 50px;
-    background-color: var(--color-grey-100);
-    font-size: 1.4rem;
-    font-weight: 500;
-    border: 1px solid var(--color-grey-300);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    &:hover {
-        background-color: var(--color-primary-light);
-        color: #fff;
-        border-color: var(--color-primary-light);
-    }
-    &.active {
-        background-color: var(--color-primary);
-        color: #fff;
-        border-color: var(--color-primary);
-    }
-`;
-
-const SortSelect = styled.select`
-    padding: 0.8rem 1.2rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-grey-300);
-    font-size: 1.4rem;
-    background-color: var(--color-grey-0);
-    cursor: pointer;
-    &:hover {
-        border-color: var(--color-primary);
-    }
-    &:focus {
-        outline: none;
-        border-color: var(--color-primary);
-        box-shadow: var(--shadow-sm);
-    }
-`;
-
 const JobList = styled.div`
     flex: 1;
     overflow-y: auto;
     padding-top: 1rem;
+    padding-right: 1.6rem;
 `;
 
 const JobsCard = styled.div`
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     background: var(--color-grey-0);
     padding: 1.6rem;
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-grey-300);
     max-width: 100%;
     margin: 0 auto 1.6rem;
     gap: 1.6rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+
     &:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-lg);
+        transform: translateX(10px);
+        box-shadow: var(--shadow-sm);
+
+        .hover-buttons {
+            opacity: 1;
+            pointer-events: auto;
+        }
     }
 `;
 
@@ -147,24 +82,63 @@ const JobText = styled.div`
 `;
 
 const JobTitle = styled.h3`
-    font-size: 1.8rem;
+    font-size: var(--font-lg);
     font-weight: 600;
+    color: var(--color-grey-900);
+    margin-bottom: var(--space-4);
 `;
 
 const JobPosition = styled.p`
-    font-size: 1.4rem;
-    color: var(--color-grey-600);
+    font-size: var(--font-base);
+    font-weight: 500;
+    color: var(--color-grey-700);
 `;
 
-const JobDetails = styled.p`
-    font-size: 1.4rem;
+const JobInfo = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-12);
+    margin-top: var(--space-8);
+    font-size: var(--font-sm);
     color: var(--color-grey-500);
+`;
+
+const ImportantInfo = styled.span`
+    font-weight: 600;
+    color: var(--color-primary-dark);
+`;
+
+const CompanyName = styled.span`
+    font-weight: 700;
+    color: var(--color-grey-900);
+`;
+
+const Salary = styled.span`
+    font-weight: 600;
+    color: var(--color-success);
+`;
+
+const Location = styled.span`
+    font-weight: 600;
+    color: var(--color-grey-700);
+`;
+
+const PostedAt = styled.span`
+    font-size: var(--font-xs);
+    color: var(--color-grey-400);
 `;
 
 const StyledLinkButtons = styled.div`
     display: flex;
     align-items: center;
     gap: 1.2rem;
+    position: absolute;
+    top: 50%;
+    right: 1.6rem;
+    transform: translateY(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 `;
 
 const HeartIcon = styled(HiMiniHeart)`
@@ -172,20 +146,72 @@ const HeartIcon = styled(HiMiniHeart)`
     font-size: 2rem;
     color: ${(props) => (props.active ? "#2b8a3e" : "var(--color-grey-400)")};
     transition: color 0.2s ease;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     &:hover {
         color: #2b8a3e;
     }
 `;
 
-// ================= Component =================
-function AllJobs() {
+// ================= Modal =================
+const ModalOverlay = styled.div`
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+`;
+
+const ModalContent = styled.div`
+    background: #fff;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+`;
+
+const ModalTitle = styled.h2`
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+`;
+
+const ModalDescription = styled.p`
+    font-size: 1.4rem;
+    color: var(--color-grey-700);
+    margin-bottom: 2rem;
+`;
+
+const ModalButtons = styled.div`
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+`;
+
+// ================= Main Component =================
+export default function AllJobs() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [locationFilter, setLocationFilter] = useState("");
+    const [levelFilter, setLevelFilter] = useState("");
+    const [typeFilter, setTypeFilter] = useState("");
+    const [educationFilter, setEducationFilter] = useState("");
+    const [companyFilter, setCompanyFilter] = useState("");
+    const [salaryFilter, setSalaryFilter] = useState("");
     const [sortOption, setSortOption] = useState("date");
     const [savedJobIds, setSavedJobIds] = useState([]);
+    const [modalData, setModalData] = useState(null);
+
     const queryClient = useQueryClient();
     const { user } = useAuth();
+    const location = useLocation();
 
-    // Fetch all jobs
+    const isHomePage = location.pathname === "/";
+    const isDashboard = location.pathname.includes("/app");
+
     const {
         data: jobs = [],
         isLoading,
@@ -195,7 +221,6 @@ function AllJobs() {
         queryFn: getJobs,
     });
 
-    // Fetch saved jobs for current user
     useEffect(() => {
         if (!user?.id) return;
         getSavedJobsByUser(user.id)
@@ -203,7 +228,6 @@ function AllJobs() {
             .catch(console.error);
     }, [user]);
 
-    // Mutation to save job
     const saveJobMutation = useMutation({
         mutationFn: putSavedJobs,
         onSuccess: (data, variables) => {
@@ -214,7 +238,6 @@ function AllJobs() {
         onError: (err) => toast.error(err.message),
     });
 
-    // Mutation to delete saved job
     const deleteJobMutation = useMutation({
         mutationFn: deleteSavedJob,
         onSuccess: (_, savedJobId) => {
@@ -225,121 +248,184 @@ function AllJobs() {
         onError: (err) => toast.error(err.message),
     });
 
-    // Toggle favorite
     const toggleFavorite = (job) => {
-        if (!savedJobIds.includes(job.id)) {
+        if (!user?.id) {
+            setModalData({
+                type: "save",
+                title: "Save this job with a Remote Work Hub account",
+                description:
+                    "Save this job and other opportunities like this with a free Remote Work Hub account.",
+            });
+            return;
+        }
+        if (!savedJobIds.includes(job.id))
             saveJobMutation.mutate({ ...job, userId: user?.id });
-        } else {
+        else
             getSavedJobsByUser(user.id).then((saved) => {
                 const savedEntry = saved.find((s) => s.jobId === job.id);
                 if (savedEntry) deleteJobMutation.mutate(savedEntry.id);
             });
+    };
+
+    const handleApplyNow = (job) => {
+        if (!user?.id) {
+            setModalData({
+                type: "apply",
+                title: "Apply to this job with a Remote Work Hub account",
+                description:
+                    "Build your profile, apply to this job, and track your application status with a free Remote Work Hub account.",
+            });
+            return;
         }
     };
 
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
 
-    const filteredJobs = jobs.filter(
-        (job) =>
-            job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            job.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            job.type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const sortedJobs = [...filteredJobs].sort((a, b) => {
-        if (sortOption === "date") return new Date(b.date) - new Date(a.date);
-        if (sortOption === "relevance") return b.relevance - a.relevance;
-        if (sortOption === "location")
-            return a.location.localeCompare(b.location);
-        if (sortOption === "type") return a.type.localeCompare(b.type);
-        return 0;
-    });
+    const filteredJobs = jobs
+        .filter((job) => {
+            return (
+                (searchTerm === "" ||
+                    job.title
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    job.companyName
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())) &&
+                (locationFilter === "" || job.location === locationFilter) &&
+                (levelFilter === "" || job.experience === levelFilter) &&
+                (typeFilter === "" || job.type === typeFilter) &&
+                (educationFilter === "" || job.education === educationFilter) &&
+                (companyFilter === "" || job.companyName === companyFilter) &&
+                (salaryFilter === "" || job.salaryType === salaryFilter)
+            );
+        })
+        .sort((a, b) => {
+            switch (sortOption) {
+                case "date":
+                    return new Date(b.postedAt) - new Date(a.postedAt);
+                case "az":
+                    return a.title.localeCompare(b.title);
+                case "relevance":
+                    return 0;
+                case "location":
+                    return a.location.localeCompare(b.location);
+                case "type":
+                    return a.type.localeCompare(b.type);
+                default:
+                    return 0;
+            }
+        });
 
     return (
-        <JobsContainer>
-            <ControlsWrapper>
-                <SearchWrapper>
-                    <SearchBar
-                        type="search"
-                        placeholder="Search for jobs..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </SearchWrapper>
+        <AllJobsWrapper>
+            <JobsHeader
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                locationFilter={locationFilter}
+                setLocationFilter={setLocationFilter}
+                levelFilter={levelFilter}
+                setLevelFilter={setLevelFilter}
+                typeFilter={typeFilter}
+                setTypeFilter={setTypeFilter}
+                educationFilter={educationFilter}
+                setEducationFilter={setEducationFilter}
+                companyFilter={companyFilter}
+                setCompanyFilter={setCompanyFilter}
+                salaryFilter={salaryFilter}
+                setSalaryFilter={setSalaryFilter}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
+            />
 
-                <StyledSortContainer>
-                    <FilterTags>
-                        <TagButton onClick={() => setSearchTerm("Kabul")}>
-                            Kabul
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("Full Time")}>
-                            Full Time
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("Part Time")}>
-                            Part Time
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("Remote")}>
-                            Remote
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("Internship")}>
-                            Internship
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("Junior")}>
-                            Junior
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("Senior")}>
-                            Senior
-                        </TagButton>
-                        <TagButton onClick={() => setSearchTerm("")}>
-                            Clear
-                        </TagButton>
-                    </FilterTags>
-
-                    <SortSelect
-                        value={sortOption}
-                        onChange={(e) => setSortOption(e.target.value)}
-                    >
-                        <option value="date">Sort by Date</option>
-                        <option value="relevance">Sort by Relevance</option>
-                        <option value="location">Sort by Location</option>
-                        <option value="type">Sort by Job Type</option>
-                    </SortSelect>
-                </StyledSortContainer>
-            </ControlsWrapper>
-
-            <JobList>
-                {sortedJobs.map((job) => (
-                    <JobsCard key={job.id}>
-                        <JobLeft>
-                            <JobImg src={job.companyLogo} alt="Company Logo" />
-                            <JobText>
-                                <JobTitle>{job.title}</JobTitle>
-                                <JobPosition>{job.position}</JobPosition>
-                                <JobDetails>
-                                    {job.location} | {job.type} |{" "}
-                                    {job.experience} experience
-                                </JobDetails>
-                            </JobText>
-                        </JobLeft>
-
-                        <StyledLinkButtons>
+            <JobsContainer>
+                <JobList>
+                    {filteredJobs.map((job) => (
+                        <JobsCard key={job.id}>
+                            <JobLeft>
+                                <JobImg
+                                    src={job.companyLogo}
+                                    alt={job.companyName}
+                                />
+                                <JobText>
+                                    <JobTitle>{job.title}</JobTitle>
+                                    <JobPosition>{job.type}</JobPosition>
+                                    <JobInfo>
+                                        <ImportantInfo>
+                                            {job.experience}
+                                        </ImportantInfo>{" "}
+                                        |{" "}
+                                        <CompanyName>
+                                            {job.companyName}
+                                        </CompanyName>{" "}
+                                        | <Salary>{job.salary}</Salary> |{" "}
+                                        <Location>{job.location}</Location> |{" "}
+                                        <PostedAt>{job.postedAt}</PostedAt>
+                                    </JobInfo>
+                                </JobText>
+                            </JobLeft>
                             <HeartIcon
                                 active={savedJobIds.includes(job.id)}
                                 onClick={() => toggleFavorite(job)}
                             />
-                            <Link to={`jobDetails/${job.id}`}>
-                                <Button variation="secondary" size="medium">
-                                    Learn More
+                            <StyledLinkButtons className="hover-buttons">
+                                <Link to={`jobDetails/${job.id}`}>
+                                    <Button variation="secondary" size="medium">
+                                        Learn More
+                                    </Button>
+                                </Link>
+                                <Button
+                                    variation="primary"
+                                    size="medium"
+                                    onClick={() => handleApplyNow(job)}
+                                >
+                                    Apply Now
                                 </Button>
-                            </Link>
-                        </StyledLinkButtons>
-                    </JobsCard>
-                ))}
-            </JobList>
-        </JobsContainer>
+                            </StyledLinkButtons>
+                        </JobsCard>
+                    ))}
+                </JobList>
+            </JobsContainer>
+
+            {isHomePage && <Footer />}
+
+            {/* Modal */}
+            {modalData && (
+                <ModalOverlay>
+                    <ModalContent>
+                        <ModalTitle>{modalData.title}</ModalTitle>
+                        <ModalDescription>
+                            {modalData.description}
+                        </ModalDescription>
+                        <ModalButtons>
+                            {!user?.id ? (
+                                <>
+                                    <Link to="/login">
+                                        <Button
+                                            variation="secondary"
+                                            size="medium"
+                                        >
+                                            Log in
+                                        </Button>
+                                    </Link>
+                                    <Link to="/createAccount">
+                                        <Button
+                                            variation="primary"
+                                            size="medium"
+                                        >
+                                            Sign up
+                                        </Button>
+                                    </Link>
+                                </>
+                            ) : (
+                                <Button onClick={() => setModalData(null)}>
+                                    Close
+                                </Button>
+                            )}
+                        </ModalButtons>
+                    </ModalContent>
+                </ModalOverlay>
+            )}
+        </AllJobsWrapper>
     );
 }
-
-export default AllJobs;
