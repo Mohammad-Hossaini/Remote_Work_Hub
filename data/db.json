@@ -3,11 +3,7 @@
     {
       "id": "1",
       "firstName": "Sara",
-<<<<<<< HEAD
       "lastName": "Moradi",
-=======
-      "lastName": "Hayat Khan",
->>>>>>> frontend
       "email": "sara@gmail.com",
       "phone": "+1 (145) 723-1339",
       "password": "12345678",
