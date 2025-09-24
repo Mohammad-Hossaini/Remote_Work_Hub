@@ -4,73 +4,68 @@ namespace App\Http\Controllers;
 
 use App\Models\Job;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
-    // List all jobs
     public function index()
     {
-        return response()->json(Job::with('user')->latest()->get());
+        return response()->json(Job::with('company','user')->latest()->get());
     }
 
-    // Create a new job (Employer only)
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string',
+        $validated = $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'salary' => 'nullable|numeric',
+            'requirements' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+            'salary_min' => 'nullable|integer|min:0',
+            'salary_max' => 'nullable|integer|min:0|gte:salary_min',
+            'job_type' => 'required|in:full-time,part-time,contract,internship,remote',
+            'status' => 'required|in:open,closed,draft',
+            'deadline' => 'nullable|date|after:today',
         ]);
 
-        $job = Job::create([
-            'user_id' => $request->user()->id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'salary' => $request->salary,
-        ]);
+        $validated['user_id'] = Auth::id();
+
+        $job = Job::create($validated);
 
         return response()->json($job, 201);
     }
 
-    // Show a single job
     public function show($id)
     {
-        $job = Job::with('user')->findOrFail($id);
-        return response()->json($job);
+        return response()->json(Job::with('company','user')->findOrFail($id));
     }
-    // Update a job (Employer only)
+
     public function update(Request $request, $id)
     {
         $job = Job::findOrFail($id);
 
-        // Ensure the authenticated user is the owner of the job
-        if ($request->user()->id !== $job->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'title' => 'sometimes|required|string',
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
-            'salary' => 'nullable|numeric',
+            'requirements' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+            'salary_min' => 'nullable|integer|min:0',
+            'salary_max' => 'nullable|integer|min:0|gte:salary_min',
+            'job_type' => 'sometimes|required|in:full-time,part-time,contract,internship,remote',
+            'status' => 'sometimes|required|in:open,closed,draft',
+            'deadline' => 'nullable|date|after:today',
         ]);
 
-        $job->update($request->only(['title', 'description', 'salary']));
+        $job->update($validated);
 
-        return response()->json($job);
+        return response()->json(['message' => 'Job updated successfully', 'job' => $job]);
     }
 
-    // Delete a job (Employer only)
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         $job = Job::findOrFail($id);
-
-        // Ensure the authenticated user is the owner of the job
-        if ($request->user()->id !== $job->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $job->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Job deleted successfully']);
     }
 }
