@@ -28,4 +28,8 @@ class Company extends Model
     {
         return $this->hasMany(Job::class);
     }
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
 }
