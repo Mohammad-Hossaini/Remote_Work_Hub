@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -41,4 +42,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // relationships
+
+    // app/Models/User.php
+    public function profile() {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function company() {
+        return $this->hasOne(Company::class);
+    }
+    public function jobs() {
+        return $this->hasMany(Job::class);
+    }
 }

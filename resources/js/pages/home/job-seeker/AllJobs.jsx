@@ -42,6 +42,7 @@ const JobsCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    height: 15rem;
     background: var(--color-grey-0);
     padding: 1.6rem;
     border-radius: var(--radius-lg);
