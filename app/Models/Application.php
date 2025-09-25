@@ -5,26 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Application extends Model
-{
-    use HasFactory;
-
-     protected $fillable = [
-        'user_id',
-        'job_id',
-        'cover_letter',
-        'resume_path',
-        'status',
-    ];
-
-    // Relationships
-    public function user()
+    class Application extends Model
     {
-        return $this->belongsTo(User::class);
-    }
+        use HasFactory;
 
-    public function job()
-    {
-        return $this->belongsTo(Job::class);
+        protected $fillable = [
+            'user_id',
+            'job_id',
+            'cover_letter',
+            'resume_path',
+            'status',
+        ];
+
+        // Relationships
+        public function user()
+        {
+            return $this->belongsTo(User::class);
+        }
+
+        public function job()
+        {
+            return $this->belongsTo(Job::class);
+        }
     }
-}
