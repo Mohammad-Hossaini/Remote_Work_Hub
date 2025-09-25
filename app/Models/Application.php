@@ -8,8 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Application extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'job_id', 'status'];
 
+     protected $fillable = [
+        'user_id',
+        'job_id',
+        'cover_letter',
+        'resume_path',
+        'status',
+    ];
+
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -33,21 +33,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'me']);
 
+    //--------------------------------------------------------------------------------------
     // Profiles
     Route::get('/profiles', [ProfileController::class, 'index'])->middleware('role:admin'); // maybe admin only later
     Route::get('/profiles/{id}', [ProfileController::class, 'show']);
     Route::post('/profiles', [ProfileController::class, 'store'])->middleware('role:job_seeker');
     Route::post('/profiles/{id}', [ProfileController::class, 'update'])->middleware('role:job_seeker');
     Route::delete('/profiles/{id}', [ProfileController::class, 'destroy'])->middleware('role:job_seeker');
+    //--------------------------------------------------------------------------------------
 
+    //--------------------------------------------------------------------------------------
     // Company
     Route::get('/companies', [CompanyController::class, 'index']);
     Route::get('/companies/{id}', [CompanyController::class, 'show']);
     Route::post('/companies', [CompanyController::class, 'store'])->middleware('role:employer');
     Route::post('/companies/{id}', [CompanyController::class, 'update'])->middleware('role:employer');
     Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->middleware('role:employer');
-
+    //---------------------------------------------------------------------------------------
     
+    // --------------------------------------------------------------------------------------
     // Jobs
     // Employer only
     Route::middleware('role:employer')->group(function () {
@@ -59,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/employer/jobs', [JobController::class, 'myJobs']); // List jobs posted by the logged-in employer
         Route::patch('/employer/jobs/{id}/status', [JobController::class, 'changeStatus']);
     });
+    //---------------------------------------------------------------------------------------
     
     // Applications
     Route::post('/jobs/{id}/apply', [ApplicationController::class, 'store'])->middleware('role:job_seeker');
@@ -66,6 +71,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/employer/applications', [ApplicationController::class, 'employerApplications'])->middleware('role:employer');
     
     
+
+    //----------------------------------------------------------------------------------------
+    // Applicants
+    Route::middleware(['role:job_seeker'])->group(function () {
+        Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store']);
+        Route::get('/my-applications', [ApplicationController::class, 'myApplications']);
+    });
+
+    // Employers
+    Route::middleware(['role:employer'])->group(function () {
+        Route::get('/jobs/{job}/applications', [ApplicationController::class, 'jobApplications']);
+        Route::patch('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
+    });
+    //-----------------------------------------------------------------------------------------
+
+
+
     // Admin only
     Route::middleware('role:admin')->group(function () {
          Route::get('/admin/allJobs', [JobController::class, 'allJobs']);   // Admin: view all jobs (open, closed, draft)
