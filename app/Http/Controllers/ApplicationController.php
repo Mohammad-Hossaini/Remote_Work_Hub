@@ -11,30 +11,37 @@ use Illuminate\Support\Facades\Validator;
 class ApplicationController extends Controller
 {
     // Submit new application
+    // Submit new application (Job Seeker only)
     public function store(Request $request, $jobId)
     {
         $validator = Validator::make($request->all(), [
             'cover_letter' => 'nullable|string|max:2000',
-            'resume_path'       => 'required|mimes:pdf,doc,docx|max:2048',
+            'resume'       => 'required|mimes:pdf,doc,docx|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Handle resume upload
-        // $resumePath = null;
-        // if ($request->hasFile('resume')) {
-        //     $resumePath = $request->file('resume')->store('public/resumes');
-        // }
-         if ($request->hasFile('resume')) {
+        $job = Job::findOrFail($jobId);
+
+        // 🔹 Prevent duplicate applications
+        $exists = Application::where('user_id', Auth::id())
+            ->where('job_id', $jobId)
+            ->first();
+
+        if ($exists) {
+            return response()->json(['message' => 'You have already applied for this job.'], 400);
+        }
+
+        // 🔹 Handle resume upload
+        $resumePath = null;
+        if ($request->hasFile('resume')) {
             $file = $request->file('resume');
             $filename = time() . '_' . $file->getClientOriginalName();
-
-            // Save directly in public/resumes
             $file->move(public_path('resumes'), $filename);
 
-            $resumePath = 'resumes/' . $filename; // save relative path in DB
+            $resumePath = 'resumes/' . $filename; // relative path
         }
 
         $application = Application::create([
@@ -46,11 +53,66 @@ class ApplicationController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Application submitted successfully.',
+            'message'     => 'Application submitted successfully.',
             'application' => $application,
         ], 201);
     }
+    // public function store(Request $request, $jobId)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'cover_letter' => 'nullable|string|max:2000',
+    //         'resume_path'       => 'required|mimes:pdf,doc,docx|max:2048',
+    //     ]);
 
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
+
+    //     // Handle resume upload
+    //     // $resumePath = null;
+    //     // if ($request->hasFile('resume')) {
+    //     //     $resumePath = $request->file('resume')->store('public/resumes');
+    //     // }
+    //      if ($request->hasFile('resume')) {
+    //         $file = $request->file('resume');
+    //         $filename = time() . '_' . $file->getClientOriginalName();
+
+    //         // Save directly in public/resumes
+    //         $file->move(public_path('resumes'), $filename);
+
+    //         $resumePath = 'resumes/' . $filename; // save relative path in DB
+    //     }
+
+    //     $application = Application::create([
+    //         'user_id'      => Auth::id(),
+    //         'job_id'       => $jobId,
+    //         'cover_letter' => $request->cover_letter,
+    //         'resume_path'  => $resumePath,
+    //         'status'       => 'pending',
+    //     ]);
+
+    //     return response()->json([
+    //         'message' => 'Application submitted successfully.',
+    //         'application' => $application,
+    //     ], 201);
+    // }
+
+     // Withdraw/Delete application (Job Seeker only)
+    public function destroy($id)
+    {
+        $application = Application::where('id', $id)
+            ->where('user_id', Auth::id()) // only owner can delete
+            ->firstOrFail();
+
+        // 🔹 Delete resume file from public/resumes
+        if ($application->resume_path && file_exists(public_path($application->resume_path))) {
+            unlink(public_path($application->resume_path));
+        }
+
+        $application->delete();
+
+        return response()->json(['message' => 'Application withdrawn successfully.']);
+    }
     // Employer updates status
     public function updateStatus(Request $request, $id)
     {

@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Applicants
     Route::middleware(['role:job_seeker'])->group(function () {
         Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store']);
+        Route::delete('/applications/{id}', [ApplicationController::class, 'destroy']);
         Route::get('/my-applications', [ApplicationController::class, 'myApplications']);
     });
 
