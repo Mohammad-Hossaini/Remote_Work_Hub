@@ -65,15 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     //---------------------------------------------------------------------------------------
     
-    // Applications
-    Route::post('/jobs/{id}/apply', [ApplicationController::class, 'store'])->middleware('role:job_seeker');
-    Route::get('/my-applications', [ApplicationController::class, 'myApplications'])->middleware('role:job_seeker');
-    Route::get('/employer/applications', [ApplicationController::class, 'employerApplications'])->middleware('role:employer');
-    
-    
-
-    //----------------------------------------------------------------------------------------
-    // Applicants
+    // Applicantions
     Route::middleware(['role:job_seeker'])->group(function () {
         Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store']);
         Route::delete('/applications/{id}', [ApplicationController::class, 'destroy']);
@@ -82,9 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Employers
     Route::middleware(['role:employer'])->group(function () {
-        Route::get('/jobs/allApplications', [ApplicationController::class, 'allApplications']);
-        Route::get('/jobs/{job}/applications', [ApplicationController::class, 'jobApplications']);
-        Route::patch('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
+      -  Route::get('/jobs/allApplications', [ApplicationController::class, 'allApplications']);
+     -   Route::get('/jobs/{job}/applications', [ApplicationController::class, 'jobApplications']);
+      -  Route::patch('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
     });
     //-----------------------------------------------------------------------------------------
 
