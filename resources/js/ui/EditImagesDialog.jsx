@@ -1,8 +1,12 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { FaTimes } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
+import { FaEdit, FaTimes } from "react-icons/fa";
 import styled from "styled-components";
+import { useAuth } from "../hook/AuthContext";
+import { updateUser } from "../services/apiUsers";
 
+// Styled components
 const Overlay = styled(RadixDialog.Overlay)`
     position: fixed;
     inset: 0;
@@ -12,18 +16,18 @@ const Overlay = styled(RadixDialog.Overlay)`
 const Content = styled(RadixDialog.Content)`
     position: fixed;
     top: 50%;
-    left: 80%;
-    transform: translate(-50%, -260%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 48rem;
     background: var(--color-grey-0);
-    padding: 1.5rem 2rem;
+    padding: 2rem;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     z-index: 2000;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    position: relative;
+    text-align: center;
 `;
 
 const TitleLine = styled.div`
@@ -53,40 +57,32 @@ const CloseButton = styled(RadixDialog.Close)`
     }
 `;
 
-const InputGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-`;
-
-const Label = styled.label`
-    font-weight: 600;
-    font-size: var(--font-sm);
-    color: var(--color-grey-900);
-`;
-
-const FileInput = styled.input`
-    padding: 0.4rem 0.6rem;
-    font-size: var(--font-sm);
-    border: 1px solid var(--color-grey-300);
+const ImagePreview = styled.img`
+    width: 100%;
+    max-height: 12rem;
+    object-fit: cover;
     border-radius: var(--radius-sm);
-    cursor: pointer;
+    border: 1px solid var(--color-grey-200);
 `;
 
 const ButtonContainer = styled.div`
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 0.5rem;
     margin-top: 1rem;
 `;
 
-const SaveButton = styled.button`
+const ChooseButton = styled.button`
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     background-color: var(--color-primary);
     color: #fff;
     padding: 0.5rem 1rem;
     border-radius: var(--radius-xxl);
     font-weight: 500;
     cursor: pointer;
+    border: none;
     transition: 0.2s ease;
 
     &:hover {
@@ -94,13 +90,92 @@ const SaveButton = styled.button`
     }
 `;
 
-export default function EditImagesDialog({ trigger }) {
-    const [profileImage, setProfileImage] = useState(null);
-    const [bgImage, setBgImage] = useState(null);
+const SaveButton = styled.button`
+    background-color: #ffd43b;
+    color: var(--color-green-600);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-xxl);
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
 
-    const handleSave = () => {
-        console.log({ profileImage, bgImage });
-        // TODO: call API to save images
+    &:hover {
+        opacity: 0.85;
+    }
+`;
+
+const DeleteButton = styled.button`
+    background-color: var(--color-error);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-xxl);
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s ease;
+
+    &:hover {
+        opacity: 0.85;
+    }
+`;
+
+export default function EditImagesDialog({ trigger, onBgUpdate }) {
+    const { user, setUser } = useAuth();
+    const [preview, setPreview] = useState("/default_bg_image.jpeg");
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (user) {
+            setPreview(user.bg_image || "/default_bg_image.jpeg");
+        }
+    }, [user]);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => setPreview(event.target.result);
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleChooseClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleSave = async () => {
+        try {
+            const updatedUser = await updateUser(user.id, {
+                bg_image: preview,
+            });
+            if (setUser) {
+                setUser(updatedUser);
+                localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            }
+
+            toast.success("Background image updated!");
+            if (onBgUpdate) onBgUpdate(preview);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update background image.");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const updatedUser = await updateUser(user.id, { bg_image: "" });
+            if (setUser) {
+                setUser(updatedUser);
+                localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            }
+
+            setPreview("/default_bg_image.jpeg"); 
+            toast.success("Background image deleted!");
+            if (onBgUpdate) onBgUpdate("/default_bg_image.jpeg");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to delete background image.");
+        }
     };
 
     return (
@@ -109,31 +184,30 @@ export default function EditImagesDialog({ trigger }) {
             <RadixDialog.Portal>
                 <Overlay />
                 <Content>
-                    <h2>Edit Images</h2>
+                    <h2>Edit Your Background Image</h2>
                     <TitleLine />
-
                     <CloseButton asChild>
                         <FaTimes />
                     </CloseButton>
-                    <InputGroup>
-                        <Label>Profile Image</Label>
-                        <FileInput
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setProfileImage(e.target.files[0])}
-                        />
-                    </InputGroup>
 
-                    <InputGroup>
-                        <Label>Background Image</Label>
-                        <FileInput
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setBgImage(e.target.files[0])}
-                        />
-                    </InputGroup>
+                    <ImagePreview src={preview} alt="Background Preview" />
+
+                    {/* Hidden file input */}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                    />
 
                     <ButtonContainer>
+                        <ChooseButton onClick={handleChooseClick}>
+                            <FaEdit /> Choose
+                        </ChooseButton>
+                        <DeleteButton onClick={handleDelete}>
+                            Delete
+                        </DeleteButton>
                         <SaveButton onClick={handleSave}>Save</SaveButton>
                     </ButtonContainer>
                 </Content>

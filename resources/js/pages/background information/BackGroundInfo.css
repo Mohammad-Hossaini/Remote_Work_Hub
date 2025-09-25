@@ -4,11 +4,9 @@
     background-color: var(--color-grey-0);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
-    /* overflow: hidden; */
     height: 88vh;
 }
 
-/* HEADER WITH BG + PROFILE PHOTO */
 .profile-header {
     position: relative;
     width: 100%;
@@ -25,7 +23,7 @@
     width: 10rem;
     height: 10rem;
     border-radius: 50%;
-    border: 3px solid var(--color-grey-0);
+    border: 3px solid var(--color-grey-500);
     position: absolute;
     bottom: -5rem;
     left: 2rem;
@@ -177,6 +175,35 @@
 }
 
 .community-list li:hover {
+    background-color: var(--color-primary-light);
+    color: #fff;
+}
+
+.section-box {
+    background-color: var(--color-grey-50);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    margin: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.section-box h3 {
+    font-size: var(--font-lg);
+    margin-bottom: 1.5rem;
+    color: var(--color-grey-900);
+}
+
+.experience-card,
+.education-card {
+    background-color: var(--color-grey-100);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    transition: background 0.2s ease;
+}
+
+.experience-card:hover,
+.education-card:hover {
     background-color: var(--color-primary-light);
     color: #fff;
 }

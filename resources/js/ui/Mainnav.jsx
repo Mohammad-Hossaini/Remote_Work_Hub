@@ -1,14 +1,13 @@
 import { BsBriefcase } from "react-icons/bs";
+import { FaRegUser } from "react-icons/fa6";
 import { HiOutlineHeart } from "react-icons/hi";
+import { IoFolderOpenOutline } from "react-icons/io5";
 import { MdOutlineBookmarkAdded } from "react-icons/md";
+import { TbMessage2Share } from "react-icons/tb";
 
-import {
-    HiOutlineCheckCircle,
-    HiOutlineCog6Tooth,
-    HiOutlineHome,
-} from "react-icons/hi2";
+import { HiOutlineCheckCircle, HiOutlineHome } from "react-icons/hi2";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const NavList = styled.ul`
@@ -56,7 +55,10 @@ const StyledNavLink = styled(NavLink)`
     }
 `;
 
-function MainNav() {
+function MainNav({ children, role = "jobseeker" }) {
+    const navigate = useNavigate();
+    const profilePath =
+        role === "employer" ? "/employerApp/profile" : "/app/profile";
     return (
         <nav>
             <NavList>
@@ -92,11 +94,23 @@ function MainNav() {
                         <span>Sugessted Jobs</span>
                     </StyledNavLink>
                 </li>
+                <li>
+                    <StyledNavLink to="/app/application">
+                        <IoFolderOpenOutline />
+                        <span>Application</span>
+                    </StyledNavLink>
+                </li>
+                <li>
+                    <StyledNavLink to="/app/messages">
+                        <TbMessage2Share />
+                        <span>Messages</span>
+                    </StyledNavLink>
+                </li>
 
                 <li>
-                    <StyledNavLink to="/settings">
-                        <HiOutlineCog6Tooth />
-                        <span>Settings</span>
+                    <StyledNavLink to={profilePath}>
+                        <FaRegUser />
+                        <span>Profile</span>
                     </StyledNavLink>
                 </li>
             </NavList>

@@ -1,13 +1,16 @@
+// components/DialogDemo.jsx
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import { CiWarning } from "react-icons/ci";
 import styled from "styled-components";
 
-import { storeApplicants } from "../services/apiStoreApplicants";
+import { useAuth } from "../hook/AuthContext";
+import { storeApplicant } from "../services/apiStoreApplicants";
 
-// Overlay
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background-color: rgba(0, 0, 0, 0.5);
     position: fixed;
@@ -136,7 +139,8 @@ const ButtonContainer = styled.div`
 `;
 
 export default function DialogDemo({ open, onOpenChange, jobId }) {
-    const [submitError, setSubmitError] = useState(null);
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
 
     const {
         register,
@@ -145,21 +149,53 @@ export default function DialogDemo({ open, onOpenChange, jobId }) {
         reset,
     } = useForm();
 
-    const onSubmit = async (data) => {
-        try {
-            setSubmitError(null);
+    const [submitError, setSubmitError] = useState(null);
 
-            if (!jobId) throw new Error("Job ID not found"); // Safety check
-
-            await storeApplicants(data, jobId); // Pass jobId
-
-            alert("Application submitted successfully!");
+    const mutation = useMutation({
+        mutationFn: (payload) => storeApplicant(payload),
+        onSuccess: () => {
             reset();
             onOpenChange(false);
-        } catch (err) {
-            console.error(err);
-            setSubmitError(err.message || "Failed to submit application.");
+            setTimeout(() => {
+                toast.success("Application submitted successfully!");
+            }, 100); // 100ms delay
+            queryClient.invalidateQueries(["appliedJobs", user?.id]);
+        },
+
+        onError: (err) => {
+            setSubmitError(err.message || "Failed to submit application");
+            toast.error(err.message || "Failed to submit application");
+        },
+    });
+
+    const onSubmit = (formData) => {
+        setSubmitError(null);
+
+        if (!user?.id) {
+            setSubmitError("You must be logged in to apply.");
+            toast.error("Please login first.");
+            return;
         }
+        if (!jobId) {
+            setSubmitError("Job id not found.");
+            return;
+        }
+
+        const payload = {
+            userId: String(user.id),
+            jobId: String(jobId),
+            appliedAt: new Date().toISOString(),
+            status: "Under Review",
+            form: {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                mobile: formData.mobile,
+                countryCode: formData.countryCode,
+            },
+        };
+
+        mutation.mutate(payload);
     };
 
     return (
@@ -287,8 +323,14 @@ export default function DialogDemo({ open, onOpenChange, jobId }) {
                         )}
 
                         <ButtonContainer>
-                            <Button color="green" type="submit">
-                                Submit Application
+                            <Button
+                                color="green"
+                                type="submit"
+                                disabled={mutation.isLoading}
+                            >
+                                {mutation.isLoading
+                                    ? "Submitting..."
+                                    : "Submit Application"}
                             </Button>
                         </ButtonContainer>
                     </form>

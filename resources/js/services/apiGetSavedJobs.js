@@ -1,55 +1,43 @@
 
-export async function getSavedJobs() {
-  try {
-    const res = await fetch("http://localhost:5000/savedJobs");
-    if (!res.ok) {
-      throw new Error("Failed to fetch saved jobs");
-    }
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Saved jobs could not be loaded");
-  }
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+export async function getSavedJobsByUser(userId) {
+    const res = await fetch(`${BASE_URL}/savedJobs`);
+    if (!res.ok) throw new Error("Failed to fetch saved jobs");
+    const all = await res.json();
+    return all.filter((s) => String(s.userId) === String(userId));
 }
 
-// Save a job (PUT/POST depending on your backend)
+
 export async function putSavedJobs(job) {
-  try {
-    const res = await fetch("http://localhost:5000/savedJobs", {
-      method: "POST", // use POST for adding new jobs
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(job),
+    const userId = job.userId;
+    const jobId = job.id;
+
+    const checkRes = await fetch(
+        `${BASE_URL}/savedJobs?userId=${userId}&jobId=${jobId}`
+    );
+    const existing = await checkRes.json();
+    if (existing.length > 0) throw new Error("Job already saved");
+
+    const res = await fetch(`${BASE_URL}/savedJobs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userId,
+            jobId,
+            savedAt: new Date().toISOString(),
+        }),
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to save job");
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Job could not be saved");
-  }
+    if (!res.ok) throw new Error("Failed to save job");
+    return await res.json();
 }
 
-// Delete a saved job
-export async function deleteSavedJob(id) {
-  try {
-    const res = await fetch(`http://localhost:5000/savedJobs/${id}`, {
-      method: "DELETE",
+
+export async function deleteSavedJob(savedJobId) {
+    const res = await fetch(`${BASE_URL}/savedJobs/${savedJobId}`, {
+        method: "DELETE",
     });
-
-    if (!res.ok) {
-      throw new Error("Failed to delete job");
-    }
-
-    return true; // we don’t need data, just success
-  } catch (error) {
-    console.error(error);
-    throw new Error("Job could not be deleted");
-  }
+    if (!res.ok) throw new Error("Failed to delete saved job");
+    return await res.json();
 }

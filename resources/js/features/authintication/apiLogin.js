@@ -1,19 +1,24 @@
+// apiLogin.js
 const BASE_URL = "http://localhost:5000/users";
 
-export async function loginUser({ name, email, password }) {
-    // JSON Server query
-    const res = await fetch(`${BASE_URL}?email=${email}&password=${password}`);
+// Login function
+export async function loginUser({ email, password }) {
+    const res = await fetch(BASE_URL);
     const users = await res.json();
 
-    if (users.length === 0) return null;
+    const user = users.find(
+        (u) => u.email === email && u.password === password
+    );
 
-    const user = users[0];
-    const token = btoa(`${user.email}:${user.password}`); 
-
-    return { ...user, token };
+    if (!user) return null;
+    const token = btoa(`${user.email}:${user.password}`);
+    return {
+        id: user.id,
+        role: user.role,
+        token,
+    };
 }
-
 export function logout() {
     localStorage.removeItem("authUser");
-    window.location.href = "/"; 
+    window.location.href = "/login";
 }

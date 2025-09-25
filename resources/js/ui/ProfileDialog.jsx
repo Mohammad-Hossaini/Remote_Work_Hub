@@ -1,8 +1,12 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import { MdOutlineLogout } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { logout } from "../features/authintication/apiLogin";
+import { useAuth } from "../hook/AuthContext";
+import { getUserById } from "../services/apiUsers";
+import UpdateProfileDialog from "./UpdateProfileDialog";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: transparent;
@@ -15,7 +19,7 @@ const DialogContent = styled(RadixDialog.Content)`
     top: 60px;
     right: 2.5rem;
     width: 24rem;
-    max-width: 90vw;
+    max-width: 95vw;
     border: 1px solid var(--color-grey-200);
     background-color: var(--color-grey-0);
     border-radius: var(--radius-md);
@@ -75,7 +79,6 @@ const BaseButton = styled(Link)`
 const PrimaryButton = styled(BaseButton)`
     background-color: var(--color-primary);
     color: #fff;
-
     &:hover {
         background-color: var(--color-primary-dark);
     }
@@ -85,14 +88,12 @@ const OutlineButton = styled(BaseButton)`
     border: 1px solid var(--color-primary);
     background-color: transparent;
     color: var(--color-primary);
-
     &:hover {
         background-color: var(--color-primary-light);
         color: #fff;
     }
 `;
 
-// New Logout Button
 const LogoutButton = styled.button`
     width: 100%;
     text-align: center;
@@ -109,23 +110,48 @@ const LogoutButton = styled.button`
     color: var(--color-error);
     margin-top: var(--space-12);
     transition: all 0.2s ease;
-
     &:hover {
         background-color: var(--color-error);
         color: #fff;
     }
 `;
 
-export default function ProfileDialog({ children, role = "jobseeker" }) {
+export default function ProfileDialog({ children }) {
+    const { user, setUser } = useAuth();
     const navigate = useNavigate();
-    const profilePath =
-        role === "employer" ? "/employerApp/profile" : "/app/profile";
+
+    // Fetch latest user data
+    const { data: fullUser, refetch } = useQuery(
+        ["user", user?.id],
+        () => getUserById(user.id),
+        {
+            enabled: !!user?.id,
+            refetchOnWindowFocus: true,
+            staleTime: 0,
+        }
+    );
+
+    const role = fullUser?.role || "jobseeker";
+    const basePath = role === "employer" ? "/employerApp" : "/app";
+    const profilePath = `${basePath}/profile`;
 
     const handleLogout = () => {
-        // Clear any auth tokens/localStorage here if needed
         localStorage.removeItem("token");
+        localStorage.removeItem("authUser");
         toast.success("Logged out successfully!");
-        navigate("/login"); // Redirect to login page
+        navigate("/");
+    };
+
+    // اصلاح شده: بررسی setUser و refetch بعد از update
+    const handleUserUpdate = (updatedUser) => {
+        if (setUser) {
+            setUser(updatedUser);
+            localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            toast.success("Profile updated successfully!");
+            refetch(); // برای اطمینان از آپدیت کامل اطلاعات
+        } else {
+            console.warn("setUser is not defined!");
+        }
     };
 
     return (
@@ -136,31 +162,32 @@ export default function ProfileDialog({ children, role = "jobseeker" }) {
                 <DialogContent>
                     <ProfileImageWrapper>
                         <ProfileImage
-                            src="/profile/profile-2.jpg"
+                            src={
+                                fullUser?.profilePhoto || "/profile/default.jpg"
+                            }
                             alt="Profile"
                         />
                     </ProfileImageWrapper>
 
                     <Description>
-                        Front-End Developer | HTML, CSS, JavaScript, React, SQL
-                        | Building Responsive & Interactive Web Experiences |
-                        Passionate About User-Centric Design & Database
-                        Management
+                        {fullUser?.description || "No description available."}
                     </Description>
 
                     <ButtonContainer>
-                        <PrimaryButton asChild>
-                            <Link to={profilePath}>View Profile</Link>
+                        <PrimaryButton to={profilePath}>
+                            View Profile
                         </PrimaryButton>
-                        <OutlineButton to="/settings">Settings</OutlineButton>
+
+                        <UpdateProfileDialog
+                            trigger={
+                                <OutlineButton asChild>Settings</OutlineButton>
+                            }
+                            user={fullUser || {}}
+                            onUpdate={handleUserUpdate}
+                        />
                     </ButtonContainer>
 
-                    {/* Logout Button */}
-                    {/* <LogoutButton onClick={handleLogout}>
-                        <MdOutlineLogout />
-                        Logout
-                    </LogoutButton> */}
-                    <LogoutButton onClick={logout}>
+                    <LogoutButton onClick={handleLogout}>
                         <MdOutlineLogout />
                         Logout
                     </LogoutButton>
