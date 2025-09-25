@@ -15,7 +15,7 @@ class ApplicationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'cover_letter' => 'nullable|string|max:2000',
-            'resume'       => 'required|mimes:pdf,doc,docx|max:2048',
+            'resume_path'       => 'required|mimes:pdf,doc,docx|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -23,9 +23,18 @@ class ApplicationController extends Controller
         }
 
         // Handle resume upload
-        $resumePath = null;
-        if ($request->hasFile('resume')) {
-            $resumePath = $request->file('resume')->store('public/resumes');
+        // $resumePath = null;
+        // if ($request->hasFile('resume')) {
+        //     $resumePath = $request->file('resume')->store('public/resumes');
+        // }
+         if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // Save directly in public/resumes
+            $file->move(public_path('resumes'), $filename);
+
+            $resumePath = 'resumes/' . $filename; // save relative path in DB
         }
 
         $application = Application::create([
@@ -63,7 +72,7 @@ class ApplicationController extends Controller
     // Applicant views their applications
     public function myApplications()
     {
-        return response()->json(Auth::user()->applications()->with('job')->get());
+        return response()->json(Auth::user()->applications()->with('job','user')->get());
     }
 
     // Employer views applicants for a job
@@ -71,7 +80,7 @@ class ApplicationController extends Controller
     // {
     //     return response()->json(Application::where('job_id', $jobId)->with('user','job',  )->get());
     // }
-    
+
     // Employer views applicants for a job, including job and user info
     public function jobApplications(Request $request, $jobId)
     {
@@ -84,6 +93,15 @@ class ApplicationController extends Controller
         $applications = Application::where('job_id', $jobId)
             ->with(['user', 'job'])
             ->get();
+
+        return response()->json($applications);
+    }
+    // Employer views all applications for their jobs
+    public function allApplications(Request $request)
+    {
+        $applications = Application::whereHas('job', function ($query) use ($request) {
+            $query->where('user_id', $request->user()->id);
+        })->with(['user', 'job'])->get();
 
         return response()->json($applications);
     }
