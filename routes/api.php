@@ -74,9 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Employers
     Route::middleware(['role:employer'])->group(function () {
-      -  Route::get('/jobs/allApplications', [ApplicationController::class, 'allApplications']);
-     -   Route::get('/jobs/{job}/applications', [ApplicationController::class, 'jobApplications']);
-      -  Route::patch('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
+        Route::get('/jobs/allApplications', [ApplicationController::class, 'allApplications']);
+        Route::get('/jobs/{job}/applications', [ApplicationController::class, 'jobApplications']);
+        Route::patch('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
     });
     //-----------------------------------------------------------------------------------------
 
