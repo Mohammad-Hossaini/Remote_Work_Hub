@@ -8,6 +8,8 @@ import { useAuth } from "../hook/AuthContext";
 import { getUserById } from "../services/apiUsers";
 import UpdateProfileDialog from "./UpdateProfileDialog";
 
+import { logoutUser } from "../features/authintication/apiLogin";
+
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: transparent;
     position: fixed;
@@ -116,11 +118,11 @@ const LogoutButton = styled.button`
     }
 `;
 
+
 export default function ProfileDialog({ children }) {
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
 
-    // Fetch latest user data
     const { data: fullUser, refetch } = useQuery(
         ["user", user?.id],
         () => getUserById(user.id),
@@ -135,20 +137,30 @@ export default function ProfileDialog({ children }) {
     const basePath = role === "employer" ? "/employerApp" : "/app";
     const profilePath = `${basePath}/profile`;
 
-    const handleLogout = () => {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("authUser");
-        toast.success("Logged out successfully!");
-        navigate("/");
+    const handleLogout = async () => {
+        try {
+            const token = sessionStorage.getItem("token");
+            if (token) {
+                await logoutUser(token);
+            }
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("authUser");
+            if (setUser) setUser(null);
+
+            toast.success("Logged out successfully!");
+            navigate("/");
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error(error.message || "Logout failed. Please try again.");
+        }
     };
 
-    // اصلاح شده: بررسی setUser و refetch بعد از update
     const handleUserUpdate = (updatedUser) => {
         if (setUser) {
             setUser(updatedUser);
             localStorage.setItem("authUser", JSON.stringify(updatedUser));
             toast.success("Profile updated successfully!");
-            refetch(); // برای اطمینان از آپدیت کامل اطلاعات
+            refetch();
         } else {
             console.warn("setUser is not defined!");
         }

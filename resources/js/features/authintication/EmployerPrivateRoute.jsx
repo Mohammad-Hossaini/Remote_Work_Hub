@@ -1,3 +1,5 @@
+import { Navigate } from "react-router-dom";
+
 export default function EmployerPrivateRoute({ children }) {
     const authUser = JSON.parse(sessionStorage.getItem("authUser"));
     if (!authUser || !authUser.token || authUser.role !== "employer") {
