@@ -174,37 +174,6 @@ export default function JobsHeader({
 
     return (
         <HeaderWrapper>
-            {/* <TopRow>
-                <SearchWrapper>
-                    {(isHomePage || isDashboard) && (
-                        <StyledH2>
-                            {isHomePage || isLoginPage || isRegisterPage
-                                ? "Remote Work Hub"
-                                : ""}
-                        </StyledH2>
-                    )}
-
-                    {(isHomePage || isDashboard) && (
-                        <>
-                            <SearchBar
-                                type="search"
-                                placeholder="Search for jobs..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <FilterIcon onClick={toggleFilters} />
-                        </>
-                    )}
-                </SearchWrapper>
-
-                {isHomePage ||
-                    ((isLoginPage || isRegisterPage) && (
-                        <Buttons>
-                            <LoginBtn to="/login">Log in</LoginBtn>
-                            <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
-                        </Buttons>
-                    ))}
-            </TopRow> */}
             <TopRow>
                 <SearchWrapper>
                     <StyledH2>
@@ -232,6 +201,16 @@ export default function JobsHeader({
                         <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
                     </Buttons>
                 ) : null}
+                {/* {(isHomePage || isLoginPage || isRegisterPage) && (
+                    <Buttons>
+                        {!isLoginPage && (
+                            <LoginBtn to="/login">Log in</LoginBtn>
+                        )}
+                        {!isRegisterPage && (
+                            <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
+                        )}
+                    </Buttons>
+                )} */}
             </TopRow>
 
             {(isHomePage || isDashboard) && (

@@ -1,14 +1,11 @@
+export default function JobseekerPrivateRoute({ children }) {
+    const authUser = JSON.parse(sessionStorage.getItem("authUser"));
 
-import { Navigate } from "react-router-dom";
-
-export default function JobseekerPrivateRoute({ children, role }) {
-    const authUser = JSON.parse(sessionStorage.getItem("authUser")); // تغییر اینجا 👈
-
-    if (!authUser) {
+    if (!authUser || !authUser.token) {
         return <Navigate to="/welcome" replace />;
     }
 
-    if (role && authUser.role !== role) {
+    if (authUser.role !== "job_seeker") {
         return <Navigate to="/login" replace />;
     }
 
