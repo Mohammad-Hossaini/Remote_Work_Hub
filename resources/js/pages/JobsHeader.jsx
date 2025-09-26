@@ -201,16 +201,6 @@ export default function JobsHeader({
                         <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
                     </Buttons>
                 ) : null}
-                {/* {(isHomePage || isLoginPage || isRegisterPage) && (
-                    <Buttons>
-                        {!isLoginPage && (
-                            <LoginBtn to="/login">Log in</LoginBtn>
-                        )}
-                        {!isRegisterPage && (
-                            <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
-                        )}
-                    </Buttons>
-                )} */}
             </TopRow>
 
             {(isHomePage || isDashboard) && (

@@ -1,19 +1,24 @@
-import { v4 as uuidv4 } from "uuid";
-const BASE_URL = "http://localhost:5000/users";
-
+const BASE_URL = "http://127.0.0.1:8000/api";
 export async function loginUser({ email, password }) {
-    const res = await fetch(BASE_URL);
-    const users = await res.json();
+    const res = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+    });
 
-    const user = users.find(
-        (u) => u.email === email && u.password === password
-    );
-    if (!user) return null;
-    const fakeToken = uuidv4();
+    const data = await res.json();
+
+    if (!data.token) {
+        // ← check token instead of data.ok
+        throw new Error(data.message || "Invalid credentials");
+    }
 
     return {
-        id: user.id,
-        role: user.role,
-        token: fakeToken,
+        id: data.user.id,
+        role: data.user.role,
+        token: data.token, 
     };
 }

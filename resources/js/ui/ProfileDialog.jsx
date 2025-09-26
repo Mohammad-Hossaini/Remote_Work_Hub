@@ -136,8 +136,8 @@ export default function ProfileDialog({ children }) {
     const profilePath = `${basePath}/profile`;
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("authUser");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("authUser");
         toast.success("Logged out successfully!");
         navigate("/");
     };
