@@ -1,3 +1,4 @@
+import { Navigate } from "react-router-dom";
 export default function JobseekerPrivateRoute({ children }) {
     const authUser = JSON.parse(sessionStorage.getItem("authUser"));
 

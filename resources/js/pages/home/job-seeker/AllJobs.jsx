@@ -210,6 +210,7 @@ export default function AllJobs() {
         queryKey: ["jobs"],
         queryFn: getJobs,
     });
+    console.log("All jobs from API:", jobs);
 
     useEffect(() => {
         if (!user?.id) return;
