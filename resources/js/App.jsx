@@ -53,6 +53,10 @@ export default function App() {
                     <Routes>
                         {/* Public pages */}
                         <Route path="/" element={<AllJobs />} />
+                        <Route
+                            path="/jobDetails/:id"
+                            element={<JobDetails />}
+                        />
                         <Route path="/home" element={<Home />} />
                         <Route path="/welcome" element={<Welcome />} />
                         <Route path="/settings" element={<Settings />} />

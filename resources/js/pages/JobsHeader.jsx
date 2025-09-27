@@ -143,6 +143,7 @@ const CaretIcon = styled(RxCaretDown)`
     color: var(--color-grey-500);
 `;
 
+// ================= JobsHeader Component =================
 export default function JobsHeader({
     searchTerm,
     setSearchTerm,
@@ -171,18 +172,29 @@ export default function JobsHeader({
     const isLoginPage = location.pathname === "/login";
     const isRegisterPage = location.pathname === "/createAccount";
     const isDashboard = location.pathname.includes("/app");
+    const isJobDetailsPage = location.pathname.includes("/jobDetails");
+
+    // --- Hide entire header for dashboard job details page ---
+    if (isDashboard && isJobDetailsPage) return null;
+
+    // Show filters/search only on Home or Dashboard pages (not Home → JobDetails)
+    const showFiltersSection =
+        (isHomePage || isDashboard) && !(isJobDetailsPage && !isHomePage);
+
+    // Show login/signup buttons on Home, Login, Register, or Home → JobDetails
+    const showAuthButtons =
+        isHomePage ||
+        isLoginPage ||
+        isRegisterPage ||
+        (isJobDetailsPage && !isDashboard);
 
     return (
         <HeaderWrapper>
             <TopRow>
                 <SearchWrapper>
-                    <StyledH2>
-                        {isHomePage || isLoginPage || isRegisterPage
-                            ? "Remote Work Hub"
-                            : ""}
-                    </StyledH2>
+                    <StyledH2>Remote Work Hub</StyledH2>
 
-                    {(isHomePage || isDashboard) && (
+                    {showFiltersSection && (
                         <>
                             <SearchBar
                                 type="search"
@@ -195,15 +207,15 @@ export default function JobsHeader({
                     )}
                 </SearchWrapper>
 
-                {isHomePage || isLoginPage || isRegisterPage ? (
+                {showAuthButtons && (
                     <Buttons>
                         <LoginBtn to="/login">Log in</LoginBtn>
                         <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
                     </Buttons>
-                ) : null}
+                )}
             </TopRow>
 
-            {(isHomePage || isDashboard) && (
+            {showFiltersSection && (
                 <StyledSortWrapper>
                     <StyledSortContainer show={showFilters}>
                         <FiltersWrapper>
