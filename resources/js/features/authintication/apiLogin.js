@@ -12,11 +12,11 @@ export async function loginUser({ email, password }) {
     const data = await res.json();
 
     if (!data.token) {
-        // ← check token instead of data.ok
         throw new Error(data.message || "Invalid credentials");
     }
 
     return {
+        data,
         id: data.user.id,
         role: data.user.role,
         token: data.token,
@@ -38,5 +38,5 @@ export async function logoutUser(token) {
         throw new Error(data.message || "Logout failed");
     }
 
-    return true; 
+    return true;
 }

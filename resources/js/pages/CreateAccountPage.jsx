@@ -179,10 +179,9 @@ export default function CreateAccountPage() {
             login({
                 token: data.token,
                 user: data.user,
-                role: data.user.role, 
+                role: data.user.role,
             });
 
-         
             if (data.user.role === "employer") {
                 navigate("/employerApp/employerDashboard");
             } else if (data.user.role === "job_seeker") {
@@ -196,19 +195,19 @@ export default function CreateAccountPage() {
         onError: (err) => toast.error(err.message),
     });
 
-  const onSubmit = (formData) => {
-    if (!role) {
-        toast.error("Please select a role before continuing");
-        return;
-    }
+    const onSubmit = (formData) => {
+        if (!role) {
+            toast.error("Please select a role before continuing");
+            return;
+        }
 
-    const payload = {
-        ...formData,
-        role, 
+        const payload = {
+            ...formData,
+            role,
+        };
+
+        mutate(payload);
     };
-
-    mutate(payload);
-};
 
     return (
         <>
@@ -344,7 +343,6 @@ export default function CreateAccountPage() {
                                 </Select>
                             </InputGroup>
                         </FormGrid>
-
                         {/* Extra fields for jobseeker */}
                         {role === "job_seeker" && (
                             <FormGrid>
@@ -355,14 +353,24 @@ export default function CreateAccountPage() {
                                         {...register("description")}
                                     />
                                 </InputGroup>
+
                                 <InputGroup>
-                                    <Label>Resume (Optional)</Label>
+                                    <Label>Resume</Label>
                                     <Input
                                         type="file"
                                         accept=".pdf,.doc,.docx"
-                                        {...register("resume")}
+                                        {...register("resume", {
+                                            required: "Resume is required", // ✅ اعتبارسنجی
+                                        })}
                                     />
+                                    {errors.resume && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.resume.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Skills</Label>
                                     <Input
@@ -379,6 +387,7 @@ export default function CreateAccountPage() {
                                         </ErrorMessage>
                                     )}
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Experience (Optional)</Label>
                                     <Input
@@ -389,6 +398,7 @@ export default function CreateAccountPage() {
                                 </InputGroup>
                             </FormGrid>
                         )}
+
                         {/* Extra fields for employer */}
                         {role === "employer" && (
                             <FormGrid>
