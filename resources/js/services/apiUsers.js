@@ -2,24 +2,56 @@
 const BASE_URL = "http://127.0.0.1:8000/api"; // Laravel API base URL
 
 // Register new user
+// export async function createNewUser(userData) {
+//     const res = await fetch(`${BASE_URL}/register`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             Accept: "application/json", // Laravel expects this
+//         },
+//         body: JSON.stringify(userData),
+//     });
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//         console.error("Server error:", data);
+//         throw new Error(data.message || "Failed to create user");
+//     }
+
+//     return data; // { user: {...}, token: "..." }
+// }
+
 export async function createNewUser(userData) {
-    const res = await fetch(`${BASE_URL}/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json", // Laravel expects this
-        },
-        body: JSON.stringify(userData),
-    });
+    try {
+        const basicData = {
+            name: `${userData.firstName} ${userData.lastName}`,
+            password: userData.password,
+            email: userData.email,
+            role: userData.role,
+        };
 
-    const data = await res.json();
+        const res = await fetch(`${BASE_URL}/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify(basicData), // کاما بعد از headers فراموش نشود
+        });
 
-    if (!res.ok) {
-        console.error("Server error:", data);
-        throw new Error(data.message || "Failed to create user");
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.log("Server Error:", data);
+            throw new Error(data.message || "Failed to save user data!");
+        }
+
+        return data; // در صورت موفقیت
+    } catch (error) {
+        console.error("Error in createNewUser:", error);
+        throw error;
     }
-
-    return data; // { user: {...}, token: "..." }
 }
 
 // Get user by ID (optional, if you defined this route in Laravel)
