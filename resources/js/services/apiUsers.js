@@ -3,7 +3,8 @@ const BASE_URL = "http://127.0.0.1:8000/api"; // Laravel API base URL
 export async function createNewUser(userData) {
     try {
         // =========================
-        // مرحله 1: ثبت کاربر
+        // STEP 1 : SEND THE USER DATA
+
         // =========================
         const basicData = {
             name: `${userData.firstName} ${userData.lastName}`,
@@ -35,7 +36,7 @@ export async function createNewUser(userData) {
         }
 
         // =========================
-        // STEP 1 : SEND THE JOB SEEKER DATA
+        // STEP 2 : SEND THE JOB SEEKER DATA
         // =========================
         if (userData.role === "job_seeker") {
             const profileData = new FormData();
@@ -67,12 +68,12 @@ export async function createNewUser(userData) {
             }
         }
         // =========================
-        // STEP 1 : SEND THE employer DATA
+        // STEP 3 : SEND THE employer DATA
         // =========================
         if (userData.role === "employer") {
             const companyData = {
                 user_id: createdUser.user.id,
-                name: userData.companyName, 
+                name: userData.companyName,
                 industry: userData.industry,
                 location: userData.location,
                 description: userData.description || "",
@@ -98,7 +99,7 @@ export async function createNewUser(userData) {
             }
         }
 
-        return createdUser; 
+        return createdUser;
     } catch (error) {
         console.error("Error in createNewUser:", error);
         throw error;

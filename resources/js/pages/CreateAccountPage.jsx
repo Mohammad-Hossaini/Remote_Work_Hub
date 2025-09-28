@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { TiWarningOutline } from "react-icons/ti";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../hook/AuthContext";
 import { createNewUser } from "../services/apiUsers";
 import Footer from "./Footer";
 import JobsHeader from "./JobsHeader";
@@ -155,7 +157,10 @@ const ErrorMessage = styled.span`
 
 export default function CreateAccountPage() {
     const [role, setRole] = useState("");
+    const { login } = useAuth();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
+
     const {
         handleSubmit,
         reset,
@@ -164,19 +169,46 @@ export default function CreateAccountPage() {
         formState: { errors },
     } = useForm();
     const password = watch("password");
+
     const { mutate, isLoading } = useMutation(createNewUser, {
-        onSuccess: () => {
+        onSuccess: (data) => {
             toast.success("Created account successfully!");
             queryClient.invalidateQueries({ queryKey: ["users"] });
-            reset(); 
+
+            // ذخیره در AuthContext
+            login({
+                token: data.token,
+                user: data.user,
+                role: data.user.role, 
+            });
+
+         
+            if (data.user.role === "employer") {
+                navigate("/employerApp/employerDashboard");
+            } else if (data.user.role === "job_seeker") {
+                navigate("/app/jobSeekerDashboard");
+            } else {
+                navigate("/");
+            }
+
+            reset();
         },
         onError: (err) => toast.error(err.message),
     });
 
-    const onSubmit = (data) => {
-        const payload = { ...data, role };
-        mutate(payload); 
+  const onSubmit = (formData) => {
+    if (!role) {
+        toast.error("Please select a role before continuing");
+        return;
+    }
+
+    const payload = {
+        ...formData,
+        role, 
     };
+
+    mutate(payload);
+};
 
     return (
         <>

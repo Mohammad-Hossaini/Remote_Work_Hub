@@ -210,7 +210,7 @@ export default function JobsHeader({
                 {showAuthButtons && (
                     <Buttons>
                         <LoginBtn to="/login">Log in</LoginBtn>
-                        <SignUpBtn to="/createAccount">Sign up →</SignUpBtn>
+                        <SignUpBtn to="/welcome">Sign up →</SignUpBtn>
                     </Buttons>
                 )}
             </TopRow>
