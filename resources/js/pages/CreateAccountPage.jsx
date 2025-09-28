@@ -343,7 +343,6 @@ export default function CreateAccountPage() {
                                 </Select>
                             </InputGroup>
                         </FormGrid>
-
                         {/* Extra fields for jobseeker */}
                         {role === "job_seeker" && (
                             <FormGrid>
@@ -354,14 +353,24 @@ export default function CreateAccountPage() {
                                         {...register("description")}
                                     />
                                 </InputGroup>
+
                                 <InputGroup>
-                                    <Label>Resume (Optional)</Label>
+                                    <Label>Resume</Label>
                                     <Input
                                         type="file"
                                         accept=".pdf,.doc,.docx"
-                                        {...register("resume")}
+                                        {...register("resume", {
+                                            required: "Resume is required", // ✅ اعتبارسنجی
+                                        })}
                                     />
+                                    {errors.resume && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.resume.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Skills</Label>
                                     <Input
@@ -378,6 +387,7 @@ export default function CreateAccountPage() {
                                         </ErrorMessage>
                                     )}
                                 </InputGroup>
+
                                 <InputGroup>
                                     <Label>Experience (Optional)</Label>
                                     <Input
@@ -388,6 +398,7 @@ export default function CreateAccountPage() {
                                 </InputGroup>
                             </FormGrid>
                         )}
+
                         {/* Extra fields for employer */}
                         {role === "employer" && (
                             <FormGrid>
