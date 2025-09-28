@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Register new user
+   // Register new user
     public function register(Request $request)
     {
         $request->validate([
@@ -19,6 +19,7 @@ class AuthController extends Controller
             'role' => 'required|in:admin,employer,job_seeker',
         ]);
 
+        // Create user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -26,9 +27,24 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
+        // If user is a job seeker, create profile if missing
+        if ($request->role === 'job_seeker' && !$user->profile) {
+            $user->profile()->create([]);
+        }
+
+        // If user is an employer, create company if missing
+        if ($request->role === 'employer' && !$user->company) {
+            $user->company()->create([]);
+        }
+
+        // Generate token
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'token' => $token]);
+        // Return user + related models
+        return response()->json([
+            'user' => $user->load('profile', 'company'), // eager load relations
+            'token' => $token
+        ]);
     }
 
     // Login
@@ -39,17 +55,24 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Find user
         $user = User::where('email', $request->email)->first();
 
+        // Check credentials
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Invalid credentials'],
             ]);
         }
 
+        // Generate token
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'token' => $token]);
+        // Return user + related models
+        return response()->json([
+            'user' => $user->load('profile', 'company'),
+            'token' => $token
+        ]);
     }
 
     // Logout
