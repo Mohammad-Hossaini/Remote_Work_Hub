@@ -1,24 +1,42 @@
-// apiLogin.js
-const BASE_URL = "http://localhost:5000/users";
-
-// Login function
+const BASE_URL = "http://127.0.0.1:8000/api";
 export async function loginUser({ email, password }) {
-    const res = await fetch(BASE_URL);
-    const users = await res.json();
+    const res = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+    });
 
-    const user = users.find(
-        (u) => u.email === email && u.password === password
-    );
+    const data = await res.json();
 
-    if (!user) return null;
-    const token = btoa(`${user.email}:${user.password}`);
+    if (!data.token) {
+        // ← check token instead of data.ok
+        throw new Error(data.message || "Invalid credentials");
+    }
+
     return {
-        id: user.id,
-        role: user.role,
-        token,
+        id: data.user.id,
+        role: data.user.role,
+        token: data.token,
     };
 }
-export function logout() {
-    localStorage.removeItem("authUser");
-    window.location.href = "/login";
+
+export async function logoutUser(token) {
+    const res = await fetch(`${BASE_URL}/logout`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Logout failed");
+    }
+
+    return true; 
 }

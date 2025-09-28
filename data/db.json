@@ -34,10 +34,23 @@
       "location": "magahza   Barchi  Kabul  Afghanistan",
       "companyLogo": null,
       "contactPerson": "Mohammad",
+<<<<<<< HEAD
+=======
+      "role": "employer"
+    },
+    {
+      "id": "2",
+      "firstName": "Mohammad Jan",
+      "lastName": "Hossaini",
+      "email": "mohammad@gmail.com",
+      "phone": "078 15 98 774",
+      "password": "12345678",
+>>>>>>> 2317c7131d7503d78c0c55aeaffdb2073dd67157
       "role": "employer",
       "profilePhoto": "/profile/default.jpg"
     },
     {
+<<<<<<< HEAD
       "id": "ecbb",
       "email": "",
       "password": "",
@@ -68,6 +81,41 @@
       "experience": "1 years",
       "companyName": "",
       "website": "",
+=======
+      "id": "604c",
+      "firstName": "Ali Aqa",
+      "lastName": "Mohammadi",
+      "password": "12345678",
+      "confirmPassword": "Pa$$w0rd!",
+      "phone": "+1 (326) 684-7678",
+      "email": "ali@gmail.com",
+      "description": "Software Engineer | Python, Django, JavaScript, React, PostgreSQL | Developing Full-Stack Applications | Focused on Clean Architecture & Optimized Database Design",
+      "resume": {},
+      "skills": [
+        "Eveniet repudiandae"
+      ],
+      "experience": "Suscipit possimus v",
+      "Work_Experience": [
+        {
+          "jobTitle": "",
+          "company": "",
+          "from": "",
+          "to": "",
+          "jobLevel": ""
+        }
+      ],
+      "Educations": [
+        {
+          "school": "",
+          "educationalAttainment": "",
+          "from": "",
+          "to": "",
+          "description": ""
+        }
+      ],
+      "mobile": "",
+      "token": "42c43qhrm0p",
+>>>>>>> 2317c7131d7503d78c0c55aeaffdb2073dd67157
       "location": "",
       "companyLogo": null,
       "contactPerson": "",

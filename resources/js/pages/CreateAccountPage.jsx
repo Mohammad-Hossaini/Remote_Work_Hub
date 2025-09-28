@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { TiWarningOutline } from "react-icons/ti";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../hook/AuthContext";
 import { createNewUser } from "../services/apiUsers";
 import Footer from "./Footer";
 import JobsHeader from "./JobsHeader";
@@ -13,7 +15,7 @@ import JobsHeader from "./JobsHeader";
 const PageWrapper = styled.div`
     display: flex;
     justify-content: center;
-    padding: 5rem 2rem 5rem; 
+    padding: 5rem 2rem 5rem;
     background-color: var(--color-grey-30);
     min-height: 100vh;
 `;
@@ -155,6 +157,10 @@ const ErrorMessage = styled.span`
 
 export default function CreateAccountPage() {
     const [role, setRole] = useState("");
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
     const {
         handleSubmit,
         reset,
@@ -162,35 +168,47 @@ export default function CreateAccountPage() {
         watch,
         formState: { errors },
     } = useForm();
-
     const password = watch("password");
 
-    const queryClient = useQueryClient();
-    const { mutate, isLoading: isCreating } = useMutation({
-        mutationFn: createNewUser,
-        onSuccess: () => {
-            toast.success("You have registered successfully");
+    const { mutate, isLoading } = useMutation(createNewUser, {
+        onSuccess: (data) => {
+            toast.success("Created account successfully!");
             queryClient.invalidateQueries({ queryKey: ["users"] });
+
+            // ذخیره در AuthContext
+            login({
+                token: data.token,
+                user: data.user,
+                role: data.user.role, 
+            });
+
+         
+            if (data.user.role === "employer") {
+                navigate("/employerApp/employerDashboard");
+            } else if (data.user.role === "job_seeker") {
+                navigate("/app/jobSeekerDashboard");
+            } else {
+                navigate("/");
+            }
+
             reset();
         },
         onError: (err) => toast.error(err.message),
     });
 
-    const onSubmit = (data, e) => {
-        e.preventDefault();
+  const onSubmit = (formData) => {
+    if (!role) {
+        toast.error("Please select a role before continuing");
+        return;
+    }
 
-        if (data.skills && typeof data.skills === "string") {
-            data.skills = data.skills.split(",").map((s) => s.trim());
-        }
-        data.role = role;
-        data.token = Math.random().toString(36).substring(2, 15);
-
-        if (data.resume && data.resume.length > 0) {
-            data.resume = data.resume[0].name;
-        }
-
-        mutate(data);
+    const payload = {
+        ...formData,
+        role, 
     };
+
+    mutate(payload);
+};
 
     return (
         <>
@@ -264,7 +282,7 @@ export default function CreateAccountPage() {
                                         required: "This field is required",
                                         validate: (value) =>
                                             value === password ||
-                                            "Passwords do not match",
+                                            "Password do not match",
                                     })}
                                 />
                                 {errors.confirmPassword && (
@@ -319,7 +337,7 @@ export default function CreateAccountPage() {
                                     onChange={(e) => setRole(e.target.value)}
                                 >
                                     <option value="">Select Role</option>
-                                    <option value="jobseeker">
+                                    <option value="job_seeker">
                                         Job Seeker
                                     </option>
                                     <option value="employer">Employer</option>
@@ -327,8 +345,8 @@ export default function CreateAccountPage() {
                             </InputGroup>
                         </FormGrid>
 
-                        {/* Extra fields for Jobseeker */}
-                        {role === "jobseeker" && (
+                        {/* Extra fields for jobseeker */}
+                        {role === "job_seeker" && (
                             <FormGrid>
                                 <InputGroup>
                                     <Label>Description</Label>
@@ -337,7 +355,6 @@ export default function CreateAccountPage() {
                                         {...register("description")}
                                     />
                                 </InputGroup>
-
                                 <InputGroup>
                                     <Label>Resume (Optional)</Label>
                                     <Input
@@ -346,12 +363,11 @@ export default function CreateAccountPage() {
                                         {...register("resume")}
                                     />
                                 </InputGroup>
-
                                 <InputGroup>
-                                    <Label>Skills (comma separated)</Label>
+                                    <Label>Skills</Label>
                                     <Input
                                         type="text"
-                                        placeholder="JavaScript, React, Node.js"
+                                        placeholder="JavaScript, React"
                                         {...register("skills", {
                                             required: "This field is required",
                                         })}
@@ -363,7 +379,6 @@ export default function CreateAccountPage() {
                                         </ErrorMessage>
                                     )}
                                 </InputGroup>
-
                                 <InputGroup>
                                     <Label>Experience (Optional)</Label>
                                     <Input
@@ -374,41 +389,51 @@ export default function CreateAccountPage() {
                                 </InputGroup>
                             </FormGrid>
                         )}
-
-                        {/* Extra fields for Employer */}
+                        {/* Extra fields for employer */}
                         {role === "employer" && (
                             <FormGrid>
+                                {/* Company Name */}
                                 <InputGroup>
                                     <Label>Company Name</Label>
                                     <Input
                                         type="text"
                                         placeholder="Enter company name"
-                                        {...register("company_name", {
+                                        {...register("companyName", {
                                             required: "This field is required",
                                         })}
                                     />
-                                    {errors.company_name && (
+                                    {errors.companyName && (
                                         <ErrorMessage>
                                             <TiWarningOutline />{" "}
-                                            {errors.company_name.message}
+                                            {errors.companyName.message}
                                         </ErrorMessage>
                                     )}
                                 </InputGroup>
 
+                                {/* Industry */}
                                 <InputGroup>
-                                    <Label>Website (Optional)</Label>
+                                    <Label>Industry</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter website"
-                                        {...register("website")}
+                                        placeholder="Enter industry"
+                                        {...register("industry", {
+                                            required: "This field is required",
+                                        })}
                                     />
+                                    {errors.industry && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.industry.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
 
+                                {/* Location */}
                                 <InputGroup>
                                     <Label>Location</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter location"
+                                        placeholder="Enter company location"
                                         {...register("location", {
                                             required: "This field is required",
                                         })}
@@ -421,36 +446,30 @@ export default function CreateAccountPage() {
                                     )}
                                 </InputGroup>
 
+                                {/* Description */}
                                 <InputGroup>
-                                    <Label>Religion (Optional)</Label>
-                                    <Input
-                                        type="text"
-                                        {...register("religion")}
+                                    <Label>Description</Label>
+                                    <TextArea
+                                        placeholder="Write company description"
+                                        {...register("description")}
                                     />
                                 </InputGroup>
 
+                                {/* Website */}
                                 <InputGroup>
-                                    <Label>Contact Person</Label>
+                                    <Label>Website (Optional)</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter contact person"
-                                        {...register("contact_person", {
-                                            required: "This field is required",
-                                        })}
+                                        placeholder="Enter website"
+                                        {...register("website")}
                                     />
-                                    {errors.contact_person && (
-                                        <ErrorMessage>
-                                            <TiWarningOutline />{" "}
-                                            {errors.contact_person.message}
-                                        </ErrorMessage>
-                                    )}
                                 </InputGroup>
                             </FormGrid>
                         )}
 
                         <StyledButtons>
                             <CancelButton type="reset">Cancel</CancelButton>
-                            <RegisterButton type="submit" disabled={isCreating}>
+                            <RegisterButton type="submit">
                                 SIGN IN
                             </RegisterButton>
                         </StyledButtons>

@@ -25,36 +25,31 @@ const AllJobsWrapper = styled.div`
 const JobsContainer = styled.div`
     max-width: 1200px;
     margin: 0 auto;
-    height: 100%;
     display: flex;
     flex-direction: column;
     padding: 2rem 1rem;
 `;
 
 const JobList = styled.div`
-    flex: 1;
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.6rem;
     padding-top: 1rem;
-    padding-right: 1.6rem;
 `;
 
 const JobsCard = styled.div`
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
     background: var(--color-grey-0);
     padding: 1.6rem;
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-grey-300);
-    max-width: 100%;
-    margin: 0 auto 1.6rem;
-    gap: 1.6rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
-        transform: translateX(10px);
-        box-shadow: var(--shadow-sm);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
 
         .hover-buttons {
             opacity: 1;
@@ -63,29 +58,31 @@ const JobsCard = styled.div`
     }
 `;
 
-const JobLeft = styled.div`
+const JobTop = styled.div`
     display: flex;
     align-items: center;
     gap: 1.6rem;
 `;
 
 const JobImg = styled.img`
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
     border-radius: var(--radius-md);
+    flex-shrink: 0;
 `;
 
 const JobText = styled.div`
     display: flex;
     flex-direction: column;
+    flex: 1;
 `;
 
 const JobTitle = styled.h3`
     font-size: var(--font-lg);
     font-weight: 600;
     color: var(--color-grey-900);
-    margin-bottom: var(--space-4);
+    margin-bottom: 0.4rem;
 `;
 
 const JobPosition = styled.p`
@@ -97,15 +94,10 @@ const JobPosition = styled.p`
 const JobInfo = styled.div`
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-12);
-    margin-top: var(--space-8);
+    gap: 0.8rem;
+    margin-top: 0.8rem;
     font-size: var(--font-sm);
     color: var(--color-grey-500);
-`;
-
-const ImportantInfo = styled.span`
-    font-weight: 600;
-    color: var(--color-primary-dark);
 `;
 
 const CompanyName = styled.span`
@@ -113,14 +105,14 @@ const CompanyName = styled.span`
     color: var(--color-grey-900);
 `;
 
-const Salary = styled.span`
-    font-weight: 600;
-    color: var(--color-success);
-`;
-
 const Location = styled.span`
     font-weight: 600;
     color: var(--color-grey-700);
+`;
+
+const Salary = styled.span`
+    font-weight: 600;
+    color: var(--color-success);
 `;
 
 const PostedAt = styled.span`
@@ -128,14 +120,19 @@ const PostedAt = styled.span`
     color: var(--color-grey-400);
 `;
 
+const JobDescription = styled.p`
+    margin-top: 0.8rem;
+    font-size: var(--font-base);
+    color: var(--color-grey-600);
+    line-height: 1.4;
+`;
+
 const StyledLinkButtons = styled.div`
     display: flex;
     align-items: center;
-    gap: 1.2rem;
-    position: absolute;
-    top: 50%;
-    right: 1.6rem;
-    transform: translateY(-50%);
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.2rem;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -145,10 +142,10 @@ const HeartIcon = styled(HiMiniHeart)`
     cursor: pointer;
     font-size: 2rem;
     color: ${(props) => (props.active ? "#2b8a3e" : "var(--color-grey-400)")};
-    transition: color 0.2s ease;
     position: absolute;
     top: 1rem;
     right: 1rem;
+
     &:hover {
         color: #2b8a3e;
     }
@@ -196,12 +193,6 @@ const ModalButtons = styled.div`
 export default function AllJobs() {
     const [searchTerm, setSearchTerm] = useState("");
     const [locationFilter, setLocationFilter] = useState("");
-    const [levelFilter, setLevelFilter] = useState("");
-    const [typeFilter, setTypeFilter] = useState("");
-    const [educationFilter, setEducationFilter] = useState("");
-    const [companyFilter, setCompanyFilter] = useState("");
-    const [salaryFilter, setSalaryFilter] = useState("");
-    const [sortOption, setSortOption] = useState("date");
     const [savedJobIds, setSavedJobIds] = useState([]);
     const [modalData, setModalData] = useState(null);
 
@@ -210,16 +201,16 @@ export default function AllJobs() {
     const location = useLocation();
 
     const isHomePage = location.pathname === "/";
-    const isDashboard = location.pathname.includes("/app");
 
     const {
-        data: jobs = [],
+        data: jobs,
         isLoading,
         error,
     } = useQuery({
         queryKey: ["jobs"],
         queryFn: getJobs,
     });
+    console.log("All jobs from API:", jobs);
 
     useEffect(() => {
         if (!user?.id) return;
@@ -230,7 +221,7 @@ export default function AllJobs() {
 
     const saveJobMutation = useMutation({
         mutationFn: putSavedJobs,
-        onSuccess: (data, variables) => {
+        onSuccess: (_, variables) => {
             setSavedJobIds((prev) => [...prev, variables.id]);
             toast.success("Job saved successfully!");
             queryClient.invalidateQueries(["savedJobs", user?.id]);
@@ -252,9 +243,9 @@ export default function AllJobs() {
         if (!user?.id) {
             setModalData({
                 type: "save",
-                title: "Save this job with a Remote Work Hub account",
+                title: "Save this job with an account",
                 description:
-                    "Save this job and other opportunities like this with a free Remote Work Hub account.",
+                    "Save this job and other opportunities with a free account.",
             });
             return;
         }
@@ -271,9 +262,9 @@ export default function AllJobs() {
         if (!user?.id) {
             setModalData({
                 type: "apply",
-                title: "Apply to this job with a Remote Work Hub account",
+                title: "Apply to this job with an account",
                 description:
-                    "Build your profile, apply to this job, and track your application status with a free Remote Work Hub account.",
+                    "Build your profile, apply to this job, and track your application status with a free account.",
             });
             return;
         }
@@ -283,39 +274,19 @@ export default function AllJobs() {
     if (error) return <p>Failed to load jobs 😢</p>;
 
     const filteredJobs = jobs
-        .filter((job) => {
-            return (
-                (searchTerm === "" ||
-                    job.title
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                    job.companyName
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase())) &&
-                (locationFilter === "" || job.location === locationFilter) &&
-                (levelFilter === "" || job.experience === levelFilter) &&
-                (typeFilter === "" || job.type === typeFilter) &&
-                (educationFilter === "" || job.education === educationFilter) &&
-                (companyFilter === "" || job.companyName === companyFilter) &&
-                (salaryFilter === "" || job.salaryType === salaryFilter)
-            );
-        })
-        .sort((a, b) => {
-            switch (sortOption) {
-                case "date":
-                    return new Date(b.postedAt) - new Date(a.postedAt);
-                case "az":
-                    return a.title.localeCompare(b.title);
-                case "relevance":
-                    return 0;
-                case "location":
-                    return a.location.localeCompare(b.location);
-                case "type":
-                    return a.type.localeCompare(b.type);
-                default:
-                    return 0;
-            }
-        });
+        ?.filter((job) =>
+            searchTerm === ""
+                ? true
+                : job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  job.company?.name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+        )
+        .sort(
+            (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
+        );
 
     return (
         <AllJobsWrapper>
@@ -324,50 +295,57 @@ export default function AllJobs() {
                 setSearchTerm={setSearchTerm}
                 locationFilter={locationFilter}
                 setLocationFilter={setLocationFilter}
-                levelFilter={levelFilter}
-                setLevelFilter={setLevelFilter}
-                typeFilter={typeFilter}
-                setTypeFilter={setTypeFilter}
-                educationFilter={educationFilter}
-                setEducationFilter={setEducationFilter}
-                companyFilter={companyFilter}
-                setCompanyFilter={setCompanyFilter}
-                salaryFilter={salaryFilter}
-                setSalaryFilter={setSalaryFilter}
-                sortOption={sortOption}
-                setSortOption={setSortOption}
             />
 
             <JobsContainer>
                 <JobList>
                     {filteredJobs.map((job) => (
                         <JobsCard key={job.id}>
-                            <JobLeft>
+                            <JobTop>
                                 <JobImg
-                                    src={job.companyLogo}
-                                    alt={job.companyName}
+                                    src={
+                                        job.company?.logo ||
+                                        "/company-images/image(6).jfif"
+                                    }
+                                    alt={job.company?.name || "Company Logo"}
                                 />
                                 <JobText>
                                     <JobTitle>{job.title}</JobTitle>
-                                    <JobPosition>{job.type}</JobPosition>
+                                    <JobPosition>
+                                        {job.company?.name}
+                                    </JobPosition>
                                     <JobInfo>
-                                        <ImportantInfo>
-                                            {job.experience}
-                                        </ImportantInfo>{" "}
-                                        |{" "}
                                         <CompanyName>
-                                            {job.companyName}
-                                        </CompanyName>{" "}
-                                        | <Salary>{job.salary}</Salary> |{" "}
-                                        <Location>{job.location}</Location> |{" "}
-                                        <PostedAt>{job.postedAt}</PostedAt>
+                                            {job.job_type || "Unknown Company"}
+                                        </CompanyName>
+                                        <Location>{job.location}</Location>
+                                        <Salary>
+                                            ${job.salary_min} - $
+                                            {job.salary_max}
+                                        </Salary>
+                                        <PostedAt>
+                                            {new Date(
+                                                job.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                            })}
+                                        </PostedAt>
                                     </JobInfo>
+                                    <JobDescription>
+                                        {job.description.length > 80
+                                            ? job.description.slice(0, 80) +
+                                              "..."
+                                            : job.description}
+                                    </JobDescription>
                                 </JobText>
-                            </JobLeft>
+                            </JobTop>
+
                             <HeartIcon
                                 active={savedJobIds.includes(job.id)}
                                 onClick={() => toggleFavorite(job)}
                             />
+
                             <StyledLinkButtons className="hover-buttons">
                                 <Link to={`jobDetails/${job.id}`}>
                                     <Button variation="secondary" size="medium">
@@ -389,7 +367,6 @@ export default function AllJobs() {
 
             {isHomePage && <Footer />}
 
-            {/* Modal */}
             {modalData && (
                 <ModalOverlay>
                     <ModalContent>
