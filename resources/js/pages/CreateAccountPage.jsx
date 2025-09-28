@@ -179,10 +179,9 @@ export default function CreateAccountPage() {
             login({
                 token: data.token,
                 user: data.user,
-                role: data.user.role, 
+                role: data.user.role,
             });
 
-         
             if (data.user.role === "employer") {
                 navigate("/employerApp/employerDashboard");
             } else if (data.user.role === "job_seeker") {
@@ -196,19 +195,19 @@ export default function CreateAccountPage() {
         onError: (err) => toast.error(err.message),
     });
 
-  const onSubmit = (formData) => {
-    if (!role) {
-        toast.error("Please select a role before continuing");
-        return;
-    }
+    const onSubmit = (formData) => {
+        if (!role) {
+            toast.error("Please select a role before continuing");
+            return;
+        }
 
-    const payload = {
-        ...formData,
-        role, 
+        const payload = {
+            ...formData,
+            role,
+        };
+
+        mutate(payload);
     };
-
-    mutate(payload);
-};
 
     return (
         <>
