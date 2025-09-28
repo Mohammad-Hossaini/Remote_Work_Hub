@@ -168,14 +168,14 @@ export default function CreateAccountPage() {
         onSuccess: () => {
             toast.success("Created account successfully!");
             queryClient.invalidateQueries({ queryKey: ["users"] });
-            reset(); // پاک کردن فرم بعد از ارسال موفق
+            reset(); 
         },
         onError: (err) => toast.error(err.message),
     });
 
     const onSubmit = (data) => {
         const payload = { ...data, role };
-        mutate(payload); // ارسال دیتا به API
+        mutate(payload); 
     };
 
     return (
@@ -357,39 +357,51 @@ export default function CreateAccountPage() {
                                 </InputGroup>
                             </FormGrid>
                         )}
-
                         {/* Extra fields for employer */}
                         {role === "employer" && (
                             <FormGrid>
+                                {/* Company Name */}
                                 <InputGroup>
                                     <Label>Company Name</Label>
                                     <Input
                                         type="text"
                                         placeholder="Enter company name"
-                                        {...register("company_name", {
+                                        {...register("companyName", {
                                             required: "This field is required",
                                         })}
                                     />
-                                    {errors.company_name && (
+                                    {errors.companyName && (
                                         <ErrorMessage>
                                             <TiWarningOutline />{" "}
-                                            {errors.company_name.message}
+                                            {errors.companyName.message}
                                         </ErrorMessage>
                                     )}
                                 </InputGroup>
+
+                                {/* Industry */}
                                 <InputGroup>
-                                    <Label>Website (Optional)</Label>
+                                    <Label>Industry</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter website"
-                                        {...register("website")}
+                                        placeholder="Enter industry"
+                                        {...register("industry", {
+                                            required: "This field is required",
+                                        })}
                                     />
+                                    {errors.industry && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.industry.message}
+                                        </ErrorMessage>
+                                    )}
                                 </InputGroup>
+
+                                {/* Location */}
                                 <InputGroup>
                                     <Label>Location</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter location"
+                                        placeholder="Enter company location"
                                         {...register("location", {
                                             required: "This field is required",
                                         })}
@@ -401,28 +413,24 @@ export default function CreateAccountPage() {
                                         </ErrorMessage>
                                     )}
                                 </InputGroup>
+
+                                {/* Description */}
                                 <InputGroup>
-                                    <Label>Religion (Optional)</Label>
-                                    <Input
-                                        type="text"
-                                        {...register("religion")}
+                                    <Label>Description</Label>
+                                    <TextArea
+                                        placeholder="Write company description"
+                                        {...register("description")}
                                     />
                                 </InputGroup>
+
+                                {/* Website */}
                                 <InputGroup>
-                                    <Label>Contact Person</Label>
+                                    <Label>Website (Optional)</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Enter contact person"
-                                        {...register("contact_person", {
-                                            required: "This field is required",
-                                        })}
+                                        placeholder="Enter website"
+                                        {...register("website")}
                                     />
-                                    {errors.contact_person && (
-                                        <ErrorMessage>
-                                            <TiWarningOutline />{" "}
-                                            {errors.contact_person.message}
-                                        </ErrorMessage>
-                                    )}
                                 </InputGroup>
                             </FormGrid>
                         )}

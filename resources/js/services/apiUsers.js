@@ -28,14 +28,14 @@ export async function createNewUser(userData) {
             throw new Error(createdUser.message || "Failed to register user!");
         }
 
-        // فرض: لاراول بعد از ثبت کاربر توکن برمی‌گرداند
+        // laravel returns a token after rgister
         const token = createdUser.token;
         if (!token) {
             throw new Error("Token not received from registration API!");
         }
 
         // =========================
-        // مرحله 2: ثبت پروفایل برای job_seeker
+        // STEP 1 : SEND THE JOB SEEKER DATA
         // =========================
         if (userData.role === "job_seeker") {
             const profileData = new FormData();
@@ -46,7 +46,6 @@ export async function createNewUser(userData) {
             profileData.append("skills", userData.skills || "");
             profileData.append("description", userData.description || "");
 
-            // اگر فایل رزومه آپلود شده است
             if (userData.resume && userData.resume[0]) {
                 profileData.append("resume", userData.resume[0]);
             }
@@ -54,7 +53,7 @@ export async function createNewUser(userData) {
             const resProfile = await fetch(`${BASE_URL}/profiles`, {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer ${token}`, // ارسال توکن
+                    Authorization: `Bearer ${token}`,
                 },
                 body: profileData,
             });
@@ -67,8 +66,39 @@ export async function createNewUser(userData) {
                 );
             }
         }
+        // =========================
+        // STEP 1 : SEND THE employer DATA
+        // =========================
+        if (userData.role === "employer") {
+            const companyData = {
+                user_id: createdUser.user.id,
+                name: userData.companyName, 
+                industry: userData.industry,
+                location: userData.location,
+                description: userData.description || "",
+                website: userData.website || "",
+            };
 
-        return createdUser; // در صورت موفقیت
+            const resCompany = await fetch(`${BASE_URL}/companies`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(companyData),
+            });
+
+            const companyResult = await resCompany.json();
+            if (!resCompany.ok) {
+                console.error("Company Creation Error:", companyResult);
+                throw new Error(
+                    companyResult.message || "Failed to save company data!"
+                );
+            }
+        }
+
+        return createdUser; 
     } catch (error) {
         console.error("Error in createNewUser:", error);
         throw error;
