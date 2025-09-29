@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('resume')->nullable(); // file path
             $table->string('education')->nullable();
             $table->string('skills')->nullable();
+            $table->string('profile_image')->nullable(); // profile picture
+            $table->string('background_image')->nullable(); // cover photo
             $table->timestamps();
         });
     }
