@@ -5,6 +5,7 @@ import { HiMiniHeart } from "react-icons/hi2";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
+import { RxCross2 } from "react-icons/rx";
 import { useAuth } from "../../../hook/AuthContext";
 import { getJobs } from "../../../services/apiAllJobs";
 import {
@@ -18,7 +19,7 @@ import JobsHeader from "../../JobsHeader";
 
 // ================= Styled Components =================
 const AllJobsWrapper = styled.div`
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     min-height: 100vh;
 `;
 
@@ -38,6 +39,8 @@ const JobList = styled.div`
 `;
 
 const JobsCard = styled.div`
+    min-width: 450px;
+    min-height: 250px;
     display: flex;
     flex-direction: column;
     background: var(--color-grey-0);
@@ -45,16 +48,57 @@ const JobsCard = styled.div`
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-grey-300);
     position: relative;
+    overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
         transform: translateY(-5px);
         box-shadow: var(--shadow-md);
 
-        .hover-buttons {
+        .hover-overlay {
             opacity: 1;
             pointer-events: auto;
         }
+    }
+`;
+
+const HoverOverlay = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: var(--space-16);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(25px);
+    border-top: 1px solid var(--color-grey-200);
+`;
+
+const FancyButton = styled(Button)`
+    min-width: 140px;
+    font-size: var(--font-sm);
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    padding: var(--space-12) var(--space-20);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
     }
 `;
 
@@ -167,8 +211,27 @@ const ModalContent = styled.div`
     padding: 2rem;
     border-radius: var(--radius-lg);
     max-width: 500px;
-    width: 90%;
+    width: 90rem;
+    max-height: 500px;
+    height: 25rem;
     text-align: center;
+    position: relative;
+`;
+
+const CloseButton = styled.button`
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--color-grey-600);
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--color-grey-900);
+    }
 `;
 
 const ModalTitle = styled.h2`
@@ -185,8 +248,16 @@ const ModalDescription = styled.p`
 
 const ModalButtons = styled.div`
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: 1rem;
+    margin-top: 1.5rem;
+`;
+
+const WideButton = styled(Button)`
+    width: 100%;
+    font-size: 1%.5;
+    padding: 0.9rem 1.2rem;
 `;
 
 // ================= Main Component =================
@@ -346,30 +417,35 @@ export default function AllJobs() {
                                 onClick={() => toggleFavorite(job)}
                             />
 
-                            <StyledLinkButtons className="hover-buttons">
-                                <Link to={`jobDetails/${job.id}`}>
-                                    <Button variation="secondary" size="medium">
+                            <HoverOverlay className="hover-overlay">
+                                <Link
+                                    to={`jobDetails/${job.id}`}
+                                    style={{ width: "100%" }}
+                                >
+                                    <FancyButton variation="secondary">
                                         Learn More
-                                    </Button>
+                                    </FancyButton>
                                 </Link>
-                                <Button
+                                <FancyButton
                                     variation="primary"
-                                    size="medium"
                                     onClick={() => handleApplyNow(job)}
                                 >
                                     Apply Now
-                                </Button>
-                            </StyledLinkButtons>
+                                </FancyButton>
+                            </HoverOverlay>
                         </JobsCard>
                     ))}
                 </JobList>
             </JobsContainer>
 
             {isHomePage && <Footer />}
-
             {modalData && (
                 <ModalOverlay>
                     <ModalContent>
+                        <CloseButton onClick={() => setModalData(null)}>
+                            <RxCross2 />
+                        </CloseButton>
+
                         <ModalTitle>{modalData.title}</ModalTitle>
                         <ModalDescription>
                             {modalData.description}
@@ -378,26 +454,26 @@ export default function AllJobs() {
                             {!user?.id ? (
                                 <>
                                     <Link to="/login">
-                                        <Button
+                                        <WideButton
                                             variation="secondary"
                                             size="medium"
                                         >
                                             Log in
-                                        </Button>
+                                        </WideButton>
                                     </Link>
                                     <Link to="/createAccount">
-                                        <Button
+                                        <WideButton
                                             variation="primary"
                                             size="medium"
                                         >
                                             Sign up
-                                        </Button>
+                                        </WideButton>
                                     </Link>
                                 </>
                             ) : (
-                                <Button onClick={() => setModalData(null)}>
+                                <WideButton onClick={() => setModalData(null)}>
                                     Close
-                                </Button>
+                                </WideButton>
                             )}
                         </ModalButtons>
                     </ModalContent>
