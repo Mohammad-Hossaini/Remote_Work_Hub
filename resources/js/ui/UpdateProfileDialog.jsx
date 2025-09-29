@@ -1,4 +1,3 @@
-
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -98,7 +97,9 @@ export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
     } = useForm({
         defaultValues: {
             ...user,
-            Work_Experience: user.Work_Experience?.length ? user.Work_Experience : [{}],
+            Work_Experience: user.Work_Experience?.length
+                ? user.Work_Experience
+                : [{}],
             Educations: user.Educations?.length ? user.Educations : [{}],
         },
     });
@@ -109,12 +110,15 @@ export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
     useEffect(() => {
         reset({
             ...user,
-            Work_Experience: user.Work_Experience?.length ? user.Work_Experience : [{}],
+            Work_Experience: user.Work_Experience?.length
+                ? user.Work_Experience
+                : [{}],
             Educations: user.Educations?.length ? user.Educations : [{}],
         });
     }, [user, reset]);
 
-    const handleNext = () => setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
+    const handleNext = () =>
+        setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
     const handlePrev = () => setSlideIndex((prev) => Math.max(prev - 1, 0));
 
     const onSubmit = async (data) => {
@@ -187,15 +191,35 @@ export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
                                 {workArray.fields.map((field, index) => (
                                     <div key={field.id}>
                                         <label>Job Title</label>
-                                        <input {...register(`Work_Experience.${index}.jobTitle`)} />
+                                        <input
+                                            {...register(
+                                                `Work_Experience.${index}.jobTitle`
+                                            )}
+                                        />
                                         <label>Company</label>
-                                        <input {...register(`Work_Experience.${index}.company`)} />
+                                        <input
+                                            {...register(
+                                                `Work_Experience.${index}.company`
+                                            )}
+                                        />
                                         <label>From</label>
-                                        <input {...register(`Work_Experience.${index}.from`)} />
+                                        <input
+                                            {...register(
+                                                `Work_Experience.${index}.from`
+                                            )}
+                                        />
                                         <label>To</label>
-                                        <input {...register(`Work_Experience.${index}.to`)} />
+                                        <input
+                                            {...register(
+                                                `Work_Experience.${index}.to`
+                                            )}
+                                        />
                                         <label>Job Level</label>
-                                        <input {...register(`Work_Experience.${index}.jobLevel`)} />
+                                        <input
+                                            {...register(
+                                                `Work_Experience.${index}.jobLevel`
+                                            )}
+                                        />
                                     </div>
                                 ))}
                             </Section>
@@ -208,27 +232,53 @@ export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
                                 {eduArray.fields.map((field, index) => (
                                     <div key={field.id}>
                                         <label>School</label>
-                                        <input {...register(`Educations.${index}.school`)} />
+                                        <input
+                                            {...register(
+                                                `Educations.${index}.school`
+                                            )}
+                                        />
                                         <label>Degree</label>
-                                        <input {...register(`Educations.${index}.educationalAttainment`)} />
+                                        <input
+                                            {...register(
+                                                `Educations.${index}.educationalAttainment`
+                                            )}
+                                        />
                                         <label>From</label>
-                                        <input {...register(`Educations.${index}.from`)} />
+                                        <input
+                                            {...register(
+                                                `Educations.${index}.from`
+                                            )}
+                                        />
                                         <label>To</label>
-                                        <input {...register(`Educations.${index}.to`)} />
+                                        <input
+                                            {...register(
+                                                `Educations.${index}.to`
+                                            )}
+                                        />
                                         <label>Description</label>
-                                        <textarea {...register(`Educations.${index}.description`)} />
+                                        <textarea
+                                            {...register(
+                                                `Educations.${index}.description`
+                                            )}
+                                        />
                                     </div>
                                 ))}
                             </Section>
                         </Slide>
 
                         <CarouselControls>
-                            <button type="button" onClick={handlePrev} disabled={slideIndex === 0}>
+                            <button
+                                type="button"
+                                onClick={handlePrev}
+                                disabled={slideIndex === 0}
+                            >
                                 <FaChevronLeft /> Prev
                             </button>
 
                             {slideIndex === slides.length - 1 ? (
-                                <button type="submit" disabled={isSubmitting}>Save</button>
+                                <button type="submit" disabled={isSubmitting}>
+                                    Save
+                                </button>
                             ) : (
                                 <button type="button" onClick={handleNext}>
                                     Next <FaChevronRight />

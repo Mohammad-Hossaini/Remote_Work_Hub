@@ -169,7 +169,7 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
                 localStorage.setItem("authUser", JSON.stringify(updatedUser));
             }
 
-            setPreview("/default_bg_image.jpeg"); 
+            setPreview("/default_bg_image.jpeg");
             toast.success("Background image deleted!");
             if (onBgUpdate) onBgUpdate("/default_bg_image.jpeg");
         } catch (err) {
