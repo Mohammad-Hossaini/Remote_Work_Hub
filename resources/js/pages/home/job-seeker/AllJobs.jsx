@@ -34,12 +34,13 @@ const JobsContainer = styled.div`
 const JobList = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.6rem;
+    gap: 2.5rem;
     padding-top: 1rem;
 `;
 
 const JobsCard = styled.div`
-    min-width: 450px;
+    /* min-width: 450px; */
+    min-width: 320px;
     min-height: 250px;
     display: flex;
     flex-direction: column;

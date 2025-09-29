@@ -1,6 +1,9 @@
 import { FiEdit } from "react-icons/fi";
 import { MdOutlineCameraAlt } from "react-icons/md";
 import { useAuth } from "../../hook/AuthContext";
+import EditImagesDialog from "../../ui/EditImagesDialog";
+import UpdateImagesDialog from "../../ui/UpdateImagesDialog";
+import UpdateProfileDialog from "../../ui/UpdateProfileDialog";
 import "./BackGroundInfo.css";
 function BackGroundInfo() {
     const { user } = useAuth();
@@ -23,11 +26,13 @@ function BackGroundInfo() {
                     alt="Background"
                     className="bg-image"
                 />
-
-                {/* Edit button for background */}
-                <button className="edit-btn edit-bg-bottom">
-                    <MdOutlineCameraAlt />
-                </button>
+                <EditImagesDialog
+                    trigger={
+                        <button className="edit-btn edit-bg-bottom">
+                            <MdOutlineCameraAlt />
+                        </button>
+                    }
+                />
 
                 <img
                     src={"/profile/default.jpg"}
@@ -36,14 +41,22 @@ function BackGroundInfo() {
                 />
 
                 {/* Edit button for profile photo */}
-                <button className="edit-btn edit-profile">
-                    <MdOutlineCameraAlt />
-                </button>
+                <UpdateImagesDialog
+                    trigger={
+                        <button className="edit-btn edit-profile">
+                            <MdOutlineCameraAlt />
+                        </button>
+                    }
+                />
 
                 {/* ✅ Edit button for profile info (name, desc, skills …) */}
-                <button className="edit-btn edit-info">
-                    <FiEdit />
-                </button>
+                <UpdateProfileDialog
+                    trigger={
+                        <button className="edit-btn edit-info">
+                            <FiEdit />
+                        </button>
+                    }
+                />
             </div>
 
             {/* BASIC INFO */}
@@ -77,18 +90,7 @@ function BackGroundInfo() {
                         <strong>Email:</strong> {fullUser.email || "N/A"} <br />
                         <strong>Phone:</strong> {profile.phone || "N/A"} <br />
                         <strong>Role:</strong> {fullUser.role || "N/A"} <br />
-                        <strong>Resume:</strong>{" "}
-                        {profile.resume ? (
-                            <a
-                                href={`/${profile.resume}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                View Resume
-                            </a>
-                        ) : (
-                            "N/A"
-                        )}
+                        <strong>Education:</strong> {profile.education || "N/A"}{" "}
                         <br />
                     </p>
                 </div>

@@ -86,22 +86,24 @@ const ActionButtons = styled.div`
 `;
 
 export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
-    const { user, login } = useAuth();
+    const { user, setUser } = useAuth();
     const [previewImage, setPreviewImage] = useState("/profile/default.jpg");
     const fileInputRef = useRef(null);
 
+    // Load actual user photo
     useEffect(() => {
-        if (user) {
-            setPreviewImage(user.profilePhoto || "/profile/default.jpg");
+        if (user && user.profilePhoto) {
+            setPreviewImage(user.profilePhoto);
         }
     }, [user]);
 
-    // Delete profile photo immediately
     const handleDelete = async () => {
         try {
-            await updateUser(user.id, { profilePhoto: "" });
-            const updatedUser = { ...user, profilePhoto: "" };
-            login(updatedUser);
+            const updatedUser = await updateUser(user.id, { profilePhoto: "" });
+            if (setUser) {
+                setUser(updatedUser);
+                localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            }
             setPreviewImage("/profile/default.jpg");
             if (onPhotoUpdate) onPhotoUpdate("/profile/default.jpg");
             toast.success("Profile photo deleted!");
@@ -119,21 +121,21 @@ export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = (event) => {
-                setPreviewImage(event.target.result);
-            };
+            reader.onload = (event) => setPreviewImage(event.target.result);
             reader.readAsDataURL(file);
         }
     };
 
-    // Save new profile photo
     const handleSave = async () => {
         try {
             const updatedUser = await updateUser(user.id, {
                 profilePhoto: previewImage,
             });
-            login(updatedUser);
-            if (onPhotoUpdate) onPhotoUpdate(previewImage); // notify parent
+            if (setUser) {
+                setUser(updatedUser);
+                localStorage.setItem("authUser", JSON.stringify(updatedUser));
+            }
+            if (onPhotoUpdate) onPhotoUpdate(previewImage);
             toast.success("Profile photo updated!");
         } catch (err) {
             console.error(err);
@@ -147,15 +149,15 @@ export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    <h2>Update Your Profile</h2>
+                    <h2>Update Your Profile Photo</h2>
 
                     <PhotoWrapper>
                         <ProfileImage src={previewImage} alt="Profile" />
                         <input
                             type="file"
+                            accept="image/*"
                             ref={fileInputRef}
                             style={{ display: "none" }}
-                            accept="image/*"
                             onChange={handleFileChange}
                         />
                     </PhotoWrapper>

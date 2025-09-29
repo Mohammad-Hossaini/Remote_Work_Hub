@@ -4,7 +4,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import styled from "styled-components";
-import { updateUser } from "../services/apiUsers"; // مسیر فایل شما
+import { useAuth } from "../hook/AuthContext";
+import { updateUser } from "../services/apiUsers";
 
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: rgba(0, 0, 0, 0.3);
@@ -83,7 +84,8 @@ const Section = styled.div`
     }
 `;
 
-export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
+export default function UpdateProfileDialog({ trigger, onUpdate }) {
+    const { user, setUser } = useAuth();
     const [open, setOpen] = useState(false);
     const [slideIndex, setSlideIndex] = useState(0);
     const slides = ["basic", "work", "education"];
@@ -97,29 +99,30 @@ export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
     } = useForm({
         defaultValues: {
             ...user,
-            Work_Experience: user.Work_Experience?.length
+            Work_Experience: user?.Work_Experience?.length
                 ? user.Work_Experience
                 : [{}],
-            Educations: user.Educations?.length ? user.Educations : [{}],
+            Educations: user?.Educations?.length ? user.Educations : [{}],
         },
     });
 
     const workArray = useFieldArray({ control, name: "Work_Experience" });
     const eduArray = useFieldArray({ control, name: "Educations" });
 
+    // Reset form when user changes
     useEffect(() => {
         reset({
             ...user,
-            Work_Experience: user.Work_Experience?.length
+            Work_Experience: user?.Work_Experience?.length
                 ? user.Work_Experience
                 : [{}],
-            Educations: user.Educations?.length ? user.Educations : [{}],
+            Educations: user?.Educations?.length ? user.Educations : [{}],
         });
     }, [user, reset]);
 
     const handleNext = () =>
         setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
-    const handlePrev = () => setSlideIndex((prev) => Math.max(prev - 1, 0));
+    const handlePrev = () => setSlideIndex((prev) => Math.max(prev - 0, 0));
 
     const onSubmit = async (data) => {
         try {
@@ -143,14 +146,18 @@ export default function UpdateProfileDialog({ trigger, user = {}, onUpdate }) {
 
             const updated = await updateUser(user.id, payload);
 
-            // اصلاح شده: بررسی وجود onUpdate
-            if (onUpdate) onUpdate(updated);
+            // Update AuthContext & localStorage
+            if (setUser) {
+                setUser(updated);
+                localStorage.setItem("authUser", JSON.stringify(updated));
+            }
 
+            if (onUpdate) onUpdate(updated);
             setOpen(false);
             toast.success("Profile updated successfully!");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to update user.");
+            toast.error("Failed to update profile.");
         }
     };
 
