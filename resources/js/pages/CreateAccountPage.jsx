@@ -1,4 +1,3 @@
-// CreateAccountPage.jsx
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -219,7 +218,7 @@ export default function CreateAccountPage() {
                         <FormGrid>
                             {/* First Name */}
                             <InputGroup>
-                                <Label>First Name</Label>
+                                <Label>Name</Label>
                                 <Input
                                     type="text"
                                     placeholder="Enter your first name"
@@ -236,24 +235,6 @@ export default function CreateAccountPage() {
                             </InputGroup>
 
                             {/* Last Name */}
-                            <InputGroup>
-                                <Label>Last Name</Label>
-                                <Input
-                                    type="text"
-                                    placeholder="Enter your last name"
-                                    {...register("lastName", {
-                                        required: "This field is required",
-                                    })}
-                                />
-                                {errors.lastName && (
-                                    <ErrorMessage>
-                                        <TiWarningOutline />{" "}
-                                        {errors.lastName.message}
-                                    </ErrorMessage>
-                                )}
-                            </InputGroup>
-
-                            {/* Password */}
                             <InputGroup>
                                 <Label>Password</Label>
                                 <Input
@@ -291,25 +272,6 @@ export default function CreateAccountPage() {
                                     </ErrorMessage>
                                 )}
                             </InputGroup>
-
-                            {/* Phone */}
-                            <InputGroup>
-                                <Label>Phone Number</Label>
-                                <Input
-                                    type="tel"
-                                    placeholder="Enter your phone number"
-                                    {...register("phone", {
-                                        required: "This field is required",
-                                    })}
-                                />
-                                {errors.phone && (
-                                    <ErrorMessage>
-                                        <TiWarningOutline />{" "}
-                                        {errors.phone.message}
-                                    </ErrorMessage>
-                                )}
-                            </InputGroup>
-
                             {/* Email */}
                             <InputGroup>
                                 <Label>Email</Label>
@@ -346,6 +308,56 @@ export default function CreateAccountPage() {
                         {/* Extra fields for jobseeker */}
                         {role === "job_seeker" && (
                             <FormGrid>
+                                {/* First Name */}
+                                <InputGroup>
+                                    <Label>First Name</Label>
+                                    <Input
+                                        type="text"
+                                        placeholder="Enter your first name"
+                                        {...register("firstName", {
+                                            required: "This field is required",
+                                        })}
+                                    />
+                                    {errors.firstName && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.firstName.message}
+                                        </ErrorMessage>
+                                    )}
+                                </InputGroup>
+                                {/* Last Name */}
+                                <InputGroup>
+                                    <Label>Last Name</Label>
+                                    <Input
+                                        type="text"
+                                        placeholder="Enter your last name"
+                                        {...register("lastName", {
+                                            required: "This field is required",
+                                        })}
+                                    />
+                                    {errors.lastName && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.lastName.message}
+                                        </ErrorMessage>
+                                    )}
+                                </InputGroup>
+                                <InputGroup>
+                                    <Label>Phone Number</Label>
+                                    <Input
+                                        type="tel"
+                                        placeholder="Enter your phone number"
+                                        {...register("phone", {
+                                            required: "This field is required",
+                                        })}
+                                    />
+                                    {errors.phone && (
+                                        <ErrorMessage>
+                                            <TiWarningOutline />{" "}
+                                            {errors.phone.message}
+                                        </ErrorMessage>
+                                    )}
+                                </InputGroup>
                                 <InputGroup>
                                     <Label>Description</Label>
                                     <TextArea
