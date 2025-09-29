@@ -10,13 +10,15 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
    // Register new user
-    public function register(Request $request)
+   public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'role' => 'required|in:admin,employer,job_seeker',
+            'profile' => 'nullable|array',   // optional profile data
+            'company' => 'nullable|array',   // optional company data
         ]);
 
         // Create user
@@ -27,16 +29,20 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
-        // If user is a job seeker, create profile if missing
-        if ($request->role === 'job_seeker' && !$user->profile) {
-            $user->profile()->create([]);
-        }
+        // If user is a job seeker
+        if ($request->role === 'job_seeker') {
+            if ($request->filled('profile')) {
+                // Create profile with provided data
+                $user->profile()->create($request->profile);
+        }}
 
-        // If user is an employer, create company if missing
-        if ($request->role === 'employer' && !$user->company) {
-            $user->company()->create([]);
+        // If user is an employer
+        if ($request->role === 'employer') {
+            if ($request->filled('company')) {
+                // Create company with provided data
+                $user->company()->create($request->company);
         }
-
+    }
         // Generate token
         $token = $user->createToken('api_token')->plainTextToken;
 
@@ -46,6 +52,7 @@ class AuthController extends Controller
             'token' => $token
         ]);
     }
+
 
     // Login
     public function login(Request $request)
