@@ -18,7 +18,9 @@ function JobSeekerDashboard() {
             {/* Welcome Section */}
             <div className="messageBox">
                 <h1 className="welcomeMessage">
-                    Welcome back, {user?.data?.user?.name || user?.user?.name}
+                    Welcome back,{" "}
+                    {user?.data?.user?.profile?.first_name || user?.user?.name}{" "}
+                    {user?.data?.user?.profile?.last_name}
                     👋
                 </h1>
                 <p>Today is July 23, 2025</p>

@@ -176,63 +176,18 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
                                 <input {...register("firstName")} />
                                 <label>Last Name</label>
                                 <input {...register("lastName")} />
+
+                                {/* =============== */}
                                 <label>Email</label>
                                 <input {...register("email")} />
-                                <label>Location</label>
-                                <input {...register("location")} />
                                 <label>Mobile</label>
                                 <input {...register("mobile")} />
                                 <label>Description</label>
                                 <textarea {...register("description")} />
-                                <label>Profile Photo URL</label>
-                                <input {...register("profilePhoto")} />
-                                <label>Background Image URL</label>
-                                <input {...register("bg_image")} />
+                                <label>Resume</label>
+                                <textarea {...register("resume")} />
                             </Section>
                         </Slide>
-
-                        {/* Work Experience */}
-                        <Slide active={slides[slideIndex] === "work"}>
-                            <Section>
-                                <h2>Work Experience</h2>
-                                {workArray.fields.map((field, index) => (
-                                    <div key={field.id}>
-                                        <label>Job Title</label>
-                                        <input
-                                            {...register(
-                                                `Work_Experience.${index}.jobTitle`
-                                            )}
-                                        />
-                                        <label>Company</label>
-                                        <input
-                                            {...register(
-                                                `Work_Experience.${index}.company`
-                                            )}
-                                        />
-                                        <label>From</label>
-                                        <input
-                                            {...register(
-                                                `Work_Experience.${index}.from`
-                                            )}
-                                        />
-                                        <label>To</label>
-                                        <input
-                                            {...register(
-                                                `Work_Experience.${index}.to`
-                                            )}
-                                        />
-                                        <label>Job Level</label>
-                                        <input
-                                            {...register(
-                                                `Work_Experience.${index}.jobLevel`
-                                            )}
-                                        />
-                                    </div>
-                                ))}
-                            </Section>
-                        </Slide>
-
-                        {/* Education */}
                         <Slide active={slides[slideIndex] === "education"}>
                             <Section>
                                 <h2>Education</h2>

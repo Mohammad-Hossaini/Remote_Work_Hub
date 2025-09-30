@@ -9,7 +9,8 @@ import { useAuth } from "../hook/AuthContext";
 const HeaderWrapper = styled.div`
     max-width: 120rem;
     text-align: center;
-    margin: 1rem auto;
+    margin: 0 auto;
+    margin-top: 1rem;
 `;
 
 const TopRow = styled.div`
@@ -179,7 +180,7 @@ export default function JobsHeader({
 
     // Show filters/search only on Home or Dashboard pages (not Home → JobDetails)
     const showFiltersSection =
-        (isHomePage || isDashboard) && !(isJobDetailsPage && !isHomePage);
+        isDashboard && !(isJobDetailsPage && !isHomePage);
 
     // Show login/signup buttons on Home, Login, Register, or Home → JobDetails
     const showAuthButtons =

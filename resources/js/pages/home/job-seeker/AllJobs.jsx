@@ -16,6 +16,7 @@ import {
 import Button from "../../../ui/Button";
 import Footer from "../../Footer";
 import JobsHeader from "../../JobsHeader";
+import SearchBar from "../../SearchBar";
 
 // ================= Styled Components =================
 const AllJobsWrapper = styled.div`
@@ -361,125 +362,133 @@ export default function AllJobs() {
         );
 
     return (
-        <AllJobsWrapper>
-            <JobsHeader
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                locationFilter={locationFilter}
-                setLocationFilter={setLocationFilter}
-            />
+        <>
+            <AllJobsWrapper>
+                <JobsHeader
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    locationFilter={locationFilter}
+                    setLocationFilter={setLocationFilter}
+                />
+                <SearchBar />
 
-            <JobsContainer>
-                <JobList>
-                    {filteredJobs.map((job) => (
-                        <JobsCard key={job.id}>
-                            <JobTop>
-                                <JobImg
-                                    src={
-                                        job.company?.logo ||
-                                        "/company-images/image(6).jfif"
-                                    }
-                                    alt={job.company?.name || "Company Logo"}
+                <JobsContainer>
+                    <JobList>
+                        {filteredJobs.map((job) => (
+                            <JobsCard key={job.id}>
+                                <JobTop>
+                                    <JobImg
+                                        src={
+                                            job.company?.logo ||
+                                            "/company-images/image(6).jfif"
+                                        }
+                                        alt={
+                                            job.company?.name || "Company Logo"
+                                        }
+                                    />
+                                    <JobText>
+                                        <JobTitle>{job.title}</JobTitle>
+                                        <JobPosition>
+                                            {job.company?.name}
+                                        </JobPosition>
+                                        <JobInfo>
+                                            <CompanyName>
+                                                {job.job_type ||
+                                                    "Unknown Company"}
+                                            </CompanyName>
+                                            <Location>{job.location}</Location>
+                                            <Salary>
+                                                ${job.salary_min} - $
+                                                {job.salary_max}
+                                            </Salary>
+                                            <PostedAt>
+                                                {new Date(
+                                                    job.created_at
+                                                ).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                })}
+                                            </PostedAt>
+                                        </JobInfo>
+                                        <JobDescription>
+                                            {job.description.length > 80
+                                                ? job.description.slice(0, 80) +
+                                                  "..."
+                                                : job.description}
+                                        </JobDescription>
+                                    </JobText>
+                                </JobTop>
+
+                                <HeartIcon
+                                    active={savedJobIds.includes(job.id)}
+                                    onClick={() => toggleFavorite(job)}
                                 />
-                                <JobText>
-                                    <JobTitle>{job.title}</JobTitle>
-                                    <JobPosition>
-                                        {job.company?.name}
-                                    </JobPosition>
-                                    <JobInfo>
-                                        <CompanyName>
-                                            {job.job_type || "Unknown Company"}
-                                        </CompanyName>
-                                        <Location>{job.location}</Location>
-                                        <Salary>
-                                            ${job.salary_min} - $
-                                            {job.salary_max}
-                                        </Salary>
-                                        <PostedAt>
-                                            {new Date(
-                                                job.created_at
-                                            ).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                            })}
-                                        </PostedAt>
-                                    </JobInfo>
-                                    <JobDescription>
-                                        {job.description.length > 80
-                                            ? job.description.slice(0, 80) +
-                                              "..."
-                                            : job.description}
-                                    </JobDescription>
-                                </JobText>
-                            </JobTop>
 
-                            <HeartIcon
-                                active={savedJobIds.includes(job.id)}
-                                onClick={() => toggleFavorite(job)}
-                            />
-
-                            <HoverOverlay className="hover-overlay">
-                                <Link
-                                    to={`jobDetails/${job.id}`}
-                                    style={{ width: "100%" }}
-                                >
-                                    <FancyButton variation="secondary">
-                                        Learn More
+                                <HoverOverlay className="hover-overlay">
+                                    <Link
+                                        to={`jobDetails/${job.id}`}
+                                        style={{ width: "100%" }}
+                                    >
+                                        <FancyButton variation="secondary">
+                                            Learn More
+                                        </FancyButton>
+                                    </Link>
+                                    <FancyButton
+                                        variation="primary"
+                                        onClick={() => handleApplyNow(job)}
+                                    >
+                                        Apply Now
                                     </FancyButton>
-                                </Link>
-                                <FancyButton
-                                    variation="primary"
-                                    onClick={() => handleApplyNow(job)}
-                                >
-                                    Apply Now
-                                </FancyButton>
-                            </HoverOverlay>
-                        </JobsCard>
-                    ))}
-                </JobList>
-            </JobsContainer>
+                                </HoverOverlay>
+                            </JobsCard>
+                        ))}
+                    </JobList>
+                </JobsContainer>
 
-            {isHomePage && <Footer />}
-            {modalData && (
-                <ModalOverlay>
-                    <ModalContent>
-                        <CloseButton onClick={() => setModalData(null)}>
-                            <RxCross2 />
-                        </CloseButton>
+                {isHomePage && <Footer />}
+                {modalData && (
+                    <ModalOverlay>
+                        <ModalContent>
+                            <CloseButton onClick={() => setModalData(null)}>
+                                <RxCross2 />
+                            </CloseButton>
 
-                        <ModalTitle>{modalData.title}</ModalTitle>
-                        <ModalDescription>
-                            {modalData.description}
-                        </ModalDescription>
-                        <ModalButtons>
-                            {!user?.id ? (
-                                <>
-                                    <Link to="/login">
-                                        <WideButton
-                                            variation="secondary"
-                                            size="medium"
-                                        >
-                                            Log in
-                                        </WideButton>
-                                    </Link>
-                                    <Link to="/createAccount">
-                                        <WideButton
-                                            variation="primary"
-                                            size="medium"
-                                        >
-                                            Sign up
-                                        </WideButton>
-                                    </Link>
-                                </>
-                            ) : (
-                                <WideButton onClick={() => setModalData(null)}>
-                                    Close
-                                </WideButton>
-                            )}
-                        </ModalButtons>
-                    </ModalContent>
-                </ModalOverlay>
-            )}
-        </AllJobsWrapper>
+                            <ModalTitle>{modalData.title}</ModalTitle>
+                            <ModalDescription>
+                                {modalData.description}
+                            </ModalDescription>
+                            <ModalButtons>
+                                {!user?.id ? (
+                                    <>
+                                        <Link to="/login">
+                                            <WideButton
+                                                variation="secondary"
+                                                size="medium"
+                                            >
+                                                Log in
+                                            </WideButton>
+                                        </Link>
+                                        <Link to="/createAccount">
+                                            <WideButton
+                                                variation="primary"
+                                                size="medium"
+                                            >
+                                                Sign up
+                                            </WideButton>
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <WideButton
+                                        onClick={() => setModalData(null)}
+                                    >
+                                        Close
+                                    </WideButton>
+                                )}
+                            </ModalButtons>
+                        </ModalContent>
+                    </ModalOverlay>
+                )}
+            </AllJobsWrapper>
+        </>
     );
 }
