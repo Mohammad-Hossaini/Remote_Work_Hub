@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { CiWarning } from "react-icons/ci";
 import styled from "styled-components";
+import { useAuth } from "../hook/AuthContext";
 import { createJob } from "../services/apiAllJobs";
 
 // Styled components
@@ -120,6 +121,8 @@ const IconButton = styled.button`
 `;
 
 export default function JobModal({ open, onOpenChange }) {
+    const { user } = useAuth();
+    console.log("compnay data :", user?.data?.user?.company?.id);
     const queryClient = useQueryClient();
 
     const {
@@ -145,7 +148,7 @@ export default function JobModal({ open, onOpenChange }) {
 
     const onSubmit = (data) => {
         const jobData = {
-            company_id: parseInt(data.company_id),
+            company_id: user?.data?.user?.company?.id,
             title: data.title,
             description: data.description,
             requirements: data.requirements || "",
@@ -172,20 +175,15 @@ export default function JobModal({ open, onOpenChange }) {
 
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Company ID */}
-                        <Fieldset>
+                        {/* <Fieldset>
                             <Label>Company ID</Label>
-                            <Input
-                                type="number"
-                                {...register("company_id", {
-                                    required: "Company ID is required",
-                                })}
-                            />
+                            <Input type="number" {...register("company_id")} />
                             {errors.company_id && (
                                 <StyledWarning>
                                     <CiWarning /> {errors.company_id.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
+                        </Fieldset> */}
 
                         {/* Title */}
                         <Fieldset>
