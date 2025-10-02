@@ -1,6 +1,6 @@
 .main-container {
     background-color: #e6f2ef;
-    height: 70vh;
+    height: 65vh;
 }
 
 .content-container {
@@ -49,42 +49,52 @@
     width: 60%;
     height: 7rem;
     position: absolute;
-    top: 34rem;
+    top: 33rem;
     left: 2.4rem;
     border-radius: 5px;
+    display: flex; 
+    align-items: center;
+    padding: 0 1rem;
+    gap: 1.2rem; 
+}
+.search-form {
+    display: flex;
+    flex: 1;
+    gap: 1.2rem;
 }
 .pop-search {
     margin-left: 2.4rem;
-    font-size: 1.3rem;
-    margin-top: 14rem;
+    font-size: 1.2rem;
+    margin-top: 13rem;
     line-height: 1.02;
     font-weight: 500;
     color: var(--color-grey-900);
 }
 .first-input {
-    margin-left: 1.4rem;
-    width: 22rem;
-    padding: 1.2rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
 }
 .type-label {
     color: var(--color-grey-900);
     font-size: 1.2rem;
+    margin-bottom: 0.4rem;
 }
 .type-input {
     width: 100%;
     border: none;
     font-size: 1.2rem;
+    padding: 0.8rem;
+    border-radius: 5px;
 }
 
-.buttons {
-    width: 8rem;
+.apply-buttons {
+    width: 10rem;
     padding: 1.2rem 1.4rem;
     border-radius: 5px;
-    position: absolute;
-    bottom: 1.2rem;
-    right: 3rem;
-    justify-content: center;
-    align-items: center;
     background-color: #114a38;
     color: var(--color-grey-0);
+    text-align: center;
+    cursor: pointer;
 }

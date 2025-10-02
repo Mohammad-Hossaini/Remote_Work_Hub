@@ -194,7 +194,6 @@ export default function JobsHeader({
             <TopRow>
                 <SearchWrapper>
                     <StyledH2>Remote Work Hub</StyledH2>
-
                     {showFiltersSection && (
                         <>
                             <SearchBar

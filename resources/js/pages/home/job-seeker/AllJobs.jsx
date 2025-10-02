@@ -370,7 +370,7 @@ export default function AllJobs() {
                     locationFilter={locationFilter}
                     setLocationFilter={setLocationFilter}
                 />
-                <SearchBar />
+                {isHomePage && <SearchBar />}
 
                 <JobsContainer>
                     <JobList>
