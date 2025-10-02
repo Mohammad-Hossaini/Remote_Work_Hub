@@ -49,6 +49,7 @@ const Section = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+    padding-top: 1.8rem;
 
     label {
         font-weight: 600;
@@ -123,7 +124,6 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
             email: user?.data?.user?.email || "",
             mobile: user?.data?.user?.profile?.phone || "",
             description: user?.data?.user?.profile?.description || "",
-            resume: user?.data?.user?.profile?.resume || "",
             skills: user?.data?.user?.profile?.skills || "",
         },
     });
@@ -137,7 +137,6 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
             email: user?.data?.user?.email || "",
             mobile: user?.data?.user?.profile?.phone || "",
             description: user?.data?.user?.profile?.description || "",
-            resume: user?.data?.user?.profile?.resume || "",
             skills: user?.data?.user?.profile?.skills || "",
         });
     }, [user, reset]);
@@ -152,10 +151,7 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
             formData.append("phone", data.mobile);
             formData.append("description", data.description);
             formData.append("skills", data.skills);
-
-            if (data.resume && data.resume[0]) {
-                formData.append("resume", data.resume[0]); // the selected file
-            }
+            data.resume && data.resume.length > 0;
 
             const res = await fetch(
                 `http://127.0.0.1:8000/api/profiles/${user?.data?.user?.profile?.id}`,

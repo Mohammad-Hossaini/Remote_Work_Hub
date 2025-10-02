@@ -118,7 +118,6 @@ const LogoutButton = styled.button`
     }
 `;
 
-
 export default function ProfileDialog({ children }) {
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
@@ -182,7 +181,8 @@ export default function ProfileDialog({ children }) {
                     </ProfileImageWrapper>
 
                     <Description>
-                        {fullUser?.description || "No description available."}
+                        {user?.data?.user?.profile?.description ||
+                            "No description available."}
                     </Description>
 
                     <ButtonContainer>
