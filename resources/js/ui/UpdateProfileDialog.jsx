@@ -1,73 +1,54 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { RxCross1 } from "react-icons/rx";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
-import { updateUser } from "../services/apiUsers";
 
+// Styled components
 const DialogOverlay = styled(RadixDialog.Overlay)`
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
     position: fixed;
     inset: 0;
 `;
 
 const DialogContent = styled(RadixDialog.Content)`
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 70rem;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: #fff;
+    transform: translate(-50%, -120%);
+    width: 60rem;
+    max-height: 80vh;
+    background-color: #fff;
     border-radius: 1rem;
-    padding: 2rem;
+    padding: 3rem 2rem 4rem;
+    overflow-y: auto;
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
 `;
 
-const Slide = styled.div`
-    display: ${(props) => (props.active ? "block" : "none")};
+const Title = styled.h2`
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-size: 2rem;
+    font-weight: 600;
 `;
 
-const CarouselControls = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.6rem;
-
-    button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        font-size: 1.6rem;
-        padding: 0.8rem 1.2rem;
-        background: #087f5b;
-        color: #fff;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        &:hover:not(:disabled) {
-            background: #066f4b;
-        }
-    }
+const CloseIcon = styled(RxCross1)`
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 2rem;
+    cursor: pointer;
 `;
 
 const Section = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    font-family: "Inter", sans-serif;
 
     label {
         font-weight: 600;
@@ -84,72 +65,130 @@ const Section = styled.div`
     }
 `;
 
+const BottomActions = styled.div`
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #ced4da;
+    }
+
+    button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1.4rem;
+        border-radius: 0.5rem;
+        border: none;
+        cursor: pointer;
+    }
+
+    .cancel {
+        background-color: #f1f3f5;
+        color: #495057;
+    }
+
+    .save {
+        background-color: #087f5b;
+        color: #fff;
+
+        &:hover {
+            background-color: #066f4b;
+        }
+    }
+`;
+
 export default function UpdateProfileDialog({ trigger, onUpdate }) {
     const { user, setUser } = useAuth();
+    console.log("user info:", user);
     const [open, setOpen] = useState(false);
-    const [slideIndex, setSlideIndex] = useState(0);
-    const slides = ["basic", "work", "education"];
 
     const {
         register,
         handleSubmit,
-        control,
         reset,
         formState: { isSubmitting },
     } = useForm({
         defaultValues: {
-            ...user,
-            Work_Experience: user?.Work_Experience?.length
-                ? user.Work_Experience
-                : [{}],
-            Educations: user?.Educations?.length ? user.Educations : [{}],
+            firstName: user?.data?.user?.profile?.first_name || "",
+            lastName: user?.data?.user?.profile?.last_name || "",
+            education: user?.data?.user?.profile?.education || "",
+            email: user?.data?.user?.email || "",
+            mobile: user?.data?.user?.profile?.phone || "",
+            description: user?.data?.user?.profile?.description || "",
+            resume: user?.data?.user?.profile?.resume || "",
+            skills: user?.data?.user?.profile?.skills || "",
         },
     });
-
-    const workArray = useFieldArray({ control, name: "Work_Experience" });
-    const eduArray = useFieldArray({ control, name: "Educations" });
 
     // Reset form when user changes
     useEffect(() => {
         reset({
-            ...user,
-            Work_Experience: user?.Work_Experience?.length
-                ? user.Work_Experience
-                : [{}],
-            Educations: user?.Educations?.length ? user.Educations : [{}],
+            firstName: user?.data?.user?.profile?.first_name || "",
+            lastName: user?.data?.user?.profile?.last_name || "",
+            education: user?.data?.user?.profile?.education || "",
+            email: user?.data?.user?.email || "",
+            mobile: user?.data?.user?.profile?.phone || "",
+            description: user?.data?.user?.profile?.description || "",
+            resume: user?.data?.user?.profile?.resume || "",
+            skills: user?.data?.user?.profile?.skills || "",
         });
     }, [user, reset]);
 
-    const handleNext = () =>
-        setSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
-    const handlePrev = () => setSlideIndex((prev) => Math.max(prev - 0, 0));
-
     const onSubmit = async (data) => {
         try {
-            const payload = {
-                ...data,
-                Work_Experience: data.Work_Experience.map((w) => ({
-                    jobTitle: w.jobTitle || "",
-                    company: w.company || "",
-                    from: w.from || "",
-                    to: w.to || "",
-                    jobLevel: w.jobLevel || "",
-                })),
-                Educations: data.Educations.map((e) => ({
-                    school: e.school || "",
-                    educationalAttainment: e.educationalAttainment || "",
-                    from: e.from || "",
-                    to: e.to || "",
-                    description: e.description || "",
-                })),
-            };
+            const formData = new FormData();
+            formData.append("first_name", data.firstName);
+            formData.append("last_name", data.lastName);
+            formData.append("education", data.education);
+            formData.append("email", data.email);
+            formData.append("phone", data.mobile);
+            formData.append("description", data.description);
+            formData.append("skills", data.skills);
 
-            const updated = await updateUser(user.id, payload);
+            if (data.resume && data.resume[0]) {
+                formData.append("resume", data.resume[0]); // the selected file
+            }
 
-            // Update AuthContext & localStorage
+            const res = await fetch(
+                `http://127.0.0.1:8000/api/profiles/${user?.data?.user?.profile?.id}`,
+                {
+                    method: "POST", // or PUT if backend supports
+                    headers: {
+                        Authorization: `Bearer ${user?.token}`, // do NOT set Content-Type manually
+                        Accept: "application/json",
+                    },
+                    body: formData,
+                }
+            );
+
+            const updated = await res.json();
+
             if (setUser) {
-                setUser(updated);
-                localStorage.setItem("authUser", JSON.stringify(updated));
+                setUser((prev) => ({
+                    ...prev,
+                    data: {
+                        ...prev.data,
+                        user: { ...prev.data.user, profile: updated },
+                    },
+                }));
+                localStorage.setItem(
+                    "authUser",
+                    JSON.stringify({
+                        ...user,
+                        data: {
+                            ...user.data,
+                            user: { ...user.data.user, profile: updated },
+                        },
+                    })
+                );
             }
 
             if (onUpdate) onUpdate(updated);
@@ -167,86 +206,49 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
+                    <Title>Basic Info</Title>
+                    <RadixDialog.Close asChild>
+                        <CloseIcon />
+                    </RadixDialog.Close>
+
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Basic Info */}
-                        <Slide active={slides[slideIndex] === "basic"}>
-                            <Section>
-                                <h2>Basic Info</h2>
-                                <label>First Name</label>
-                                <input {...register("firstName")} />
-                                <label>Last Name</label>
-                                <input {...register("lastName")} />
+                        <Section>
+                            <label>First Name</label>
+                            <input {...register("firstName")} />
+                            <label>Last Name</label>
+                            <input {...register("lastName")} />
+                            <label>Education</label>
+                            <input {...register("education")} />
+                            <label>Email</label>
+                            <input {...register("email")} />
+                            <label>Mobile</label>
+                            <input {...register("mobile")} />
+                            <label>Description</label>
+                            <textarea {...register("description")} />
+                            <label>Resume</label>
+                            <input
+                                type="file"
+                                {...register("resume")}
+                                accept=".pdf,.doc,.docx"
+                            />
+                        </Section>
 
-                                {/* =============== */}
-                                <label>Email</label>
-                                <input {...register("email")} />
-                                <label>Mobile</label>
-                                <input {...register("mobile")} />
-                                <label>Description</label>
-                                <textarea {...register("description")} />
-                                <label>Resume</label>
-                                <textarea {...register("resume")} />
-                            </Section>
-                        </Slide>
-                        <Slide active={slides[slideIndex] === "education"}>
-                            <Section>
-                                <h2>Education</h2>
-                                {eduArray.fields.map((field, index) => (
-                                    <div key={field.id}>
-                                        <label>School</label>
-                                        <input
-                                            {...register(
-                                                `Educations.${index}.school`
-                                            )}
-                                        />
-                                        <label>Degree</label>
-                                        <input
-                                            {...register(
-                                                `Educations.${index}.educationalAttainment`
-                                            )}
-                                        />
-                                        <label>From</label>
-                                        <input
-                                            {...register(
-                                                `Educations.${index}.from`
-                                            )}
-                                        />
-                                        <label>To</label>
-                                        <input
-                                            {...register(
-                                                `Educations.${index}.to`
-                                            )}
-                                        />
-                                        <label>Description</label>
-                                        <textarea
-                                            {...register(
-                                                `Educations.${index}.description`
-                                            )}
-                                        />
-                                    </div>
-                                ))}
-                            </Section>
-                        </Slide>
-
-                        <CarouselControls>
+                        <BottomActions>
                             <button
                                 type="button"
-                                onClick={handlePrev}
-                                disabled={slideIndex === 0}
+                                className="cancel"
+                                onClick={() => setOpen(false)}
                             >
-                                <FaChevronLeft /> Prev
+                                Cancel
                             </button>
-
-                            {slideIndex === slides.length - 1 ? (
-                                <button type="submit" disabled={isSubmitting}>
-                                    Save
-                                </button>
-                            ) : (
-                                <button type="button" onClick={handleNext}>
-                                    Next <FaChevronRight />
-                                </button>
-                            )}
-                        </CarouselControls>
+                            <button
+                                type="submit"
+                                className="save"
+                                disabled={isSubmitting}
+                            >
+                                Save
+                            </button>
+                        </BottomActions>
                     </form>
                 </DialogContent>
             </RadixDialog.Portal>
