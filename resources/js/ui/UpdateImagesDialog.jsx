@@ -1,7 +1,9 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { MdDelete, MdEdit, MdSave } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { RxCross1 } from "react-icons/rx";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
 import { updateUser } from "../services/apiUsers";
@@ -17,80 +19,90 @@ const DialogContent = styled(RadixDialog.Content)`
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40rem;
-    max-width: 95vw;
-    background-color: var(--color-grey-0);
+    transform: translate(-50%, -120%);
+    width: 80rem;
+    height: 70vh;
+    background-color: var(--color-grey-900);
     border-radius: var(--radius-md);
-    padding: 3rem;
     box-shadow: var(--shadow-md);
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    z-index: 1000;
-    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+`;
+
+const Title = styled.h2`
+    position: absolute;
+    top: 2rem;
+    left: 3rem;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--color-grey-0);
+`;
+
+const CloseIcon = styled(RxCross1)`
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 2rem;
+    color: var(--color-grey-0);
+    cursor: pointer;
 `;
 
 const PhotoWrapper = styled.div`
     position: relative;
-    width: 100%;
-    display: flex;
-    justify-content: center;
 `;
 
 const ProfileImage = styled.img`
-    width: 16rem;
-    height: 16rem;
+    width: 25rem;
+    height: 25rem;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-grey-200);
 `;
 
-const ActionButtons = styled.div`
+const BottomActions = styled.div`
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
     display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8rem;
 
-    button {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.6rem 1rem;
-        border-radius: var(--radius-md);
-        font-size: var(--font-sm);
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--color-grey-0);
+    }
+`;
+
+const ActionWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.2rem 2.4rem;
+    color: var(--color-grey-0);
+
+    svg {
+        font-size: 2.5rem;
+    }
+
+    span {
+        margin-top: 0.4rem;
+        font-size: 1.4rem;
         font-weight: 500;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s ease;
-
-        &.delete {
-            background-color: var(--color-error);
-            color: #fff;
-        }
-
-        &.edit {
-            background-color: var(--color-primary);
-            color: #fff;
-        }
-
-        &.save {
-            background-color: #ffd43b;
-            color: var(--color-green-600);
-        }
-
-        &:hover {
-            opacity: 0.85;
-        }
     }
 `;
 
 export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
     const { user, setUser } = useAuth();
-    const [previewImage, setPreviewImage] = useState("/profile/default.jpg");
+    const [previewImage, setPreviewImage] = useState("/profile/profile-6.jpg");
     const fileInputRef = useRef(null);
 
-    // Load actual user photo
     useEffect(() => {
         if (user && user.profilePhoto) {
             setPreviewImage(user.profilePhoto);
@@ -126,30 +138,16 @@ export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
         }
     };
 
-    const handleSave = async () => {
-        try {
-            const updatedUser = await updateUser(user.id, {
-                profilePhoto: previewImage,
-            });
-            if (setUser) {
-                setUser(updatedUser);
-                localStorage.setItem("authUser", JSON.stringify(updatedUser));
-            }
-            if (onPhotoUpdate) onPhotoUpdate(previewImage);
-            toast.success("Profile photo updated!");
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to update profile photo.");
-        }
-    };
-
     return (
         <RadixDialog.Root>
             <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    <h2>Update Your Profile Photo</h2>
+                    <Title>Profile Photo</Title>
+                    <RadixDialog.Close asChild>
+                        <CloseIcon />
+                    </RadixDialog.Close>
 
                     <PhotoWrapper>
                         <ProfileImage src={previewImage} alt="Profile" />
@@ -162,17 +160,17 @@ export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
                         />
                     </PhotoWrapper>
 
-                    <ActionButtons>
-                        <button className="delete" onClick={handleDelete}>
-                            <MdDelete /> Delete
-                        </button>
-                        <button className="edit" onClick={handleEditPhoto}>
-                            <MdEdit /> Choose
-                        </button>
-                        <button className="save" onClick={handleSave}>
-                            <MdSave /> Save
-                        </button>
-                    </ActionButtons>
+                    <BottomActions>
+                        <ActionWrapper onClick={handleEditPhoto}>
+                            <MdEdit />
+                            <span>Edit</span>
+                        </ActionWrapper>
+
+                        <ActionWrapper onClick={handleDelete}>
+                            <RiDeleteBin6Line />
+                            <span>Delete</span>
+                        </ActionWrapper>
+                    </BottomActions>
                 </DialogContent>
             </RadixDialog.Portal>
         </RadixDialog.Root>
