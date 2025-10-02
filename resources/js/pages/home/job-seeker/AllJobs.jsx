@@ -272,7 +272,6 @@ export default function AllJobs() {
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const location = useLocation();
-
     const isHomePage = location.pathname === "/";
 
     const {
@@ -283,7 +282,6 @@ export default function AllJobs() {
         queryKey: ["jobs"],
         queryFn: getJobs,
     });
-    console.log("All jobs from API:", jobs);
 
     useEffect(() => {
         if (!user?.id) return;
@@ -346,15 +344,32 @@ export default function AllJobs() {
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
 
+    // 🔹 فیلتر بر اساس Type و Location
+    const validJobTypes = [
+        "full-time",
+        "part-time",
+        "contract",
+        "internship",
+        "remote",
+    ];
+
     const filteredJobs = jobs
-        ?.filter((job) =>
-            searchTerm === ""
-                ? true
-                : job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  job.company?.name
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase())
-        )
+        ?.filter((job) => {
+            // 🔹 فیلتر بر اساس Type
+            const matchesType =
+                searchTerm === "" ||
+                (validJobTypes.includes(searchTerm.toLowerCase()) &&
+                    job.job_type.toLowerCase() === searchTerm.toLowerCase());
+
+            // 🔹 فیلتر بر اساس Location
+            const matchesLocation =
+                locationFilter === "" ||
+                job.location
+                    ?.toLowerCase()
+                    .includes(locationFilter.toLowerCase());
+
+            return matchesType && matchesLocation;
+        })
         .sort(
             (a, b) =>
                 new Date(b.created_at).getTime() -
@@ -370,7 +385,21 @@ export default function AllJobs() {
                     locationFilter={locationFilter}
                     setLocationFilter={setLocationFilter}
                 />
-                {isHomePage && <SearchBar />}
+                {isHomePage && (
+                    <SearchBar
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        locationFilter={locationFilter}
+                        setLocationFilter={setLocationFilter}
+                        onApply={() =>
+                            console.log(
+                                "Apply clicked:",
+                                searchTerm,
+                                locationFilter
+                            )
+                        }
+                    />
+                )}
 
                 <JobsContainer>
                     <JobList>

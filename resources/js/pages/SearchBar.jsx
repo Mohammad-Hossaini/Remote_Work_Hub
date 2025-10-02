@@ -1,6 +1,12 @@
 import "./searchBar.css";
 
-function SearchBar() {
+export default function SearchBar({
+    searchTerm,
+    setSearchTerm,
+    locationFilter,
+    setLocationFilter,
+    onApply,
+}) {
     return (
         <div className="main-container">
             <div className="content-container">
@@ -23,33 +29,45 @@ function SearchBar() {
                         className="search-img"
                     />
                 </div>
+
+                {/* 🔹 جعبه سرچ */}
                 <div className="search-container">
-                    <form className="search-form">
+                    <form
+                        className="search-form"
+                        onSubmit={(e) => e.preventDefault()}
+                    >
+                        {/* فیلد Type */}
                         <div className="first-input">
                             <label className="type-label">Type</label>
                             <input
                                 type="text"
                                 className="type-input"
                                 placeholder="Enter job type!"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+
+                        {/* فیلد Location */}
                         <div className="first-input">
                             <label className="type-label">Location</label>
                             <input
                                 type="text"
                                 className="type-input"
                                 placeholder="Enter location!"
+                                value={locationFilter}
+                                onChange={(e) =>
+                                    setLocationFilter(e.target.value)
+                                }
                             />
                         </div>
                     </form>
 
                     <div className="apply-buttons">
-                        <button>Apply</button>
+                        <button onClick={onApply}>Apply</button>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-
-export default SearchBar;
