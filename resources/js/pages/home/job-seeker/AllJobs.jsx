@@ -358,8 +358,11 @@ export default function AllJobs() {
             // 🔹 فیلتر بر اساس Type
             const matchesType =
                 searchTerm === "" ||
-                (validJobTypes.includes(searchTerm.toLowerCase()) &&
-                    job.job_type.toLowerCase() === searchTerm.toLowerCase());
+                validJobTypes.some(
+                    (type) =>
+                        type.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                        job.job_type.toLowerCase().includes(type.toLowerCase())
+                );
 
             // 🔹 فیلتر بر اساس Location
             const matchesLocation =
