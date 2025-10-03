@@ -9,13 +9,15 @@ function BackGroundInfo() {
     const { user } = useAuth();
 
     if (!user || !user.data?.user) return <p>No user found</p>;
-
     const fullUser = user.data.user;
+    console.log("fullUser :", fullUser);
     const profile = fullUser.profile || {};
+    console.log("profile :", profile);
 
     const skills = profile.skills
         ? profile.skills.split(",").map((s) => s.trim())
         : [];
+    const BASE_URL = "http://127.0.0.1:8000/";
 
     return (
         <div className="profile-container">
@@ -33,9 +35,8 @@ function BackGroundInfo() {
                         </button>
                     }
                 />
-
                 <img
-                    src={"/profile/default.jpg"}
+                    src={`${BASE_URL}${user?.data?.user?.profile?.profile_image}`}
                     alt="Profile"
                     className="profile-photo"
                 />

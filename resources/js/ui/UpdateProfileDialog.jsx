@@ -108,7 +108,7 @@ const BottomActions = styled.div`
 
 export default function UpdateProfileDialog({ trigger, onUpdate }) {
     const { user, setUser } = useAuth();
-    console.log("user info:", user);
+    // console.log("user info:", user);
     const [open, setOpen] = useState(false);
 
     const {
