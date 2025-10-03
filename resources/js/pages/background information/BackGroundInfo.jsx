@@ -24,7 +24,8 @@ function BackGroundInfo() {
             {/* HEADER */}
             <div className="profile-header">
                 <img
-                    src={"/default_bg_image.jpeg"}
+                    // src={"/default_bg_image.jpeg"}
+                    src={`${BASE_URL}${user?.data?.user?.profile?.background_image}`}
                     alt="Background"
                     className="bg-image"
                 />

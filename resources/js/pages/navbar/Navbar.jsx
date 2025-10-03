@@ -1,4 +1,3 @@
-
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
@@ -67,6 +66,7 @@ const Badge = styled.span`
 `;
 
 function Navbar() {
+    const BASE_URL = "http://127.0.0.1:8000/";
     const [notifications, setNotifications] = useState([
         { id: 1, text: "New applicant applied for Frontend Developer" },
         { id: 2, text: "Your job posting has been approved" },
@@ -142,7 +142,8 @@ function Navbar() {
                     <div className="avatar-wrapper">
                         <img
                             src={
-                                fullUser?.profilePhoto || "/profile/default.jpg"
+                                `${BASE_URL}${user?.data?.user?.profile?.profile_image}` ||
+                                "/profile/default.jpg"
                             }
                             alt="Profile"
                             className="avatar-img"

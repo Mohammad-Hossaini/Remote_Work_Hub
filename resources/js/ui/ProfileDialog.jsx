@@ -119,6 +119,7 @@ const LogoutButton = styled.button`
 `;
 
 export default function ProfileDialog({ children }) {
+    const BASE_URL = "http://127.0.0.1:8000/";
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
 
@@ -174,7 +175,8 @@ export default function ProfileDialog({ children }) {
                     <ProfileImageWrapper>
                         <ProfileImage
                             src={
-                                fullUser?.profilePhoto || "/profile/default.jpg"
+                                `${BASE_URL}${user?.data?.user?.profile?.profile_image}` ||
+                                "/profile/default.jpg"
                             }
                             alt="Profile"
                         />

@@ -1,10 +1,9 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaEdit, FaTimes } from "react-icons/fa";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
-import { updateUser } from "../services/apiUsers";
 
 // ===== Styled Components =====
 const Overlay = styled(RadixDialog.Overlay)`
@@ -119,14 +118,23 @@ const DeleteButton = styled.button`
     }
 `;
 
-// ===== Main Component =====
 export default function EditImagesDialog({ trigger, onBgUpdate }) {
     const { user, setUser } = useAuth();
+    const [previewImage, setPreviewImage] = useState("/default_bg_image.jpeg");
     const fileInputRef = useRef(null);
 
     if (!user) return null;
 
-    const currentImage = user.bg_image || "/default_bg_image.jpeg";
+    // ⚡ وقتی مودال باز شد، تصویر فعلی یا دیفالت نمایش داده شود
+    useEffect(() => {
+        if (user.data.user.profile.background_image) {
+            setPreviewImage(
+                `http://127.0.0.1:8000/${user.data.user.profile.background_image}`
+            );
+        } else {
+            setPreviewImage("/default_bg_image.jpeg");
+        }
+    }, [user]);
 
     const handleChooseClick = () => {
         fileInputRef.current.click();
@@ -136,43 +144,92 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
         const file = e.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            const imageData = event.target.result;
+        const formData = new FormData();
+        formData.append("background_image", file);
 
-            try {
-                const updatedUser = await updateUser(user.id, {
-                    bg_image: imageData,
-                });
-                if (setUser) {
-                    setUser(updatedUser);
-                    localStorage.setItem(
-                        "authUser",
-                        JSON.stringify(updatedUser)
-                    );
+        try {
+            const res = await fetch(
+                `http://127.0.0.1:8000/api/profiles/${user.data.user.profile.id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                    body: formData,
                 }
-                toast.success("Background image updated!");
-                if (onBgUpdate) onBgUpdate(imageData);
-            } catch (err) {
-                console.error(err);
-                toast.error("Failed to update background image.");
-            }
-        };
-        reader.readAsDataURL(file);
+            );
+
+            if (!res.ok) throw new Error("Failed to upload background image");
+            const updatedProfile = await res.json();
+
+            // ⚡ آپدیت Context و Storage
+            const updatedUser = {
+                ...user,
+                data: {
+                    ...user.data,
+                    user: {
+                        ...user.data.user,
+                        profile: updatedProfile,
+                    },
+                },
+            };
+            setUser(updatedUser);
+            sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
+
+            // ⚡ پیش‌نمایش فوری
+            setPreviewImage(URL.createObjectURL(file));
+
+            if (onBgUpdate) onBgUpdate(updatedProfile.background_image);
+
+            toast.success("Background image updated!");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update background image.");
+        }
     };
 
     const handleDelete = async () => {
         try {
-            const updatedUser = await updateUser(user.id, { bg_image: "" });
-            if (setUser) {
-                setUser(updatedUser);
-                localStorage.setItem("authUser", JSON.stringify(updatedUser));
-            }
-            toast.success("Background image deleted!");
+            const formData = new FormData();
+            formData.append("background_image", "default_bg_image.jpeg"); // مسیر دیفالت
+
+            const res = await fetch(
+                `http://127.0.0.1:8000/api/profiles/${user.data.user.profile.id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                    body: formData,
+                }
+            );
+
+            if (!res.ok) throw new Error("Failed to reset background image");
+            const updatedProfile = await res.json();
+
+            // ⚡ آپدیت Context و Storage
+            const updatedUser = {
+                ...user,
+                data: {
+                    ...user.data,
+                    user: {
+                        ...user.data.user,
+                        profile: updatedProfile,
+                    },
+                },
+            };
+            setUser(updatedUser);
+            sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
+
+            // ⚡ پیش‌نمایش فوری
+            setPreviewImage("/default_bg_image.jpeg");
+
             if (onBgUpdate) onBgUpdate("/default_bg_image.jpeg");
+
+            toast.success("Background image reset to default!");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to delete background image.");
+            toast.error("Failed to reset background image.");
         }
     };
 
@@ -188,7 +245,7 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
                         <FaTimes />
                     </CloseButton>
 
-                    <ImagePreview src={currentImage} alt="Background Preview" />
+                    <ImagePreview src={previewImage} alt="Background Preview" />
 
                     <input
                         type="file"
