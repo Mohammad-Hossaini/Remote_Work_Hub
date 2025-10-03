@@ -7,17 +7,18 @@ import { CiWarning } from "react-icons/ci";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
 import { createJob } from "../services/apiAllJobs";
+import Spinner from "./Spinner";
 
-// Styled components
+// ===== Styled Components =====
 const DialogOverlay = styled(RadixDialog.Overlay)`
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     position: fixed;
     inset: 0;
 `;
 
 const DialogContent = styled(RadixDialog.Content)`
-    background-color: white;
-    border-radius: 6px;
+    background: #fff;
+    border-radius: 1rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     position: fixed;
     top: 50%;
@@ -25,104 +26,118 @@ const DialogContent = styled(RadixDialog.Content)`
     transform: translate(-50%, -50%);
     width: 90vw;
     max-width: 600px;
-    max-height: 90vh;
-    padding: 25px;
+    height: 90vh;
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    overflow: hidden;
 `;
 
-const DialogTitle = styled(RadixDialog.Title)`
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #111;
-`;
-
-const StyledWarning = styled.div`
+const Body = styled.div`
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 2rem;
     display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    label {
+        font-weight: 600;
+        font-size: 1.4rem;
+    }
+
+    input,
+    select,
+    textarea {
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        font-size: 1.4rem;
+        width: 100%;
+    }
+
+    textarea {
+        min-height: 6rem;
+        resize: vertical;
+    }
+`;
+
+const Header = styled.div`
+    position: relative;
+    padding: 2rem;
+    border-bottom: 1px solid #ced4da;
+    flex-shrink: 0;
+
+    h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+`;
+
+const Footer = styled.div`
+    flex-shrink: 0;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #ced4da;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.6rem;
-    margin-top: 0.4rem;
-    font-size: 1.4rem;
-    color: #b91c1c;
-`;
 
-const Fieldset = styled.fieldset`
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-bottom: 15px;
-    border: none;
-`;
+    button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1.4rem;
+        border-radius: var(--radius-lg);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: 100px;
+        font-weight: 600;
+    }
 
-const Label = styled.label`
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-`;
+    .cancel {
+        background-color: var(--color-grey-200);
+        color: var(--color-grey-700);
 
-const Input = styled.input`
-    padding: 8px 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid ${(props) => (props.error ? "red" : "#ccc")};
-`;
+        &:hover {
+            background-color: var(--color-grey-300);
+        }
+    }
 
-const Select = styled.select`
-    padding: 8px 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid ${(props) => (props.error ? "red" : "#ccc")};
-    background-color: white;
-`;
+    .save {
+        background-color: var(--color-primary);
+        color: #fff;
 
-const Textarea = styled.textarea`
-    padding: 8px 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid ${(props) => (props.error ? "red" : "#ccc")};
-    resize: vertical;
-`;
-
-const ButtonContainer = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 15px;
-`;
-
-const Button = styled.button`
-    all: unset;
-    cursor: pointer;
-    padding: 8px 15px;
-    border-radius: 4px;
-    background-color: #22c55e;
-    color: white;
-    font-weight: 500;
-
-    &:hover {
-        opacity: 0.9;
+        &:hover {
+            background-color: var(--color-primary-dark);
+        }
     }
 `;
 
 const IconButton = styled.button`
     all: unset;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 1rem;
+    right: 1rem;
     border-radius: 50%;
     height: 25px;
     width: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f0f0f0;
     cursor: pointer;
+`;
+
+const StyledWarning = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.4rem;
+    color: #b91c1c;
 `;
 
 export default function JobModal({ open, onOpenChange }) {
     const { user } = useAuth();
-    // console.log("compnay data :", user?.data?.user?.company?.id);
     const queryClient = useQueryClient();
 
     const {
@@ -159,11 +174,9 @@ export default function JobModal({ open, onOpenChange }) {
             status: data.status || "draft",
             deadline: data.deadline || null,
         };
-
         mutation.mutate(jobData);
     };
 
-    // تاریخ امروز برای validation deadline
     const today = new Date().toISOString().split("T")[0];
 
     return (
@@ -171,24 +184,29 @@ export default function JobModal({ open, onOpenChange }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    <DialogTitle>Add New Job</DialogTitle>
+                    <Header>
+                        <h2>Add New Job</h2>
+                        <RadixDialog.Close asChild>
+                            <IconButton aria-label="Close">
+                                <Cross2Icon
+                                    style={{ width: "32px", height: "32px" }}
+                                />
+                            </IconButton>
+                        </RadixDialog.Close>
+                    </Header>
 
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Company ID */}
-                        {/* <Fieldset>
-                            <Label>Company ID</Label>
-                            <Input type="number" {...register("company_id")} />
-                            {errors.company_id && (
-                                <StyledWarning>
-                                    <CiWarning /> {errors.company_id.message}
-                                </StyledWarning>
-                            )}
-                        </Fieldset> */}
-
-                        {/* Title */}
-                        <Fieldset>
-                            <Label>Title</Label>
-                            <Input
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            flex: "1 1 auto",
+                            minHeight: 0,
+                        }}
+                    >
+                        <Body>
+                            <label>Title</label>
+                            <input
                                 {...register("title", {
                                     required: "Title is required",
                                 })}
@@ -198,12 +216,9 @@ export default function JobModal({ open, onOpenChange }) {
                                     <CiWarning /> {errors.title.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
 
-                        {/* Description */}
-                        <Fieldset>
-                            <Label>Description</Label>
-                            <Textarea
+                            <label>Description</label>
+                            <textarea
                                 rows={4}
                                 {...register("description", {
                                     required: "Description is required",
@@ -214,18 +229,12 @@ export default function JobModal({ open, onOpenChange }) {
                                     <CiWarning /> {errors.description.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
 
-                        {/* Requirements */}
-                        <Fieldset>
-                            <Label>Requirements</Label>
-                            <Textarea rows={3} {...register("requirements")} />
-                        </Fieldset>
+                            <label>Requirements</label>
+                            <textarea rows={3} {...register("requirements")} />
 
-                        {/* Salary Min */}
-                        <Fieldset>
-                            <Label>Salary Min</Label>
-                            <Input
+                            <label>Salary Min</label>
+                            <input
                                 type="number"
                                 {...register("salary_min", {
                                     required: "Salary min required",
@@ -236,12 +245,9 @@ export default function JobModal({ open, onOpenChange }) {
                                     <CiWarning /> {errors.salary_min.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
 
-                        {/* Salary Max */}
-                        <Fieldset>
-                            <Label>Salary Max</Label>
-                            <Input
+                            <label>Salary Max</label>
+                            <input
                                 type="number"
                                 {...register("salary_max", {
                                     required: "Salary max required",
@@ -252,12 +258,9 @@ export default function JobModal({ open, onOpenChange }) {
                                     <CiWarning /> {errors.salary_max.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
 
-                        {/* Job Type */}
-                        <Fieldset>
-                            <Label>Job Type</Label>
-                            <Select
+                            <label>Job Type</label>
+                            <select
                                 {...register("job_type", {
                                     required: "Job type is required",
                                 })}
@@ -268,18 +271,15 @@ export default function JobModal({ open, onOpenChange }) {
                                 <option value="contract">Contract</option>
                                 <option value="internship">Internship</option>
                                 <option value="remote">Remote</option>
-                            </Select>
+                            </select>
                             {errors.job_type && (
                                 <StyledWarning>
                                     <CiWarning /> {errors.job_type.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
 
-                        {/* Location */}
-                        <Fieldset>
-                            <Label>Location</Label>
-                            <Input
+                            <label>Location</label>
+                            <input
                                 {...register("location", {
                                     required: "Location is required",
                                 })}
@@ -289,41 +289,43 @@ export default function JobModal({ open, onOpenChange }) {
                                     <CiWarning /> {errors.location.message}
                                 </StyledWarning>
                             )}
-                        </Fieldset>
 
-                        {/* Status */}
-                        <Fieldset>
-                            <Label>Status</Label>
-                            <Select {...register("status")}>
+                            <label>Status</label>
+                            <select {...register("status")}>
                                 <option value="draft">Draft</option>
                                 <option value="open">Open</option>
                                 <option value="closed">Closed</option>
-                            </Select>
-                        </Fieldset>
+                            </select>
 
-                        {/* Deadline */}
-                        <Fieldset>
-                            <Label>Deadline</Label>
-                            <Input
+                            <label>Deadline</label>
+                            <input
                                 type="date"
-                                min={today} // 👈 فقط تاریخ‌های بعد از امروز
+                                min={today}
                                 {...register("deadline")}
                             />
-                        </Fieldset>
+                        </Body>
+                        <Footer>
+                            <button
+                                type="button"
+                                className="cancel"
+                                onClick={() => onOpenChange(false)}
+                            >
+                                Cancel
+                            </button>
 
-                        {/* Submit */}
-                        <ButtonContainer>
-                            <Button type="submit">
-                                {mutation.isLoading ? "Saving..." : "Save Job"}
-                            </Button>
-                        </ButtonContainer>
+                            <button
+                                type="submit"
+                                className="save"
+                                disabled={mutation.isLoading}
+                            >
+                                {mutation.isLoading ? (
+                                    <Spinner size="18px" color="#fff" />
+                                ) : (
+                                    "Save Job"
+                                )}
+                            </button>
+                        </Footer>
                     </form>
-
-                    <RadixDialog.Close asChild>
-                        <IconButton aria-label="Close">
-                            <Cross2Icon />
-                        </IconButton>
-                    </RadixDialog.Close>
                 </DialogContent>
             </RadixDialog.Portal>
         </RadixDialog.Root>
