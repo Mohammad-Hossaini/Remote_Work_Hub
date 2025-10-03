@@ -5,8 +5,9 @@ import toast from "react-hot-toast";
 import { RxCross1 } from "react-icons/rx";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
+import Spinner from "./Spinner";
 
-// Styled components
+// ===== Styled Components =====
 const DialogOverlay = styled(RadixDialog.Overlay)`
     background: rgba(0, 0, 0, 0.5);
     position: fixed;
@@ -17,24 +18,26 @@ const DialogContent = styled(RadixDialog.Content)`
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -120%);
+    transform: translate(-50%, -50%);
     width: 60rem;
     max-height: 80vh;
     background-color: #fff;
     border-radius: 1rem;
-    padding: 3rem 2rem 4rem;
-    overflow-y: auto;
-    position: relative;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 `;
 
-const Title = styled.h2`
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-    font-size: 2rem;
-    font-weight: 600;
+const Header = styled.div`
+    position: relative;
+    padding: 2rem;
+    border-bottom: 1px solid #ced4da;
+    flex-shrink: 0;
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 600;
+    }
 `;
 
 const CloseIcon = styled(RxCross1)`
@@ -45,43 +48,43 @@ const CloseIcon = styled(RxCross1)`
     cursor: pointer;
 `;
 
-const Section = styled.div`
+const Body = styled.div`
+    /* flex: 1; */
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    padding-top: 1.8rem;
 
     label {
         font-weight: 600;
         font-size: 1.4rem;
     }
 
-    input,
-    textarea {
+    input {
         padding: 0.8rem;
         border-radius: 0.5rem;
         border: 1px solid #ced4da;
         font-size: 1.4rem;
         width: 100%;
     }
+    textarea {
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        padding: 0.8rem;
+        width: 100%;
+        min-height: 10rem;
+        resize: vertical;
+    }
 `;
 
-const BottomActions = styled.div`
-    position: relative;
+const Footer = styled.div`
+    flex-shrink: 0;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #ced4da;
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background-color: #ced4da;
-    }
 
     button {
         padding: 0.8rem 1.5rem;
@@ -106,9 +109,9 @@ const BottomActions = styled.div`
     }
 `;
 
+// ===== Component =====
 export default function UpdateProfileDialog({ trigger, onUpdate }) {
     const { user, setUser } = useAuth();
-    // console.log("user info:", user);
     const [open, setOpen] = useState(false);
 
     const {
@@ -128,7 +131,6 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
         },
     });
 
-    // Reset form when user changes
     useEffect(() => {
         reset({
             firstName: user?.data?.user?.profile?.first_name || "",
@@ -151,14 +153,13 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
             formData.append("phone", data.mobile);
             formData.append("description", data.description);
             formData.append("skills", data.skills);
-            data.resume && data.resume.length > 0;
 
             const res = await fetch(
                 `http://127.0.0.1:8000/api/profiles/${user?.data?.user?.profile?.id}`,
                 {
-                    method: "POST", // or PUT if backend supports
+                    method: "POST",
                     headers: {
-                        Authorization: `Bearer ${user?.token}`, // do NOT set Content-Type manually
+                        Authorization: `Bearer ${user?.token}`,
                         Accept: "application/json",
                     },
                     body: formData,
@@ -175,16 +176,6 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
                         user: { ...prev.data.user, profile: updated },
                     },
                 }));
-                localStorage.setItem(
-                    "authUser",
-                    JSON.stringify({
-                        ...user,
-                        data: {
-                            ...user.data,
-                            user: { ...user.data.user, profile: updated },
-                        },
-                    })
-                );
             }
 
             if (onUpdate) onUpdate(updated);
@@ -202,19 +193,30 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
             <RadixDialog.Portal>
                 <DialogOverlay />
                 <DialogContent>
-                    <Title>Basic Info</Title>
-                    <RadixDialog.Close asChild>
-                        <CloseIcon />
-                    </RadixDialog.Close>
+                    <Header>
+                        <h2>Basic Info</h2>
+                        <RadixDialog.Close asChild>
+                            <CloseIcon />
+                        </RadixDialog.Close>
+                    </Header>
 
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <Section>
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            // flex: 1,
+                            flex: "1 1 auto",
+                            minHeight: 0,
+                        }}
+                    >
+                        <Body>
                             <label>First Name</label>
                             <input {...register("firstName")} />
                             <label>Last Name</label>
                             <input {...register("lastName")} />
-                            <label>Education</label>
-                            <input {...register("education")} />
+                            {/* <label>Education</label>
+                            <input {...register("education")} /> */}
                             <label>Email</label>
                             <input {...register("email")} />
                             <label>Mobile</label>
@@ -227,9 +229,9 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
                                 {...register("resume")}
                                 accept=".pdf,.doc,.docx"
                             />
-                        </Section>
+                        </Body>
 
-                        <BottomActions>
+                        <Footer>
                             <button
                                 type="button"
                                 className="cancel"
@@ -241,10 +243,21 @@ export default function UpdateProfileDialog({ trigger, onUpdate }) {
                                 type="submit"
                                 className="save"
                                 disabled={isSubmitting}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5rem",
+                                    minWidth: "80px", 
+                                }}
                             >
-                                Save
+                                {isSubmitting ? (
+                                    <Spinner size="18px" color="#fff" />
+                                ) : (
+                                    "Save"
+                                )}
                             </button>
-                        </BottomActions>
+                        </Footer>
                     </form>
                 </DialogContent>
             </RadixDialog.Portal>
