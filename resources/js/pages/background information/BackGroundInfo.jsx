@@ -24,8 +24,11 @@ function BackGroundInfo() {
             {/* HEADER */}
             <div className="profile-header">
                 <img
-                    // src={"/default_bg_image.jpeg"}
-                    src={`${BASE_URL}${user?.data?.user?.profile?.background_image}`}
+                    src={
+                        user?.data?.user?.profile?.background_image
+                            ? `${BASE_URL}${user.data.user.profile.background_image}`
+                            : "/default_bg_image.jpeg"
+                    }
                     alt="Background"
                     className="bg-image"
                 />
@@ -37,11 +40,14 @@ function BackGroundInfo() {
                     }
                 />
                 <img
-                    src={`${BASE_URL}${user?.data?.user?.profile?.profile_image}`}
+                    src={
+                        user?.data?.user?.profile?.profile_image
+                            ? `${BASE_URL}${user.data.user.profile.profile_image}`
+                            : "/profile/default.jpg"
+                    }
                     alt="Profile"
                     className="profile-photo"
                 />
-
                 {/* Edit button for profile photo */}
                 <UpdateImagesDialog
                     trigger={

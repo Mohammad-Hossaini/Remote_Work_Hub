@@ -122,7 +122,7 @@ const IconButton = styled.button`
 
 export default function JobModal({ open, onOpenChange }) {
     const { user } = useAuth();
-    console.log("compnay data :", user?.data?.user?.company?.id);
+    // console.log("compnay data :", user?.data?.user?.company?.id);
     const queryClient = useQueryClient();
 
     const {

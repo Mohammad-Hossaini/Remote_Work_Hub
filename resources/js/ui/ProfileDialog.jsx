@@ -20,7 +20,7 @@ const DialogContent = styled(RadixDialog.Content)`
     position: absolute;
     top: 60px;
     right: 2.5rem;
-    width: 24rem;
+    width: 26rem;
     max-width: 95vw;
     border: 1px solid var(--color-grey-200);
     background-color: var(--color-grey-0);
@@ -175,8 +175,9 @@ export default function ProfileDialog({ children }) {
                     <ProfileImageWrapper>
                         <ProfileImage
                             src={
-                                `${BASE_URL}${user?.data?.user?.profile?.profile_image}` ||
-                                "/profile/default.jpg"
+                                user?.data?.user?.profile?.profile_image
+                                    ? `${BASE_URL}${user.data.user.profile.profile_image}`
+                                    : "/profile/default.jpg"
                             }
                             alt="Profile"
                         />
@@ -187,19 +188,23 @@ export default function ProfileDialog({ children }) {
                             "No description available."}
                     </Description>
 
-                    <ButtonContainer>
-                        <PrimaryButton to={profilePath}>
-                            View Profile
-                        </PrimaryButton>
+                    {user?.role === "job_seeker" && (
+                        <ButtonContainer>
+                            <PrimaryButton to={profilePath}>
+                                View Profile
+                            </PrimaryButton>
 
-                        <UpdateProfileDialog
-                            trigger={
-                                <OutlineButton asChild>Settings</OutlineButton>
-                            }
-                            user={fullUser || {}}
-                            onUpdate={handleUserUpdate}
-                        />
-                    </ButtonContainer>
+                            <UpdateProfileDialog
+                                trigger={
+                                    <OutlineButton asChild>
+                                        Settings
+                                    </OutlineButton>
+                                }
+                                user={fullUser || {}}
+                                onUpdate={handleUserUpdate}
+                            />
+                        </ButtonContainer>
+                    )}
 
                     <LogoutButton onClick={handleLogout}>
                         <MdOutlineLogout />

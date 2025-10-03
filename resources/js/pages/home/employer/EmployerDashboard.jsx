@@ -10,7 +10,7 @@ import "./EmployerDashboard.css";
 function EmployerDashboard() {
     const [openModal, setOpenModal] = useState(false);
     const { user } = useAuth();
-    console.log("User Data : ", user);
+    // console.log("User Data : ", user);
     // console.log(user.user.company?.company_name);
   
 

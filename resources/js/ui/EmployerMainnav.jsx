@@ -93,12 +93,12 @@ function MainNav() {
                         <span>Messages</span>
                     </StyledNavLink>
                 </li>
-                <li>
+                {/* <li>
                     <StyledNavLink to={profilePath}>
                         <FaRegUser />
                         <span>Profile</span>
                     </StyledNavLink>
-                </li>
+                </li> */}
             </NavList>
         </nav>
     );

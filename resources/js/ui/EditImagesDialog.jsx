@@ -1,10 +1,11 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { FaEdit, FaTimes } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
-
 // ===== Styled Components =====
 const Overlay = styled(RadixDialog.Overlay)`
     position: fixed;
@@ -18,7 +19,7 @@ const Content = styled(RadixDialog.Content)`
     left: 50%;
     transform: translate(-50%, -50%);
     width: 48rem;
-    background: var(--color-grey-0);
+    background: var(--color-grey-900);
     padding: 2rem;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
@@ -34,33 +35,11 @@ const TitleLine = styled.div`
     margin-bottom: 1rem;
 `;
 
-const CloseButton = styled(RadixDialog.Close)`
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--color-grey-100);
-    border-radius: 50%;
-    border: none;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 1rem;
-    color: var(--color-grey-700);
-    transition: all 0.2s ease;
-
-    &:hover {
-        background: var(--color-grey-200);
-    }
-`;
 
 const ImagePreview = styled.img`
     width: 100%;
     max-height: 12rem;
     object-fit: cover;
-    border-radius: var(--radius-sm);
     border: 1px solid var(--color-grey-200);
 `;
 
@@ -75,47 +54,54 @@ const ChooseButton = styled.button`
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    background-color: var(--color-primary);
     color: #fff;
-    padding: 0.5rem 1rem;
+    padding: 0rem 1rem;
     border-radius: var(--radius-xxl);
-    font-weight: 500;
     cursor: pointer;
-    border: none;
+    border: var(--color-grey-0);
     transition: 0.2s ease;
-
-    &:hover {
-        background-color: var(--color-primary-dark);
-    }
+`;
+const Header = styled.div`
+    position: relative;
+    padding: 0 0 1rem 0;
+    margin: -2rem -2rem 1rem -2rem;
+    border-bottom: 1px solid var(--color-grey-0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 
-const SaveButton = styled.button`
-    background-color: #ffd43b;
-    color: var(--color-green-600);
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-xxl);
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s ease;
+// Title
+const StyledH2 = styled.h2`
+    color: var(--color-grey-0);
+    font-size: 1.4rem;
+    line-height: 1.02;
+    font-weight: 400;
+    padding-top: 1rem;
+    padding-left: 2rem;
+`;
 
-    &:hover {
-        opacity: 0.85;
-    }
+const CloseButton = styled(RadixDialog.Close)`
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--color-grey-0);
+    cursor: pointer;
+    font-size: 1.5rem;
 `;
 
 const DeleteButton = styled.button`
-    background-color: var(--color-error);
     color: #fff;
     padding: 0.5rem 1rem;
     border-radius: var(--radius-xxl);
-    font-weight: 500;
     cursor: pointer;
     border: none;
+    display: flex;
+    align-items: center;
     transition: 0.2s ease;
-
-    &:hover {
-        opacity: 0.85;
-    }
 `;
 
 export default function EditImagesDialog({ trigger, onBgUpdate }) {
@@ -125,7 +111,6 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
 
     if (!user) return null;
 
-    // ⚡ وقتی مودال باز شد، تصویر فعلی یا دیفالت نمایش داده شود
     useEffect(() => {
         if (user.data.user.profile.background_image) {
             setPreviewImage(
@@ -161,8 +146,6 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
 
             if (!res.ok) throw new Error("Failed to upload background image");
             const updatedProfile = await res.json();
-
-            // ⚡ آپدیت Context و Storage
             const updatedUser = {
                 ...user,
                 data: {
@@ -176,7 +159,6 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
             setUser(updatedUser);
             sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
 
-            // ⚡ پیش‌نمایش فوری
             setPreviewImage(URL.createObjectURL(file));
 
             if (onBgUpdate) onBgUpdate(updatedProfile.background_image);
@@ -191,8 +173,7 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
     const handleDelete = async () => {
         try {
             const formData = new FormData();
-            formData.append("background_image", "default_bg_image.jpeg"); // مسیر دیفالت
-
+            formData.append("background_image", "default_bg_image.jpeg"); 
             const res = await fetch(
                 `http://127.0.0.1:8000/api/profiles/${user.data.user.profile.id}`,
                 {
@@ -207,7 +188,6 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
             if (!res.ok) throw new Error("Failed to reset background image");
             const updatedProfile = await res.json();
 
-            // ⚡ آپدیت Context و Storage
             const updatedUser = {
                 ...user,
                 data: {
@@ -220,8 +200,6 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
             };
             setUser(updatedUser);
             sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
-
-            // ⚡ پیش‌نمایش فوری
             setPreviewImage("/default_bg_image.jpeg");
 
             if (onBgUpdate) onBgUpdate("/default_bg_image.jpeg");
@@ -239,11 +217,12 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
             <RadixDialog.Portal>
                 <Overlay />
                 <Content>
-                    <h2>Edit Your Background Image</h2>
-                    <TitleLine />
-                    <CloseButton asChild>
-                        <FaTimes />
-                    </CloseButton>
+                    <Header>
+                        <StyledH2>Edit Your Background Image</StyledH2>
+                        <CloseButton asChild>
+                            <IoMdClose />
+                        </CloseButton>
+                    </Header>
 
                     <ImagePreview src={previewImage} alt="Background Preview" />
 
@@ -257,10 +236,10 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
 
                     <ButtonContainer>
                         <ChooseButton onClick={handleChooseClick}>
-                            <FaEdit /> Choose
+                            <FaEdit />
                         </ChooseButton>
                         <DeleteButton onClick={handleDelete}>
-                            Delete
+                            <RiDeleteBin6Line />
                         </DeleteButton>
                     </ButtonContainer>
                 </Content>

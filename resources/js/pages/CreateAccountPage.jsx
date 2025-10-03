@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../hook/AuthContext";
 import { createNewUser } from "../services/apiUsers";
+import Spinner from "../ui/Spinner";
 import Footer from "./Footer";
 import JobsHeader from "./JobsHeader";
 
@@ -119,6 +120,10 @@ const RegisterButton = styled.button`
     cursor: pointer;
     border: none;
     transition: 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 120px;
     &:hover {
         background-color: var(--color-primary-dark);
     }
@@ -180,14 +185,15 @@ export default function CreateAccountPage() {
                 user: data.user,
                 role: data.user.role,
             });
+            navigate("/login");
 
-            if (data.user.role === "employer") {
-                navigate("/employerApp/employerDashboard");
-            } else if (data.user.role === "job_seeker") {
-                navigate("/app/jobSeekerDashboard");
-            } else {
-                navigate("/");
-            }
+            // if (data.user.role === "employer") {
+            //     navigate("/employerApp/employerDashboard");
+            // } else if (data.user.role === "job_seeker") {
+            //     navigate("/app/jobSeekerDashboard");
+            // } else {
+            //     navigate("/");
+            // }
 
             reset();
         },
@@ -492,7 +498,12 @@ export default function CreateAccountPage() {
                         <StyledButtons>
                             <CancelButton type="reset">Cancel</CancelButton>
                             <RegisterButton type="submit">
-                                SIGN IN
+                                {/* SIGN IN */}
+                                {isLoading ? (
+                                    <Spinner size="18px" color="#fff" />
+                                ) : (
+                                    "SIGN IN"
+                                )}
                             </RegisterButton>
                         </StyledButtons>
                     </form>

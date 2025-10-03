@@ -79,8 +79,8 @@ function Navbar() {
         ["user", user?.id],
         () => getUserById(user.id),
         {
-            enabled: !!user?.id, // فقط اگر user.id موجود بود
-            refetchOnWindowFocus: true, // همیشه دیتای جدید بگیر
+            enabled: !!user?.id, 
+            refetchOnWindowFocus: true,
             staleTime: 0,
         }
     );
@@ -142,8 +142,9 @@ function Navbar() {
                     <div className="avatar-wrapper">
                         <img
                             src={
-                                `${BASE_URL}${user?.data?.user?.profile?.profile_image}` ||
-                                "/profile/default.jpg"
+                                user?.data?.user?.profile?.profile_image
+                                    ? `${BASE_URL}${user.data.user.profile.profile_image}`
+                                    : "/profile/default.jpg"
                             }
                             alt="Profile"
                             className="avatar-img"
