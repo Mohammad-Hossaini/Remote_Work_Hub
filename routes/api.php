@@ -40,6 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profiles', [ProfileController::class, 'store'])->middleware('role:job_seeker');
     Route::post('/profiles/{id}', [ProfileController::class, 'update'])->middleware('role:job_seeker');
     Route::delete('/profiles/{id}', [ProfileController::class, 'destroy'])->middleware('role:job_seeker');
+    Route::delete('/profiles/{id}/profile-image', [ProfileController::class, 'deleteProfileImage'])->middleware('role:job_seeker');
+    Route::delete('/profiles/{id}/background-image', [ProfileController::class, 'deleteBackgroundImage'])->middleware('role:job_seeker');
+
     //--------------------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------------------

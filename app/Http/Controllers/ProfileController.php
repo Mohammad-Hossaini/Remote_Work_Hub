@@ -160,31 +160,68 @@ class ProfileController extends Controller
     // Delete profile (owner only)
     // app/Http/Controllers/ProfileController.php
 
-public function destroy($id)
-{
-    $profile = Profile::findOrFail($id);
+    public function destroy($id)
+    {
+        $profile = Profile::findOrFail($id);
 
-    // Ensure only the owner can delete
-    if (Auth::id() !== $profile->user_id) {
-        return response()->json(['message' => 'Unauthorized'], 403);
+        // Ensure only the owner can delete
+        if (Auth::id() !== $profile->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Delete resume file if it exists
+        if ($profile->resume && file_exists(public_path($profile->resume))) {
+            unlink(public_path($profile->resume));
+        }
+        // Delete profile image file if it exists
+        if ($profile->profile_image && file_exists(public_path($profile->profile_image))) {
+            unlink(public_path($profile->profile_image));
+        }
+        // Delete background image file if it exists
+        if ($profile->background_image && file_exists(public_path($profile->background_image))) {
+            unlink(public_path($profile->background_image));
+        }
+
+        // Delete profile
+        $profile->delete();
+
+        return response()->json(['message' => 'Profile and resume deleted successfully']);
     }
 
-    // Delete resume file if it exists
-    if ($profile->resume && file_exists(public_path($profile->resume))) {
-        unlink(public_path($profile->resume));
-    }
-    // Delete profile image file if it exists
-    if ($profile->profile_image && file_exists(public_path($profile->profile_image))) {
-        unlink(public_path($profile->profile_image));
-    }
-    // Delete background image file if it exists
-    if ($profile->background_image && file_exists(public_path($profile->background_image))) {
-        unlink(public_path($profile->background_image));
-    }
+    public function deleteProfileImage($id)
+    {
+        $profile = Profile::findOrFail($id);
 
-    // Delete profile
-    $profile->delete();
+        // Ensure only the owner can delete the profile image
+        if (Auth::id() !== $profile->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    return response()->json(['message' => 'Profile and resume deleted successfully']);
-}
+        if ($profile->profile_image && file_exists(public_path($profile->profile_image))) {
+            unlink(public_path($profile->profile_image));
+            $profile->profile_image = null;
+            $profile->save();
+            return response()->json(['message' => 'Profile image deleted successfully']);
+        }
+
+        return response()->json(['message' => 'No profile image to delete'], 404);
+    }
+    public function deleteBackgroundImage($id)
+    {
+        $profile = Profile::findOrFail($id);
+
+        // Ensure only the owner can delete the background image
+        if (Auth::id() !== $profile->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($profile->background_image && file_exists(public_path($profile->background_image))) {
+            unlink(public_path($profile->background_image));
+            $profile->background_image = null;
+            $profile->save();
+            return response()->json(['message' => 'Background image deleted successfully']);
+        }
+
+        return response()->json(['message' => 'No background image to delete'], 404);
+    }
 }
