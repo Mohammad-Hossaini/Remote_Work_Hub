@@ -12,7 +12,8 @@ function BackGroundInfo() {
     const fullUser = user.data.user;
     console.log("fullUser :", fullUser);
     const profile = fullUser.profile || {};
-    console.log("profile :", profile);
+    // console.log("profile image:", user?.data?.user?.profile?.profile_image);
+    // console.log("profile id:", user?.data?.user?.profile?.id);
 
     const skills = profile.skills
         ? profile.skills.split(",").map((s) => s.trim())

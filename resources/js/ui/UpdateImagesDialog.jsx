@@ -1,5 +1,3 @@
-
-
 import * as RadixDialog from "@radix-ui/react-dialog";
 
 import { useEffect, useRef, useState } from "react";
@@ -103,10 +101,11 @@ const ActionWrapper = styled.div`
 
 export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
     const { user, setUser } = useAuth();
+    console.log("profile image:", user?.data?.user?.profile?.profile_image);
+    console.log("profile id:", user?.data?.user?.profile);
     const [previewImage, setPreviewImage] = useState("/profile/default.jpg");
     const fileInputRef = useRef(null);
 
-    // ⚡ وقتی مودال باز می‌شود عکس فعلی یا دیفالت نمایش داده شود
     useEffect(() => {
         if (user?.data?.user?.profile?.profile_image) {
             setPreviewImage(
@@ -171,40 +170,56 @@ export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
             toast.error("Failed to update profile image.");
         }
     };
+
     const handleDelete = async () => {
         try {
-            const formData = new FormData();
-            formData.append("profile_image", ""); // یا null، بسته به سرور
+            const profileId = user?.data?.user?.profile?.id;
+            if (!profileId) throw new Error("Profile ID not found");
 
+            // DELETE request بدون body
             const res = await fetch(
-                `http://127.0.0.1:8000/api/profiles/${user.data.user.profile.id}`,
+                `http://127.0.0.1:8000/api/profiles/${profileId}/profile-image`,
                 {
-                    method: "POST", // حتماً POST
+                    method: "DELETE",
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
-                    body: formData,
                 }
             );
 
-            if (!res.ok) throw new Error("Failed to delete profile image");
+            if (!res.ok && res.status !== 404)
+                throw new Error("Failed to delete profile image");
+            setUser((prevUser) => ({
+                ...prevUser,
+                data: {
+                    ...prevUser.data,
+                    user: {
+                        ...prevUser.data.user,
+                        profile: {
+                            ...prevUser.data.user.profile,
+                            profile_image: null,
+                        },
+                    },
+                },
+            }));
 
-            const updatedProfile = await res.json();
-
-            // آپدیت Context و Storage
+            // ذخیره در sessionStorage
             const updatedUser = {
                 ...user,
                 data: {
                     ...user.data,
                     user: {
                         ...user.data.user,
-                        profile: updatedProfile,
+                        profile: {
+                            ...user.data.user.profile,
+                            profile_image: null,
+                        },
                     },
                 },
             };
-            setUser(updatedUser);
             sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
 
+            // پیش‌نمایش پیش‌فرض
             setPreviewImage("/profile/default.jpg");
             if (onPhotoUpdate) onPhotoUpdate(null);
 

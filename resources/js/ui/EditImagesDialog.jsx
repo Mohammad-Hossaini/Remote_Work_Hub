@@ -35,7 +35,6 @@ const TitleLine = styled.div`
     margin-bottom: 1rem;
 `;
 
-
 const ImagePreview = styled.img`
     width: 100%;
     max-height: 12rem;
@@ -169,39 +168,58 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
             toast.error("Failed to update background image.");
         }
     };
-
     const handleDelete = async () => {
         try {
-            const formData = new FormData();
-            formData.append("background_image", "default_bg_image.jpeg"); 
+            const profileId = user?.data?.user?.profile?.id;
+            if (!profileId) throw new Error("Profile ID not found");
+
+            // DELETE request بدون body
             const res = await fetch(
-                `http://127.0.0.1:8000/api/profiles/${user.data.user.profile.id}`,
+                `http://127.0.0.1:8000/api/profiles/${profileId}/background-image`,
                 {
-                    method: "POST",
+                    method: "DELETE",
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
-                    body: formData,
                 }
             );
 
-            if (!res.ok) throw new Error("Failed to reset background image");
-            const updatedProfile = await res.json();
+            if (!res.ok && res.status !== 404)
+                throw new Error("Failed to delete background image");
 
+            // 🔹 آپدیت Context به‌صورت دستی
+            setUser((prevUser) => ({
+                ...prevUser,
+                data: {
+                    ...prevUser.data,
+                    user: {
+                        ...prevUser.data.user,
+                        profile: {
+                            ...prevUser.data.user.profile,
+                            background_image: null, // مقدار پیش‌فرض
+                        },
+                    },
+                },
+            }));
+
+            // ذخیره در sessionStorage
             const updatedUser = {
                 ...user,
                 data: {
                     ...user.data,
                     user: {
                         ...user.data.user,
-                        profile: updatedProfile,
+                        profile: {
+                            ...user.data.user.profile,
+                            background_image: null,
+                        },
                     },
                 },
             };
-            setUser(updatedUser);
             sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
-            setPreviewImage("/default_bg_image.jpeg");
 
+            // پیش‌نمایش پیش‌فرض
+            setPreviewImage("/default_bg_image.jpeg");
             if (onBgUpdate) onBgUpdate("/default_bg_image.jpeg");
 
             toast.success("Background image reset to default!");
