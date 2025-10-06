@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\FavoriteJobController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
@@ -80,6 +81,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/jobs/allApplications', [ApplicationController::class, 'allApplications']);
         Route::get('/jobs/{job}/applications', [ApplicationController::class, 'jobApplications']);
         Route::patch('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
+    });
+    //-----------------------------------------------------------------------------------------
+    // Favorite Jobs (Job Seekers)
+    Route::middleware('role:job_seeker')->group(function () {
+        Route::post('/jobs/{jobId}/favorite', [FavoriteJobController::class, 'store']);
+        Route::delete('/jobs/{jobId}/favorite', [FavoriteJobController::class, 'destroy']);
+        Route::get('/my-favorites', [FavoriteJobController::class, 'myFavorites']);
     });
     //-----------------------------------------------------------------------------------------
 
