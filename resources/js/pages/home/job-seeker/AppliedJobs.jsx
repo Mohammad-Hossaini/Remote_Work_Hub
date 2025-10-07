@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { HiOutlineTrash, HiOutlineUser } from "react-icons/hi";
 import {
     deleteAppliedJob,
@@ -40,9 +40,11 @@ export default function AppliedJobs() {
     const { mutate: removeJob } = useMutation(deleteAppliedJob, {
         onSuccess: () => {
             queryClient.invalidateQueries(["appliedJobs"]);
+            toast.success("Job deleted successfully!");
         },
         onError: (err) => {
             console.error(err);
+            toast.error("Failed to delete application.");
         },
     });
 
@@ -96,9 +98,13 @@ export default function AppliedJobs() {
                             </div>
                             <div className="right">
                                 <HiOutlineUser className="userIcon" />
-                                <HiOutlineTrash
+                                {/* <HiOutlineTrash
                                     className="deleteIcon"
                                     onClick={() => removeJob(app.id)} // app.id باید ID اپلای باشد
+                                /> */}
+                                <HiOutlineTrash
+                                    className="deleteIcon"
+                                    onClick={() => removeJob(app.id)}
                                 />
                             </div>
                         </div>

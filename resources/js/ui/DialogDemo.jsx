@@ -2,7 +2,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { CiWarning } from "react-icons/ci";
 import styled, { keyframes } from "styled-components";
 import { applyForJob } from "../services/application";
@@ -185,86 +185,95 @@ export default function JobApplyDialog({ open, onOpenChange, jobId }) {
         try {
             const formData = new FormData();
             formData.append("cover_letter", values.cover_letter);
-            if (values.resume_path[0]) {
+            if (values.resume_path[0])
                 formData.append("resume_path", values.resume_path[0]);
-            }
 
             const response = await applyForJob(jobId, formData);
-            console.log("✅ Applied successfully:", response);
-            toast.success("Application submitted successfully!");
+            toast.success(
+                response.message || "Application submitted successfully!"
+            );
+            onOpenChange(false);
             reset();
+            setFileName("");
         } catch (err) {
             console.error(err);
-            toast.error(err.message);
+            toast.error(err.message || "Failed to apply");
         }
     };
 
     return (
-        <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
-            <RadixDialog.Portal>
-                <DialogOverlay />
-                <DialogContent>
-                    <DialogTitle>Apply for Job</DialogTitle>
-                    <DialogDescription>
-                        Please upload your resume and write a short cover
-                        letter.
-                    </DialogDescription>
+        <>
+            <Toaster position="top-right" reverseOrder={false} />
+            <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
+                <RadixDialog.Portal>
+                    <DialogOverlay />
+                    <DialogContent>
+                        <DialogTitle>Apply for Job</DialogTitle>
+                        <DialogDescription>
+                            Please upload your resume and write a short cover
+                            letter.
+                        </DialogDescription>
 
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Cover Letter */}
-                        <Fieldset>
-                            <Label htmlFor="cover_letter">Cover Letter</Label>
-                            <Textarea
-                                id="cover_letter"
-                                placeholder="Write a short cover letter..."
-                                {...register("cover_letter")}
-                                error={errors.cover_letter}
-                            />
-                        </Fieldset>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            {/* Cover Letter */}
+                            <Fieldset>
+                                <Label htmlFor="cover_letter">
+                                    Cover Letter
+                                </Label>
+                                <Textarea
+                                    id="cover_letter"
+                                    placeholder="Write a short cover letter..."
+                                    {...register("cover_letter")}
+                                    error={errors.cover_letter}
+                                />
+                            </Fieldset>
 
-                        {/* Resume Upload */}
-                        <Fieldset>
-                            <Label htmlFor="resume_path">
-                                Upload Resume (PDF/DOC)
-                            </Label>
-                            <Input
-                                id="resume_path"
-                                type="file"
-                                accept=".pdf,.doc,.docx"
-                                {...register("resume_path", {
-                                    required: "Please upload your resume",
-                                    onChange: (e) =>
-                                        setFileName(
-                                            e.target.files[0]?.name || ""
-                                        ),
-                                })}
-                                error={errors.resume_path}
-                            />
-                            {fileName && <FileName>📄 {fileName}</FileName>}
-                            {errors.resume_path && (
-                                <StyledWarning>
-                                    <CiWarning />
-                                    <span>{errors.resume_path.message}</span>
-                                </StyledWarning>
-                            )}
-                        </Fieldset>
+                            {/* Resume Upload */}
+                            <Fieldset>
+                                <Label htmlFor="resume_path">
+                                    Upload Resume (PDF/DOC)
+                                </Label>
+                                <Input
+                                    id="resume_path"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    {...register("resume_path", {
+                                        required: "Please upload your resume",
+                                        onChange: (e) =>
+                                            setFileName(
+                                                e.target.files[0]?.name || ""
+                                            ),
+                                    })}
+                                    error={errors.resume_path}
+                                />
+                                {fileName && <FileName>📄 {fileName}</FileName>}
+                                {errors.resume_path && (
+                                    <StyledWarning>
+                                        <CiWarning />
+                                        <span>
+                                            {errors.resume_path.message}
+                                        </span>
+                                    </StyledWarning>
+                                )}
+                            </Fieldset>
 
-                        <ButtonContainer>
-                            <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting
-                                    ? "Submitting..."
-                                    : "Submit Application"}
-                            </Button>
-                        </ButtonContainer>
-                    </form>
+                            <ButtonContainer>
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting
+                                        ? "Submitting..."
+                                        : "Submit Application"}
+                                </Button>
+                            </ButtonContainer>
+                        </form>
 
-                    <RadixDialog.Close asChild>
-                        <IconButton aria-label="Close">
-                            <Cross2Icon />
-                        </IconButton>
-                    </RadixDialog.Close>
-                </DialogContent>
-            </RadixDialog.Portal>
-        </RadixDialog.Root>
+                        <RadixDialog.Close asChild>
+                            <IconButton aria-label="Close">
+                                <Cross2Icon />
+                            </IconButton>
+                        </RadixDialog.Close>
+                    </DialogContent>
+                </RadixDialog.Portal>
+            </RadixDialog.Root>
+        </>
     );
 }

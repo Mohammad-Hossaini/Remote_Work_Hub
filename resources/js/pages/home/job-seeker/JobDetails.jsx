@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaPaperPlane } from "react-icons/fa"; // ✅ Apply icon
+import { FaPaperPlane } from "react-icons/fa"; 
 import { useParams } from "react-router-dom";
 import DialogDemo from "../../../ui/DialogDemo";
 
