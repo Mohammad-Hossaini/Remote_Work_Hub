@@ -14,6 +14,7 @@ import {
     putSavedJobs,
 } from "../../../services/apiGetSavedJobs";
 import Button from "../../../ui/Button";
+import DialogDemo from "../../../ui/DialogDemo";
 import Footer from "../../Footer";
 import JobsHeader from "../../JobsHeader";
 import SearchBar from "../../SearchBar";
@@ -264,10 +265,30 @@ const WideButton = styled(Button)`
 
 // ================= Main Component =================
 export default function AllJobs() {
+    const [currentJob, setCurrentJob] = useState(null);
+
+    const [applyModalOpen, setApplyModalOpen] = useState(false); 
+    const [modalData, setModalData] = useState(null);
+
+    const handleApplyNow = (job) => {
+        if (!user?.id) {
+          
+            setModalData({
+                type: "apply",
+                title: "Apply to this job with an account",
+                description:
+                    "Build your profile, apply to this job, and track your application status with a free account.",
+            });
+        } else {
+          
+            setApplyModalOpen(true);
+            setCurrentJob(job); 
+        }
+    };
+
     const [searchTerm, setSearchTerm] = useState("");
     const [locationFilter, setLocationFilter] = useState("");
     const [savedJobIds, setSavedJobIds] = useState([]);
-    const [modalData, setModalData] = useState(null);
 
     const queryClient = useQueryClient();
     const { user } = useAuth();
@@ -329,22 +350,10 @@ export default function AllJobs() {
             });
     };
 
-    const handleApplyNow = (job) => {
-        if (!user?.id) {
-            setModalData({
-                type: "apply",
-                title: "Apply to this job with an account",
-                description:
-                    "Build your profile, apply to this job, and track your application status with a free account.",
-            });
-            return;
-        }
-    };
 
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
 
-    // 🔹 فیلتر بر اساس Type و Location
     const validJobTypes = [
         "full-time",
         "part-time",
@@ -477,6 +486,41 @@ export default function AllJobs() {
                         ))}
                     </JobList>
                 </JobsContainer>
+                {/* Login / Signup Modal */}
+                {modalData && (
+                    <ModalOverlay>
+                        <ModalContent>
+                            <CloseButton onClick={() => setModalData(null)}>
+                                <RxCross2 />
+                            </CloseButton>
+                            <ModalTitle>{modalData.title}</ModalTitle>
+                            <ModalDescription>
+                                {modalData.description}
+                            </ModalDescription>
+                            <ModalButtons>
+                                <Link to="/login">
+                                    <WideButton variation="secondary">
+                                        Log in
+                                    </WideButton>
+                                </Link>
+                                <Link to="/createAccount">
+                                    <WideButton variation="primary">
+                                        Sign up
+                                    </WideButton>
+                                </Link>
+                            </ModalButtons>
+                        </ModalContent>
+                    </ModalOverlay>
+                )}
+
+                {/* Apply Modal */}
+                {applyModalOpen && currentJob && (
+                    <DialogDemo
+                        open={applyModalOpen}
+                        onOpenChange={setApplyModalOpen}
+                        jobId={currentJob.id}
+                    />
+                )}
 
                 {isHomePage && <Footer />}
                 {modalData && (

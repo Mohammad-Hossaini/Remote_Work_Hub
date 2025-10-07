@@ -131,7 +131,7 @@ const Button = styled.button`
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    padding: 10px 18px;
+    padding: 1px 18px;
     font-size: 15px;
     font-weight: 500;
     height: 42px;
