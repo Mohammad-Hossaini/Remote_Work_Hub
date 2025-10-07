@@ -2,46 +2,55 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { HiOutlineXCircle } from "react-icons/hi";
 import { useAuth } from "../../../hook/AuthContext";
-import { getJobs } from "../../../services/apiAllJobs";
 import {
-    deleteSavedJob,
-    getSavedJobsByUser,
-} from "../../../services/apiGetSavedJobs";
+    getMyFavorites,
+    removeFavoriteJob,
+} from "../../../services/apiFavorites";
 import "./SavedJobs.css";
 
 function SavedJobs() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
+    // دریافت وظایف ذخیره شده با API جدید
     const {
         data: savedJobs = [],
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ["savedJobs", user?.id],
+        queryKey: ["myFavorites", user?.id],
         queryFn: async () => {
             if (!user?.id) return [];
-            const saves = await getSavedJobsByUser(user.id);
-            const jobs = await getJobs();
-            return saves.map((s) => ({
-                savedJobId: s.id, 
-                ...s,
-                ...jobs.find((j) => j.id === s.jobId),
-            }));
+            return await getMyFavorites(user.token);
         },
         enabled: !!user?.id,
     });
 
-    const { mutate: removeJob } = useMutation(deleteSavedJob, {
-        onSuccess: (_, savedJobId) => {
-            queryClient.setQueryData(["savedJobs", user?.id], (old) =>
-                old.filter((job) => job.savedJobId !== savedJobId)
-            );
-            toast.success("Job removed from saved!");
-            queryClient.invalidateQueries(["savedJobs", user?.id]);
-        },
-        onError: (err) => toast.error(err.message || "Failed to remove job"),
-    });
+    // حذف وظیفه ذخیره شده
+    // const { mutate: removeJob } = useMutation({
+    //     mutationFn: (favoriteId) => removeFavoriteJob(favoriteId, user.token),
+    //     onSuccess: (_, favoriteId) => {
+    //         queryClient.setQueryData(["myFavorites", user?.id], (old) =>
+    //             old.filter((fav) => fav.id !== favoriteId)
+    //         );
+    //         toast.success("Job removed from favorites!");
+    //         queryClient.invalidateQueries(["myFavorites", user?.id]);
+    //     },
+    //     onError: (err) => toast.error(err.message || "Failed to remove job"),
+    // });
+    const { mutate: removeJob } = useMutation({
+    mutationFn: (favoriteId) => removeFavoriteJob(favoriteId, user.token),
+    onSuccess: (_, favoriteId) => {
+        // ✅ فقط داده‌ی محلی را آپدیت می‌کنیم
+        queryClient.setQueryData(["myFavorites", user?.id], (old) =>
+            old.filter((fav) => fav.id !== favoriteId)
+        );
+        toast.success("Job removed from favorites!");
+        // ❌ نیازی به invalidateQueries نیست، چون داده محلی آپدیت شد
+    },
+    onError: (err) => toast.error(err.message || "Failed to remove job"),
+});
+
 
     if (isLoading) return <p className="loading">Loading saved jobs...</p>;
     if (isError) return <p className="error">Failed to fetch saved jobs.</p>;
@@ -55,33 +64,43 @@ function SavedJobs() {
             {savedJobs.length === 0 ? (
                 <p className="no-jobs">No saved jobs yet.</p>
             ) : (
-                savedJobs.map((job) => (
-                    <div key={job.savedJobId} className="savedJobsCard">
-                        <div className="left">
-                            <div className="job-img">
-                                <img
-                                    src={job.companyLogo || "/default-logo.png"}
-                                    alt={job.companyName || "Company Logo"}
+                savedJobs.map((fav) => {
+                    const job = fav.job; 
+                    return (
+                        <div key={fav.id} className="savedJobsCard">
+                            <div className="left">
+                                <div className="job-img">
+                                    <img
+                                        src={
+                                            job.company?.logo ||
+                                            "/company-images/image(6).jfif"
+                                        }
+                                        alt={
+                                            job.company?.name || "Company Logo"
+                                        }
+                                    />
+                                </div>
+                                <div className="job-desc">
+                                    <h3 className="job-title">{job.title}</h3>
+                                    <p className="job-company">
+                                        {job.company?.name}
+                                    </p>
+                                    <p className="job-meta">
+                                        📍 {job.location} • {job.job_type} •{" "}
+                                        {job.experience || 0} exp
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="right">
+                                <HiOutlineXCircle
+                                    className="unfaveIcon"
+                                    onClick={() => removeJob(fav.id)} // حذف با favorite id
                                 />
                             </div>
-                            <div className="job-desc">
-                                <h3 className="job-title">{job.title}</h3>
-                                <p className="job-company">{job.companyName}</p>
-                                <p className="job-meta">
-                                    📍 {job.location} • {job.type} •{" "}
-                                    {job.experience} exp
-                                </p>
-                            </div>
                         </div>
-
-                        <div className="right">
-                            <HiOutlineXCircle
-                                className="unfaveIcon"
-                                onClick={() => removeJob(job.savedJobId)} 
-                            />
-                        </div>
-                    </div>
-                ))
+                    );
+                })
             )}
         </div>
     );

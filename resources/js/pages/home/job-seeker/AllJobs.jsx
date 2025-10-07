@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { RxCross2 } from "react-icons/rx";
 import { useAuth } from "../../../hook/AuthContext";
 import { getJobs } from "../../../services/apiAllJobs";
+import { toggleFavoriteJob } from "../../../services/apiFavorites";
 import {
     deleteSavedJob,
     getSavedJobsByUser,
@@ -267,12 +268,11 @@ const WideButton = styled(Button)`
 export default function AllJobs() {
     const [currentJob, setCurrentJob] = useState(null);
 
-    const [applyModalOpen, setApplyModalOpen] = useState(false); 
+    const [applyModalOpen, setApplyModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
 
     const handleApplyNow = (job) => {
         if (!user?.id) {
-          
             setModalData({
                 type: "apply",
                 title: "Apply to this job with an account",
@@ -280,9 +280,8 @@ export default function AllJobs() {
                     "Build your profile, apply to this job, and track your application status with a free account.",
             });
         } else {
-          
             setApplyModalOpen(true);
-            setCurrentJob(job); 
+            setCurrentJob(job);
         }
     };
 
@@ -331,7 +330,27 @@ export default function AllJobs() {
         onError: (err) => toast.error(err.message),
     });
 
-    const toggleFavorite = (job) => {
+    // const toggleFavorite = (job) => {
+    //     if (!user?.id) {
+    //         setModalData({
+    //             type: "save",
+    //             title: "Save this job with an account",
+    //             description:
+    //                 "Save this job and other opportunities with a free account.",
+    //         });
+    //         return;
+    //     }
+    //     if (!savedJobIds.includes(job.id))
+    //         saveJobMutation.mutate({ ...job, userId: user?.id });
+    //     else
+    //         getSavedJobsByUser(user.id).then((saved) => {
+    //             const savedEntry = saved.find((s) => s.jobId === job.id);
+    //             if (savedEntry) deleteJobMutation.mutate(savedEntry.id);
+    //         });
+    // };
+
+    // حذف saveJobMutation و deleteJobMutation و تابع toggleFavorite قبلی
+    const toggleFavorite = async (job) => {
         if (!user?.id) {
             setModalData({
                 type: "save",
@@ -341,15 +360,21 @@ export default function AllJobs() {
             });
             return;
         }
-        if (!savedJobIds.includes(job.id))
-            saveJobMutation.mutate({ ...job, userId: user?.id });
-        else
-            getSavedJobsByUser(user.id).then((saved) => {
-                const savedEntry = saved.find((s) => s.jobId === job.id);
-                if (savedEntry) deleteJobMutation.mutate(savedEntry.id);
-            });
-    };
 
+        try {
+            await toggleFavoriteJob(job.id, user.token); // token از context یا session
+            if (savedJobIds.includes(job.id)) {
+                setSavedJobIds((prev) => prev.filter((id) => id !== job.id));
+                toast.success("Job removed from favorites");
+            } else {
+                setSavedJobIds((prev) => [...prev, job.id]);
+                toast.success("Job added to favorites");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error(err.message || "Failed to update favorite");
+        }
+    };
 
     if (isLoading) return <p>Loading jobs...</p>;
     if (error) return <p>Failed to load jobs 😢</p>;
