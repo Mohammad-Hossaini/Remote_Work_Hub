@@ -10,7 +10,7 @@ function BackGroundInfo() {
 
     if (!user || !user.data?.user) return <p>No user found</p>;
     const fullUser = user.data.user;
-    console.log("fullUser :", fullUser);
+    // console.log("fullUser :", fullUser);
     const profile = fullUser.profile || {};
     // console.log("profile image:", user?.data?.user?.profile?.profile_image);
     // console.log("profile id:", user?.data?.user?.profile?.id);

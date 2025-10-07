@@ -90,10 +90,10 @@ function Navbar() {
             {/* Left links */}
             <div className="left">
                 <Link to="/employerApp">
-                    <div className="nav-link">
+                    {/* <div className="nav-link">
                         <p>EmpDashboard</p>
                         <RxCaretRight className="arrow-icon" />
-                    </div>
+                    </div> */}
                 </Link>
             </div>
 

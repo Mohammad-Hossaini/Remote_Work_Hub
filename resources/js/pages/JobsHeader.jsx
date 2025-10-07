@@ -193,7 +193,7 @@ export default function JobsHeader({
         <HeaderWrapper>
             <TopRow>
                 <SearchWrapper>
-                    <StyledH2>Remote Work Hub</StyledH2>
+                    {isHomePage && <StyledH2>Remote Work Hub</StyledH2>}
                     {showFiltersSection && (
                         <>
                             <SearchBar

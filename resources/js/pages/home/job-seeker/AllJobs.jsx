@@ -282,7 +282,7 @@ export default function AllJobs() {
         queryKey: ["jobs"],
         queryFn: getJobs,
     });
-
+    console.log("all the jpobs :",jobs);
     useEffect(() => {
         if (!user?.id) return;
         getSavedJobsByUser(user.id)

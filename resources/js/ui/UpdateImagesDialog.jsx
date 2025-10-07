@@ -101,8 +101,8 @@ const ActionWrapper = styled.div`
 
 export default function UpdateImagesDialog({ trigger, onPhotoUpdate }) {
     const { user, setUser } = useAuth();
-    console.log("profile image:", user?.data?.user?.profile?.profile_image);
-    console.log("profile id:", user?.data?.user?.profile);
+    // console.log("profile image:", user?.data?.user?.profile?.profile_image);
+    // console.log("profile id:", user?.data?.user?.profile);
     const [previewImage, setPreviewImage] = useState("/profile/default.jpg");
     const fileInputRef = useRef(null);
 
