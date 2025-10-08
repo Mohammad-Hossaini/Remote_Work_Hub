@@ -28,7 +28,7 @@ function BackGroundInfo() {
                     src={
                         user?.data?.user?.profile?.background_image
                             ? `${BASE_URL}${user.data.user.profile.background_image}`
-                            : "/default_bg_image.jpeg"
+                            : "/background_images/default-bg.jpg"
                     }
                     alt="Background"
                     className="bg-image"

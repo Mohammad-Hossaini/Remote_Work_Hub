@@ -98,10 +98,6 @@ export default function AppliedJobs() {
                             </div>
                             <div className="right">
                                 <HiOutlineUser className="userIcon" />
-                                {/* <HiOutlineTrash
-                                    className="deleteIcon"
-                                    onClick={() => removeJob(app.id)} // app.id باید ID اپلای باشد
-                                /> */}
                                 <HiOutlineTrash
                                     className="deleteIcon"
                                     onClick={() => removeJob(app.id)}

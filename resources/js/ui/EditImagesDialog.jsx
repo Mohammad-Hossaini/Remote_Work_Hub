@@ -105,7 +105,7 @@ const DeleteButton = styled.button`
 
 export default function EditImagesDialog({ trigger, onBgUpdate }) {
     const { user, setUser } = useAuth();
-    const [previewImage, setPreviewImage] = useState("/default_bg_image.jpeg");
+    const [previewImage, setPreviewImage] = useState("/background_images/default-bg.jpg");
     const fileInputRef = useRef(null);
 
     if (!user) return null;
@@ -116,7 +116,7 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
                 `http://127.0.0.1:8000/${user.data.user.profile.background_image}`
             );
         } else {
-            setPreviewImage("/default_bg_image.jpeg");
+            setPreviewImage("/background_images/default-bg.jpg");
         }
     }, [user]);
 
@@ -219,8 +219,8 @@ export default function EditImagesDialog({ trigger, onBgUpdate }) {
             sessionStorage.setItem("authUser", JSON.stringify(updatedUser));
 
             // پیش‌نمایش پیش‌فرض
-            setPreviewImage("/default_bg_image.jpeg");
-            if (onBgUpdate) onBgUpdate("/default_bg_image.jpeg");
+            setPreviewImage("/background_images/default-bg.jpg");
+            if (onBgUpdate) onBgUpdate("/background_images/default-bg.jpg");
 
             toast.success("Background image reset to default!");
         } catch (err) {

@@ -1,22 +1,6 @@
 const API_BASE = "http://127.0.0.1:8000/api";
 
-//togle between favorite
-export async function toggleFavoriteJob(jobId, token) {
-    const response = await fetch(`${API_BASE}/jobs/${jobId}/favorite`, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error("Failed to save job");
-    }
-
-    return response.json();
-}
-
-// get favorite jobs
+// get from favorite
 export async function getMyFavorites(token) {
     const res = await fetch(`${API_BASE}/my-favorites`, {
         headers: {
@@ -25,15 +9,25 @@ export async function getMyFavorites(token) {
         },
     });
 
-    if (!res.ok) {
-        throw new Error("Failed to fetch favorites");
-    }
-
-    const data = await res.json();
-    return data;
+    if (!res.ok) throw new Error("Failed to fetch favorites");
+    return await res.json();
 }
 
-// remove a favoriter job
+// add to  favorite
+export async function addFavoriteJob(jobId, token) {
+    const res = await fetch(`${API_BASE}/jobs/${jobId}/favorite`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+    });
+
+    if (!res.ok) throw new Error("Failed to add favorite");
+    return jobId;
+}
+
+// delete from favorite
 export async function removeFavoriteJob(jobId, token) {
     const res = await fetch(`${API_BASE}/jobs/${jobId}/favorite`, {
         method: "DELETE",
@@ -43,9 +37,6 @@ export async function removeFavoriteJob(jobId, token) {
         },
     });
 
-    if (!res.ok) {
-        throw new Error("Failed to remove favorite");
-    }
-
+    if (!res.ok) throw new Error("Failed to remove favorite");
     return jobId;
 }
